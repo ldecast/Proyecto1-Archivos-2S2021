@@ -1,1 +1,1 @@
-mkdisk -size=10 -path="/disk 1.dk"
+Mkdisk –size=10 –path="/home/mis discos/Disco4.dk"

@@ -27,15 +27,7 @@ int main()
     MyFile.close();
 
     parser_driver driver;
-    if (!driver.parse("entrada.txt"))
-    {
-      printf("La entrada es incorrecta\n");
-    }
-    else
-    {
-      printf("La entrada es correcta\n");
-      //printf("Resultado = %f\n",driver.resultado);
-    }
+    driver.parse("entrada.txt");
   }
   return 0;
 }

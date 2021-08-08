@@ -4,32 +4,31 @@
 #include <string>
 #include <vector>
 #include <stdio.h>
-using namespace std;
 
 struct command
 {
-    string keyword;
-    string size;
-    string fit;
-    string unit;
-    string path;
-    string type;
-    string delet;
-    string name;
-    string add;
-    string id;
-    string fs;
+    std::string keyword;
+    std::string size;
+    std::string fit;
+    std::string unit;
+    std::string path;
+    std::string type;
+    std::string delet;
+    std::string name;
+    std::string add;
+    std::string id;
+    std::string fs;
 };
 
 struct parametro
 {
-    string tipo;
-    string valor;
+    std::string tipo;
+    std::string valor;
 };
 
 struct command x;
 
-void newCommand(string _type, vector<parametro> _params)
+void newCommand(std::string _type, std::vector<parametro> _params)
 {
     x.keyword = _type;
     for (size_t i = 0; i < _params.size(); i++)
@@ -65,7 +64,7 @@ void newCommand(string _type, vector<parametro> _params)
             x.fs = _params[i].valor;
 
         else
-            cout << "Parámetro no válido: " + _params[i].valor << endl;
+            std::cout << "Parámetro no válido: " + _params[i].valor << std::endl;
     }
 }
 

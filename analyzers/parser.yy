@@ -89,7 +89,7 @@ DATA: STRING {$$=$1;}
     | "tk_identifier" {$$=$1;}
 ;
 
-E: DISCOS //{ std::cout << x.keyword+"\n"; }
+E: DISCOS
 ;
 
 DISCOS: "pr_MKDISK" PARAMS { newCommand("__MKDISK",parametros); }

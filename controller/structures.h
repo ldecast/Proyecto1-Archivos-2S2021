@@ -3,15 +3,6 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <string.h>
-#include <cstdlib>
-#include <time.h>
-
-using namespace std;
-
-string root = "/home/ldecast/Escritorio"; //url raiz para guardar
 
 struct partition
 {

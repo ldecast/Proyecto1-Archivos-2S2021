@@ -17,12 +17,12 @@ HYPHEN "-"|"–"
 STRING_DOUBLE \"(\\.|[^"\\])*\"
 STRING_SINGLE \'(\\.|[^"\\])*\'
 SPACE " "
-PATH_DIR \/.+
 DIGITO [0-9]
 LETRA [a-zA-ZñÑ]
-NUMERO {DIGITO}+("."{DIGITO}+)?
+NUMERO "-"?{DIGITO}+("."{DIGITO}+)?
 IDENTIFICADOR {LETRA}({LETRA}|{DIGITO}|"_")*
 DELIMITADOR [\t\r\f]
+PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 
 %%
 
