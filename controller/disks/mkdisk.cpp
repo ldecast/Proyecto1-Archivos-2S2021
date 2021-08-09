@@ -10,10 +10,7 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
     FILE *file = NULL;
     file = fopen(sc, "r");
     if (file != NULL)
-    {
-        std::cout << "Error: El disco ya existe." << std::endl;
-        return 0;
-    }
+        return coutError("Error: El disco ya existe.");
 
     //Tamaño para distintas unidades que se piden
     int tam;
@@ -63,23 +60,17 @@ int makeDisk(std::string _size, std::string _fit, std::string _unit, std::string
     try
     {
         if (_size == "" || _path == "")
-        {
-            std::string err;
-            err.append(std::string("Error: faltan parámetros obligatorios: ") + ((_size == "") ? "'-size'" : "'-path'"));
-            std::cout << err << std::endl;
-            return 0;
-        }
+            return coutError("Error: faltan parámetros obligatorios.");
         int ns = intSize(_size);
         char nf = getFit(_fit);
         char nu = getUnit(_unit);
-        std::string np = getPath(_path);
+        std::string np = buildPath(_path);
         std::cout << "CREANDO DISCO EN LA RUTA: \"" + np + "\"" << std::endl;
         return CrearDisco(ns, nf, nu, np);
     }
     catch (const std::exception &e)
     {
-        std::cout << "ERROR!" << std::endl;
         std::cerr << e.what() << '\n';
-        return 0;
+        return coutError("ERROR!");
     }
 }

@@ -31,9 +31,28 @@ std::string getPath(std::string _path)
     if (np[0] != '/')
         np = "/" + np;
     np = root + np;
-    // Check if path exists
+    return np;
+}
+
+std::string getDir(std::string np)
+{
     std::string dir = np.substr(0, np.find_last_of('/'));
+    return dir;
+}
+
+bool isDir(std::string dir)
+{
     if (!fs::is_directory(dir) || !fs::exists(dir))
+        return false;
+    else
+        return true;
+}
+
+std::string buildPath(std::string _path)
+{
+    std::string np = getPath(_path);
+    std::string dir = getDir(np);
+    if (!isDir(dir))                 // Check if path exists
         fs::create_directories(dir); // create src folder
     return np;
 }
@@ -70,6 +89,12 @@ char getUnit(std::string _unit)
         exit(EXIT_FAILURE);
     }
     return nu;
+}
+
+int coutError(std::string err)
+{
+    std::cout << err << std::endl;
+    return 0;
 }
 
 #endif
