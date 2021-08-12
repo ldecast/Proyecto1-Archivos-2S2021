@@ -11,11 +11,16 @@ int main()
   string input, output;
   while (true)
   {
-    cout << ">> ";
+    cout << "\n>> ";
     getline(cin, input);
 
     if (input == "exit" || input == "quit")
       return 0;
+    if (input == "cls" || input == "clear")
+    {
+      system("clear");
+      continue;
+    }
     if (input == "")
       continue;
 

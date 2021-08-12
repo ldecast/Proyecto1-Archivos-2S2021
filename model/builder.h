@@ -26,10 +26,9 @@ struct parametro
     std::string valor;
 };
 
-struct command x;
-
-void newCommand(std::string _type, std::vector<parametro> _params)
+struct command newCommand(std::string _type, std::vector<parametro> _params)
 {
+    struct command x;
     x.keyword = _type;
     for (size_t i = 0; i < _params.size(); i++)
     {
@@ -66,6 +65,7 @@ void newCommand(std::string _type, std::vector<parametro> _params)
         else
             std::cout << "Parámetro no válido: " + _params[i].valor << std::endl;
     }
+    return x;
 }
 
 #endif

@@ -50,7 +50,7 @@
 #include <vector>
 
 std::vector<parametro> parametros;
-// struct command x;
+struct command x;
 
 
 #line 57 "parser.tab.cc"
@@ -721,19 +721,19 @@ namespace yy {
             {
   case 2:
 #line 79 "parser.yy"
-                { return bloque(); }
+                { return bloque(x); }
 #line 726 "parser.tab.cc"
     break;
 
   case 3:
 #line 82 "parser.yy"
-                      {yylhs.value.as < std::string > ()=yystack_[0].value.as < std::string > ();}
+                      {yylhs.value.as < std::string > ()=yystack_[0].value.as < std::string > ().substr(1, yystack_[0].value.as < std::string > ().size() - 2);}
 #line 732 "parser.tab.cc"
     break;
 
   case 4:
 #line 83 "parser.yy"
-                      {yylhs.value.as < std::string > ()=yystack_[0].value.as < std::string > ();}
+                      {yylhs.value.as < std::string > ()=yystack_[0].value.as < std::string > ().substr(1, yystack_[0].value.as < std::string > ().size() - 2);}
 #line 738 "parser.tab.cc"
     break;
 
@@ -763,37 +763,37 @@ namespace yy {
 
   case 10:
 #line 95 "parser.yy"
-                           { newCommand("__MKDISK",parametros); }
+                           { x = newCommand("__MKDISK",parametros); }
 #line 768 "parser.tab.cc"
     break;
 
   case 11:
 #line 96 "parser.yy"
-                           { newCommand("__RMDISK",parametros); }
+                           { x = newCommand("__RMDISK",parametros); }
 #line 774 "parser.tab.cc"
     break;
 
   case 12:
 #line 97 "parser.yy"
-                          { newCommand("__FDISK",parametros); }
+                          { x = newCommand("__FDISK",parametros); }
 #line 780 "parser.tab.cc"
     break;
 
   case 13:
 #line 98 "parser.yy"
-                          { newCommand("__MOUNT",parametros); }
+                          { x = newCommand("__MOUNT",parametros); }
 #line 786 "parser.tab.cc"
     break;
 
   case 14:
 #line 99 "parser.yy"
-                           { newCommand("__UMOUNT",parametros); }
+                           { x = newCommand("__UMOUNT",parametros); }
 #line 792 "parser.tab.cc"
     break;
 
   case 15:
 #line 100 "parser.yy"
-                         { newCommand("__MKFS",parametros); }
+                         { x = newCommand("__MKFS",parametros); }
 #line 798 "parser.tab.cc"
     break;
 
@@ -1285,4 +1285,5 @@ namespace yy {
 void yy::class_parser::error(const location_type& lugar, const std::string& lexema)
 {
   std::cout << "ERROR SINTÁCTICO: " << lexema << std::endl;
+  exit(EXIT_FAILURE);
 }

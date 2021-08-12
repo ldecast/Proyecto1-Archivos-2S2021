@@ -23,4 +23,14 @@ struct MBR
     partition mbr_partition[4];
 };
 
+struct EBR
+{
+    char part_status;
+    char part_fit; //b,f,w
+    int part_start;
+    int part_size;
+    int part_next; //próximo EBR || -1
+    char part_name[16];
+};
+
 #endif

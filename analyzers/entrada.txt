@@ -1,1 +1,1 @@
-Mkdisk –size=10 –path="/home/mis discos/Disco4.dk"
+fdisk -add=8 -u=k -name="ParticionL3" -path=dis.dk

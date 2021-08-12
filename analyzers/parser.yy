@@ -29,7 +29,7 @@ class parser_driver;
 #include <vector>
 
 std::vector<parametro> parametros;
-// struct command x;
+struct command x;
 
 }
 %define api.token.prefix {TOK_}
@@ -76,11 +76,11 @@ std::vector<parametro> parametros;
 
 %start INICIO;
 
-INICIO: E "eof" { return bloque(); }
+INICIO: E "eof" { return bloque(x); }
 ;
 
-STRING: "tk_string_d" {$$=$1;}
-      | "tk_string_s" {$$=$1;}
+STRING: "tk_string_d" {$$=$1.substr(1, $1.size() - 2);}
+      | "tk_string_s" {$$=$1.substr(1, $1.size() - 2);}
 ;
 
 DATA: STRING {$$=$1;}
@@ -92,12 +92,12 @@ DATA: STRING {$$=$1;}
 E: DISCOS
 ;
 
-DISCOS: "pr_MKDISK" PARAMS { newCommand("__MKDISK",parametros); }
-      | "pr_RMDISK" PARAMS { newCommand("__RMDISK",parametros); }
-      | "pr_FDISK" PARAMS { newCommand("__FDISK",parametros); }
-      | "pr_MOUNT" PARAMS { newCommand("__MOUNT",parametros); }
-      | "pr_UMOUNT" PARAMS { newCommand("__UMOUNT",parametros); }
-      | "pr_MKFS" PARAMS { newCommand("__MKFS",parametros); }
+DISCOS: "pr_MKDISK" PARAMS { x = newCommand("__MKDISK",parametros); }
+      | "pr_RMDISK" PARAMS { x = newCommand("__RMDISK",parametros); }
+      | "pr_FDISK" PARAMS { x = newCommand("__FDISK",parametros); }
+      | "pr_MOUNT" PARAMS { x = newCommand("__MOUNT",parametros); }
+      | "pr_UMOUNT" PARAMS { x = newCommand("__UMOUNT",parametros); }
+      | "pr_MKFS" PARAMS { x = newCommand("__MKFS",parametros); }
 ;
 
 PARAMS: PARAMS "tk_space" "tk_HYPHEN" PARAM "tk_EQUAL" DATA { parametros.push_back({$4, $6}); }
@@ -120,4 +120,5 @@ PARAM: "pr_SIZE" {$$ = "__SIZE";}
 void yy::class_parser::error(const location_type& lugar, const std::string& lexema)
 {
   std::cout << "ERROR SINTÁCTICO: " << lexema << std::endl;
+  exit(EXIT_FAILURE);
 }

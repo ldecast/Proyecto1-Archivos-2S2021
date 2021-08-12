@@ -12,14 +12,28 @@
 namespace fs = std::filesystem;
 std::string root = "/home/ldecast/Escritorio"; // url raíz
 
+int coutError(std::string err, FILE *_file)
+{
+    if (_file != NULL)
+    {
+        fclose(_file);
+        _file = NULL;
+    }
+    std::cout << err << std::endl;
+    return 0;
+}
+
+void exitFailure(std::string err)
+{
+    std::cout << err << std::endl;
+    exit(EXIT_FAILURE);
+}
+
 int intSize(std::string _size)
 {
     int ns = std::stoi(_size);
     if (ns <= 0)
-    {
-        std::cout << "Error: el valor de '-size' debe ser mayor que cero." << std::endl;
-        exit(EXIT_FAILURE);
-    }
+        exitFailure("Error: el valor de '-size' debe ser mayor que cero.");
     return ns;
 }
 
@@ -42,7 +56,7 @@ std::string getDir(std::string np)
 
 bool isDir(std::string dir)
 {
-    if (!fs::is_directory(dir) || !fs::exists(dir))
+    if (!fs::is_directory(dir) && !fs::exists(dir))
         return false;
     else
         return true;
@@ -57,44 +71,81 @@ std::string buildPath(std::string _path)
     return np;
 }
 
-char getFit(std::string _fit)
+char getFit(std::string _fit, char _default)
 {
     char nf;
     transform(_fit.begin(), _fit.end(), _fit.begin(), ::toupper);
-    if (_fit == "BF")
+    if (_fit == "BF") //best
         nf = 'B';
-    else if (_fit == "FF" || _fit == "")
+    else if (_fit == "FF") //first
         nf = 'F';
-    else if (_fit == "WF")
+    else if (_fit == "WF") //worst
         nf = 'W';
-    else
-    {
-        std::cout << "Error: valor de '-f' no válido: " + _fit << std::endl;
-        exit(EXIT_FAILURE);
-    }
+    else if (_fit == "")
+        nf = _default;
+    else //err
+        exitFailure("Error: parámetro -f no válido: " + _fit);
     return nf;
 }
 
-char getUnit(std::string _unit)
+char getUnit(std::string _unit, char _default)
 {
     char nu;
     transform(_unit.begin(), _unit.end(), _unit.begin(), ::tolower);
-    if (_unit == "k")
+    if (_unit == "b")
+        nu = 'b';
+    else if (_unit == "k")
         nu = 'k';
-    else if (_unit == "m" || _unit == "")
+    else if (_unit == "m")
         nu = 'm';
+    else if (_unit == "")
+        nu = _default;
     else //err
-    {
-        std::cout << "Error: parámetro -u no válido: " + _unit << std::endl;
-        exit(EXIT_FAILURE);
-    }
+        exitFailure("Error: parámetro -u no válido: " + _unit);
     return nu;
 }
 
-int coutError(std::string err)
+int getSize(char _unit, int _size)
 {
-    std::cout << err << std::endl;
-    return 0;
+    if (_unit == 'b') //bytes
+        return _size;
+    else if (_unit == 'k') //kb
+        return _size * 1000;
+    else if (_unit == 'm') //mb
+        return _size * 1000 * 1000;
+    return -1;
+}
+
+char charType(std::string _type, char _default)
+{
+    char ntype;
+    transform(_type.begin(), _type.end(), _type.begin(), ::toupper);
+    if (_type == "E")
+        ntype = 'E';
+    else if (_type == "L")
+        ntype = 'L';
+    else if (_type == "P")
+        ntype = 'P';
+    else if (_type == "")
+        ntype = _default;
+    else //err
+        exitFailure("Error: parámetro -type no válido: " + _type);
+    return ntype;
+}
+
+char charDelete(std::string _delete)
+{
+    char ndelete;
+    transform(_delete.begin(), _delete.end(), _delete.begin(), ::tolower);
+    if (_delete == "fast")
+        ndelete = 'R'; //rápida
+    else if (_delete == "full")
+        ndelete = 'C'; //completa
+    else if (_delete == "")
+        ndelete = 'N'; //no aplica
+    else
+        exitFailure("Error: parámetro -delete no válido: " + _delete);
+    return ndelete;
 }
 
 #endif

@@ -10,14 +10,10 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
     FILE *file = NULL;
     file = fopen(sc, "r");
     if (file != NULL)
-        return coutError("Error: El disco ya existe.");
+        return coutError("Error: El disco ya existe.", file);
 
     //Tamaño para distintas unidades que se piden
-    int tam;
-    if (_unit == 'k') //kb
-        tam = _size * 1000;
-    else if (_unit == 'm') //mb
-        tam = _size * 1000 * 1000;
+    int tam = getSize(_unit, _size);
 
     file = fopen(sc, "wb");
     fwrite("\0", 1, 1, file);
@@ -37,8 +33,8 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
         mbr.mbr_partition[i].part_status = '0';
         mbr.mbr_partition[i].part_type = 'P';
         mbr.mbr_partition[i].part_fit = _fit;
-        mbr.mbr_partition[i].part_start = 0;
-        mbr.mbr_partition[i].part_size = tam;
+        mbr.mbr_partition[i].part_start = sizeof(MBR);
+        mbr.mbr_partition[i].part_size = 0;
         strcpy(mbr.mbr_partition[i].part_name, "");
     }
 
@@ -60,10 +56,10 @@ int makeDisk(std::string _size, std::string _fit, std::string _unit, std::string
     try
     {
         if (_size == "" || _path == "")
-            return coutError("Error: faltan parámetros obligatorios.");
+            return coutError("Error: faltan parámetros obligatorios.", NULL);
         int ns = intSize(_size);
-        char nf = getFit(_fit);
-        char nu = getUnit(_unit);
+        char nf = getFit(_fit, 'F');
+        char nu = getUnit(_unit, 'm');
         std::string np = buildPath(_path);
         std::cout << "CREANDO DISCO EN LA RUTA: \"" + np + "\"" << std::endl;
         return CrearDisco(ns, nf, nu, np);
@@ -71,6 +67,6 @@ int makeDisk(std::string _size, std::string _fit, std::string _unit, std::string
     catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
-        return coutError("ERROR!");
+        return coutError("ERROR!", NULL);
     }
 }
