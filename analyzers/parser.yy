@@ -79,6 +79,7 @@ struct command x;
 %start INICIO;
 
 INICIO: E "eof"   {return bloque(x);}
+      | "eof"
 ;
 
 STRING: "tk_string_d" {$$=$1.substr(1, $1.size() - 2);}

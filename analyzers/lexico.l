@@ -13,11 +13,11 @@ static yy::location loc;
 %option case-insensitive
 %option outfile="scanner.cpp"
 
-COMENTARIOS "#".+
+COMENTARIOS "#".*
 HYPHEN "-"|"–"
 STRING_DOUBLE \"(\\.|[^"\\])*\"
 STRING_SINGLE \'(\\.|[^"\\])*\'
-SPACE " "
+SPACE " "+
 DIGITO [0-9]
 LETRA [a-zA-ZñÑ]
 NUMERO "-"?{DIGITO}+("."{DIGITO}+)?

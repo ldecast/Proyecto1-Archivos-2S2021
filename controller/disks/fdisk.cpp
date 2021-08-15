@@ -39,11 +39,12 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
     fread(&ebr_inicial, sizeof(EBR), 1, _file);
     std::cout << "ebr_inicial.part_name: ";
     std::cout << ebr_inicial.part_name << std::endl;
-    if (_size + getLogicsSize(ebr_inicial, 0, _file) > extendida.part_size)
-        return coutError("El -size requerido de la partición lógica sobrepasa el tamaño de la partición extendida", _file);
 
     if (existeNombreEBR(ebr_inicial, _name, _file))
         return coutError("El nombre a asignar ya existe como partición lógica.", _file);
+
+    if (_size + getLogicsSize(ebr_inicial, 0, _file) > extendida.part_size)
+        return coutError("El -size requerido de la partición lógica sobrepasa el tamaño de la partición extendida", _file);
 
     if (ebr_inicial.part_size == 0) // Modifica el EBR inicial si no hay una partición lógica creada
     {
