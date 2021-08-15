@@ -13,6 +13,7 @@ static yy::location loc;
 %option case-insensitive
 %option outfile="scanner.cpp"
 
+COMENTARIOS "#".+
 HYPHEN "-"|"–"
 STRING_DOUBLE \"(\\.|[^"\\])*\"
 STRING_SINGLE \'(\\.|[^"\\])*\'
@@ -21,7 +22,7 @@ DIGITO [0-9]
 LETRA [a-zA-ZñÑ]
 NUMERO "-"?{DIGITO}+("."{DIGITO}+)?
 IDENTIFICADOR {LETRA}({LETRA}|{DIGITO}|"_")*
-DELIMITADOR [\t\r\f]
+DELIMITADOR [\t\r\n\f]
 PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 
 %%
@@ -43,6 +44,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "mount"		      {return yy::class_parser::make_MOUNT(yytext, loc);}
 "umount"		    {return yy::class_parser::make_UMOUNT(yytext, loc);}
 "mkfs"		      {return yy::class_parser::make_MKFS(yytext, loc);}
+"exec"		      {return yy::class_parser::make_RUN_EXEC(yytext, loc);}
 
 {HYPHEN}        {return yy::class_parser::make_HYPHEN(yytext, loc);}
 {STRING_DOUBLE} {return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}
@@ -52,6 +54,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 {IDENTIFICADOR}	{return yy::class_parser::make_IDENTIFICADOR(yytext, loc);}
 {SPACE}         {return yy::class_parser::make_SPACE(yytext, loc);}
 {DELIMITADOR}   {}
+{COMENTARIOS}   {}
 
 .               {printf("ERROR LEXICO %s\n",yytext);}
 <<EOF>>		      {return yy::class_parser::make_FIN(loc);}

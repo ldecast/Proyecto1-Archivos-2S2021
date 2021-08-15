@@ -58,6 +58,7 @@ struct command x;
 %token <std::string> STRING_DOUBLE "tk_string_d"
 %token <std::string> STRING_SINGLE "tk_string_s"
 %token <std::string> PATH_DIR "tk_path"
+%token <std::string> RUN_EXEC "tk_exec"
 %token <std::string> IDENTIFICADOR "tk_identifier"
 %token <std::string> SPACE "tk_space"
 %token <std::string> NUMERO "tk_number"
@@ -67,6 +68,7 @@ struct command x;
 %type E
 %type PARAMS
 %type DISCOS
+%type EXEC
 %type <std::string> PARAM
 %type <std::string> STRING
 %type <std::string> DATA
@@ -76,7 +78,7 @@ struct command x;
 
 %start INICIO;
 
-INICIO: E "eof" { return bloque(x); }
+INICIO: E "eof"   {return bloque(x);}
 ;
 
 STRING: "tk_string_d" {$$=$1.substr(1, $1.size() - 2);}
@@ -89,7 +91,11 @@ DATA: STRING {$$=$1;}
     | "tk_identifier" {$$=$1;}
 ;
 
-E: DISCOS
+E: EXEC
+ | DISCOS
+;
+
+EXEC: "tk_exec" PARAMS {x = newCommand("__EXEC",parametros);}
 ;
 
 DISCOS: "pr_MKDISK" PARAMS { x = newCommand("__MKDISK",parametros); }
