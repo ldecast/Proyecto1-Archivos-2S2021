@@ -1,20 +1,15 @@
 #include <iostream>
 #include <string.h>
-#include "../structures.h"
+#include "../../model/structures.h"
 #include "../handler.h"
 #include "func.h"
+#include "../partitions/fit.cpp"
+#include "../partitions/add.cpp"
+#include "../partitions/delete.cpp"
 
-int validations(MBR _mbr, int _index, int _ini, int _size)
+void CrearPrimaria(int _size, int _nstart, FILE *_file)
 {
-    if ((_ini + _size) > _mbr.mbr_tamano)
-        return 0;
-    if (_index < 3 && _mbr.mbr_partition[_index + 1].part_size > 0 && ((_ini + _size) >= _mbr.mbr_partition[_index + 1].part_start))
-        return 0;
-    return 1;
-}
-
-void CrearPrimaria(int _size, FILE *_file)
-{
+    fseek(_file, _nstart, SEEK_SET);
     fwrite("\0", _size, 1, _file);
 }
 
@@ -27,9 +22,8 @@ void CrearExtendida(int _size, int _nstart, char _fit, FILE *_file)
     ebr.part_size = 0;
     ebr.part_start = _nstart;
     ebr.part_status = '0';
-    // fseek(pFile, 0, SEEK_SET);
+    fseek(_file, _nstart, SEEK_SET);
     fwrite(&ebr, sizeof(EBR), 1, _file);
-    // fseek(pFile, 0, SEEK_SET);
     fwrite("\0", _size, 1, _file);
 }
 
@@ -43,14 +37,15 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
     EBR ebr_inicial;
     fseek(_file, extendida.part_start, SEEK_SET);
     fread(&ebr_inicial, sizeof(EBR), 1, _file);
-
-    if (_size + getLogicsSize(ebr_inicial, _file) > extendida.part_size)
+    std::cout << "ebr_inicial.part_name: ";
+    std::cout << ebr_inicial.part_name << std::endl;
+    if (_size + getLogicsSize(ebr_inicial, 0, _file) > extendida.part_size)
         return coutError("El -size requerido de la partición lógica sobrepasa el tamaño de la partición extendida", _file);
 
     if (existeNombreEBR(ebr_inicial, _name, _file))
         return coutError("El nombre a asignar ya existe como partición lógica.", _file);
 
-    if (ebr_inicial.part_status == '0')
+    if (ebr_inicial.part_size == 0) // Modifica el EBR inicial si no hay una partición lógica creada
     {
         ebr_inicial.part_fit = _fit;
         strcpy(ebr_inicial.part_name, _name.c_str());
@@ -62,18 +57,20 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
     }
     else
     {
-        // fseek(pFile, 0, SEEK_SET);
-        EBR ebr_final = getLastEBR(ebr_inicial, _file);
+        fseek(_file, extendida.part_start, SEEK_SET);
+        EBR ebr_final = getLogicByFit(ebr_inicial, _fit, _file, _size); // ebr_to_update
+        if (ebr_final.part_status == '!')
+            return coutError("No se pudo crear la partición lógica.", _file);
         EBR ebr_new;
         ebr_new.part_fit = _fit;
         strcpy(ebr_new.part_name, _name.c_str());
         ebr_new.part_next = -1;
         ebr_new.part_size = _size;
-        ebr_new.part_start = ebr_final.part_start + sizeof(EBR) + ebr_final.part_size; // Tomo en cuenta el EBR del anterior más el size de la partición lógica
+        ebr_new.part_start = ebr_final.part_start + sizeof(EBR) + ebr_final.part_size; // Tomo en cuenta el EBR del anterior más el size de la partición lógica, sera el probelma?
         ebr_new.part_status = '1';
 
         ebr_final.part_next = ebr_new.part_start; // +1?
-        // std::cout << ebr_final.part_name << std::endl;
+        std::cout << "ebr_new.part_name: " + std::string(ebr_new.part_name) + " ebr_new.part_start: " + std::to_string(ebr_new.part_start) << std::endl;
         fseek(_file, ebr_final.part_start, SEEK_SET);
         fwrite(&ebr_final, sizeof(EBR), 1, _file);
 
@@ -81,6 +78,8 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
         fwrite(&ebr_new, sizeof(EBR), 1, _file);
         fwrite("\0", _size, 1, _file);
     }
+    fclose(_file);
+    _file = NULL;
     return 1;
 }
 
@@ -98,159 +97,67 @@ int CrearParticion(int _size, char _unit, std::string _path, char _type, char _f
     int nstart = mbr.mbr_partition[0].part_start;
     if (_type == 'L')
     {
-        if (CrearLogica(mbr, tam, pFile, _fit, _name))
-        {
-            fclose(pFile);
-            pFile = NULL;
-            return 1;
-        }
-        return 0;
+        return CrearLogica(mbr, tam, pFile, _fit, _name);
     }
     else
     {
+        int options[] = {-1, -1, -1, -1};
         for (int i = 0; i < 4; i++)
         {
             if (mbr.mbr_partition[i].part_status == '0')
             {
-                nstart = mbr.mbr_partition[i].part_start;
-                if (!validations(mbr, i, nstart, tam)) //return coutError("Ya no se encuentra espacio disponible para crear la partición.");
+                nstart = mbr.mbr_partition[i].part_start + sizeof(MBR);
+                if (!Validations(mbr, i, nstart, tam)) //return coutError("Ya no se encuentra espacio disponible para crear la partición.", pFile);
                     continue;
                 if (_type == 'E' && existeExtendida(mbr) > -1)
                     return coutError("No puede existir más de una partición extendida dentro del disco.", pFile);
                 if (existeNombreMBR(mbr, _name))
                     return coutError("El nombre a asignar ya existe como partición.", pFile);
 
-                //Modificiación del MBR
-                mbr.mbr_partition[i].part_fit = _fit;
-                strcpy(mbr.mbr_partition[i].part_name, _name.c_str());
-                mbr.mbr_partition[i].part_size = tam;
-                mbr.mbr_partition[i].part_start = nstart;
-                mbr.mbr_partition[i].part_status = '1';
-                mbr.mbr_partition[i].part_type = _type;
-                fseek(pFile, 0, SEEK_SET);
-                fwrite(&mbr, sizeof(MBR), 1, pFile);
-
-                if (_type == 'P')
+                if (i < 3)
                 {
-                    CrearPrimaria(tam, pFile);
+                    if (mbr.mbr_partition[i + 1].part_start != 0)
+                        options[i] = mbr.mbr_partition[i + 1].part_start - mbr.mbr_partition[i].part_start - _size;
+                    else
+                        options[i] = 0;
                 }
-                else if (_type == 'E')
+                else if (i == 3)
                 {
-                    CrearExtendida(tam, nstart, _fit, pFile);
+                    if (mbr.mbr_partition[i].part_start != 0)
+                        options[i] = mbr.mbr_tamano - mbr.mbr_partition[i].part_start - _size;
+                    else
+                        options[i] = 0;
                 }
-                fclose(pFile);
-                pFile = NULL;
-                return 1;
             }
         }
-        return coutError("No se encontró ningún espacio apto para crear la partición.", pFile);
-    }
-}
 
-int AdministrarEspacio(int _add, char _unit, std::string _path, std::string _name) // revisarlo
-{
-    char src[_path.size() + 1];
-    strcpy(src, _path.c_str());
-    MBR mbr;
-    FILE *pFile;
-    pFile = fopen(src, "rb+");
-    fseek(pFile, 0, SEEK_SET);
-    fread(&mbr, sizeof(MBR), 1, pFile);
+        int i = getPartitionByFit(options, _fit); //ahora toca con el EBR
+        if (i == -1)
+            return coutError("No se encontró ningún espacio apto para crear la partición.", pFile);
 
-    char type = existPartition(mbr, _name, pFile);
-    if (type == '0')
-        return coutError("No se encuentra ninguna partición con ese nombre asignado.", pFile);
-
-    int size = getSize(_unit, _add);
-    if (type == 'P' || type == 'E')
-    {
-        partition _particion = getPartition(mbr, _name, pFile);
-        std::cout << "_particion.part_size: " + std::to_string(_particion.part_size) << std::endl;
-        if (getPartitionsSize(mbr) + size > mbr.mbr_tamano) //revisar tamano
-            return coutError("El tamaño que se desea agregar excede el tamaño del disco.", pFile);
-        if (_particion.part_size + size <= 0)
-            return coutError("El tamaño al reducir la partición debe ser mayor que 0.", pFile);
-        _particion.part_size = _particion.part_size + size;
-        fseek(pFile, _particion.part_start, SEEK_SET);
-        fwrite(&_particion, sizeof(partition), 1, pFile);
-        fwrite("\0", _particion.part_size, 1, pFile);
-        std::cout << "_particion.part_size: " + std::to_string(_particion.part_size) << std::endl;
-    }
-    else if (type == 'L')
-    {
-        partition extendida = mbr.mbr_partition[existeExtendida(mbr)];
-        EBR _ebr;
-        fseek(pFile, extendida.part_start, SEEK_SET);
-        fread(&_ebr, sizeof(EBR), 1, pFile);
-        _ebr = getLogicPartition(_ebr, _name, pFile);
-        std::cout << "_ebr.part_size: " + std::to_string(_ebr.part_size) << std::endl;
-        if (getLogicsSize(_ebr, pFile) + size > extendida.part_size)
-            return coutError("El tamaño que se desea agregar excede el tamaño de la partición extendida.", pFile);
-        if (_ebr.part_size + size <= 0)
-            return coutError("El tamaño al reducir la partición debe ser mayor que 0.", pFile);
-        _ebr.part_size = _ebr.part_size + size;
-        fseek(pFile, _ebr.part_start, SEEK_SET);
-        fwrite(&_ebr, sizeof(EBR), 1, pFile);
-        fwrite("\0", _ebr.part_size, 1, pFile);
-        std::cout << "_ebr.part_size: " + std::to_string(_ebr.part_size) << std::endl;
-    }
-    fclose(pFile);
-    pFile = NULL;
-    return 1;
-}
-
-int BorrarParticion(char _delete, std::string _path, std::string _name)
-{
-    char src[_path.size() + 1];
-    strcpy(src, _path.c_str());
-    MBR mbr;
-    FILE *pFile;
-    pFile = fopen(src, "rb+");
-    fseek(pFile, 0, SEEK_SET);
-    fread(&mbr, sizeof(MBR), 1, pFile);
-
-    char type = existPartition(mbr, _name, pFile);
-    if (type == '0')
-        return coutError("No se encuentra ninguna partición con ese nombre asignado.", pFile);
-
-    if (type == 'P' || type == 'E')
-    {
-        int i = getPartitionIndex(mbr, _name, pFile);
-        int _presize = mbr.mbr_partition[i].part_size;
-        mbr.mbr_partition[i].part_fit = mbr.disk_fit;
-        strcpy(mbr.mbr_partition[i].part_name, "");
-        mbr.mbr_partition[i].part_size = 0;
-        mbr.mbr_partition[i].part_status = '0';
-        mbr.mbr_partition[i].part_type = 'P';
+        //Modificiación del MBR
+        mbr.mbr_partition[i].part_fit = _fit;
+        strcpy(mbr.mbr_partition[i].part_name, _name.c_str());
+        mbr.mbr_partition[i].part_size = tam;
+        mbr.mbr_partition[i].part_start = nstart;
+        mbr.mbr_partition[i].part_status = '1';
+        mbr.mbr_partition[i].part_type = _type;
         fseek(pFile, 0, SEEK_SET);
         fwrite(&mbr, sizeof(MBR), 1, pFile);
-        if (_delete == 'C')
-            fwrite("\0", _presize, 1, pFile);
+
+        if (_type == 'P')
+        {
+            CrearPrimaria(tam, nstart, pFile);
+        }
+        else if (_type == 'E')
+        {
+            CrearExtendida(tam, nstart, _fit, pFile);
+        }
+        fclose(pFile);
+        pFile = NULL;
+        return 1;
     }
-    else if (type == 'L') //borrar referencia del EBR anterior
-    {
-        partition extendida = mbr.mbr_partition[existeExtendida(mbr)];
-        EBR _ebr;
-        fseek(pFile, extendida.part_start, SEEK_SET);
-        fread(&_ebr, sizeof(EBR), 1, pFile);
-        _ebr = getLogicPartition(_ebr, _name, pFile);
-        // print(std::to_string(extendida.part_start));
-        // print(std::string(_ebr.part_name));
-        EBR _ebr_previous = getEBRprevious(extendida.part_start, _ebr.part_start, pFile);
-        _ebr_previous.part_next = _ebr.part_next;
-        fseek(pFile, _ebr_previous.part_start, SEEK_SET);
-        fwrite(&_ebr_previous, sizeof(EBR), 1, pFile);
-        std::cout << "_ebr.part_size: " + std::to_string(_ebr.part_size) << std::endl;
-        std::cout << "_ebr.part_name: " + std::string(_ebr.part_name) << std::endl;
-        fseek(pFile, _ebr.part_start, SEEK_SET);
-        fwrite("\0", sizeof(EBR), 1, pFile);
-        if (_delete == 'C')
-            fwrite("\0", _ebr.part_size, 1, pFile);
-        // std::cout << _ebr.part_size << std::endl;
-    }
-    fclose(pFile);
-    pFile = NULL;
-    return 1;
+    // return coutError("No se encontró ningún espacio apto para crear la partición.", pFile);
 }
 
 int formatDisk(std::string _size, std::string _unit, std::string _path, std::string _type, std::string _fit, std::string _delete, std::string _name, std::string _add)
@@ -269,7 +176,15 @@ int formatDisk(std::string _size, std::string _unit, std::string _path, std::str
         return AdministrarEspacio(std::stoi(_add), nunit, npath, _name);
 
     if (_delete != "")
-        return BorrarParticion(charDelete(_delete), npath, _name);
+    {
+        char ans;
+        std::cout << "¿Desea eliminar la partición '" + _name + "' ubicada en el disco: '" + npath + "?' [Y/n] ";
+        std::cin >> ans;
+        if (ans == 'Y' || ans == 'y')
+            return BorrarParticion(charDelete(_delete), npath, _name);
+        else
+            return 1;
+    }
 
     char ntype = charType(_type, 'P');
     char nfit = getFit(_fit, 'W');

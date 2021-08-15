@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string.h>
-#include "../structures.h"
+#include "../../model/structures.h"
 
 bool existLogicPartition(EBR _ebr, std::string _name, FILE *_file)
 {
@@ -41,7 +41,7 @@ char existPartition(MBR _mbr, std::string _name, FILE *_file)
 
 EBR getLogicPartition(EBR _ebr, std::string _name, FILE *_file)
 {
-    // std::cout << _ebr.part_name << std::endl;
+    std::cout << _ebr.part_name << std::endl;
     if (_ebr.part_name == _name)
         return _ebr;
     if (_ebr.part_next != -1)
@@ -53,22 +53,19 @@ EBR getLogicPartition(EBR _ebr, std::string _name, FILE *_file)
     return {};
 }
 
-EBR getEBRprevious(int _seek, int _num, FILE *_file)
+EBR getEBRprevious(EBR _ebr, int _n, FILE *_file) //revisar
 {
-    EBR _ebr;
-    fseek(_file, _seek, SEEK_SET);
-    fread(&_ebr, sizeof(EBR), 1, _file);
-    while (_ebr.part_next != -1)
+    std::cout << ".." + std::string(_ebr.part_name) << std::endl;
+    if (_ebr.part_next == _n)
+        return _ebr;
+    if (_ebr.part_next != -1)
     {
-        if (_ebr.part_next == _num)
-            return _ebr;
-        else
-        {
-            fseek(_file, _ebr.part_next, SEEK_SET);
-            fread(&_ebr, sizeof(EBR), 1, _file);
-        }
+        fseek(_file, _ebr.part_next, SEEK_SET);
+        fread(&_ebr, sizeof(EBR), 1, _file);
+        return getEBRprevious(_ebr, _n, _file);
     }
-    return {};
+    else
+        return _ebr;
 }
 
 partition getPartition(MBR _mbr, std::string _name, FILE *_file)
@@ -136,7 +133,6 @@ bool existeNombreMBR(MBR _mbr, std::string _name)
 
 bool existeNombreEBR(EBR _ebr, std::string _name, FILE *_file)
 {
-    fseek(_file, _ebr.part_start, SEEK_SET);
     if (_ebr.part_name == _name)
         return true;
     if (_ebr.part_next != -1)
@@ -158,24 +154,36 @@ int getPartitionsSize(MBR _mbr)
     return s;
 }
 
-int getLogicsSize(EBR _ebr, FILE *_file)
+int getLogicsSize(EBR _ebr, int _s, FILE *_file)
 {
-    fseek(_file, _ebr.part_start, SEEK_SET);
+    // std::cout << "getLogicsSize -->_ebr.part_next: ";
     // std::cout << _ebr.part_next << std::endl;
-    int s = 0;
-    s += _ebr.part_size;
-    while (_ebr.part_next != -1)
+    _s += _ebr.part_size;
+    if (_ebr.part_next == -1)
+        return _s;
+    else
     {
         fseek(_file, _ebr.part_next, SEEK_SET);
         fread(&_ebr, sizeof(EBR), 1, _file);
-        s += _ebr.part_size;
+        return getLogicsSize(_ebr, _s, _file);
     }
-    return s;
 }
 
-// void print(std::string _message)
-// {
-//     std::cout << _message << std::endl;
-// }
+bool Validations(MBR _mbr, int _index, int _ini, int _size)
+{
+    if (_ini + _size < 0 || _ini + _size > _mbr.mbr_tamano || _ini + _size < _mbr.mbr_partition[_index].part_start)
+        return false;
+    if (_index < 3 && _mbr.mbr_partition[_index + 1].part_start > 0)
+    {
+        if (_ini + _size >= _mbr.mbr_partition[_index + 1].part_start)
+            return false;
+    }
+    return true;
+}
+
+void print(std::string _message)
+{
+    std::cout << _message << std::endl;
+}
 
 #endif

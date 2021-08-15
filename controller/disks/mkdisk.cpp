@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string.h>
-#include "../structures.h"
+#include "../../model/structures.h"
 #include "../handler.h"
 
 int CrearDisco(int _size, char _fit, char _unit, std::string _path)
@@ -33,7 +33,7 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
         mbr.mbr_partition[i].part_status = '0';
         mbr.mbr_partition[i].part_type = 'P';
         mbr.mbr_partition[i].part_fit = _fit;
-        mbr.mbr_partition[i].part_start = sizeof(MBR);
+        mbr.mbr_partition[i].part_start = 0;
         mbr.mbr_partition[i].part_size = 0;
         strcpy(mbr.mbr_partition[i].part_name, "");
     }

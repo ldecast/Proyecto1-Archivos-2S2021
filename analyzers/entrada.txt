@@ -1,1 +1,1 @@
-fdisk -add=8 -u=k -name="ParticionL3" -path=dis.dk
+fdisk -type=L -size=14 -u=k -name="ParticionL3" -path=dis.dk
