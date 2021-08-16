@@ -33,4 +33,22 @@ struct EBR
     char part_name[16];
 };
 
+struct Disk_id
+{
+    std::string _carnet = "38";
+    int _number_id = 1;
+    char _letter_id = 'A';
+};
+
+struct MOUNTED
+{
+    std::string path;
+    Disk_id id;
+    char type;
+    partition particion;
+    EBR logica;
+};
+
+std::vector<MOUNTED> _particiones_montadas;
+
 #endif

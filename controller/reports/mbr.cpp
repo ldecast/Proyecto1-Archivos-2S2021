@@ -7,9 +7,10 @@
 #include "func.h"
 
 using std::string;
+
 std::string getDot();
 
-int ReportMBR(string _path, char _id[])
+int ReportMBR(string _path, Disk_id _disk_id)
 {
     string grafo =
         string("digraph MBR {\n") +

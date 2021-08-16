@@ -25,7 +25,7 @@ int exec(std::string _path)
     {
       std::cout << std::endl;
       std::cout << ">> " + line << std::endl;
-      std::this_thread::sleep_for(0.5s);
+      // std::this_thread::sleep_for(0.1s);
       std::ofstream MyFile(filename);
       MyFile << line;
       MyFile.close();
