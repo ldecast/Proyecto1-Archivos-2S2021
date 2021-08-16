@@ -18,6 +18,9 @@ struct command
     std::string add;
     std::string id;
     std::string fs;
+
+    std::string ruta;
+    std::string root;
 };
 
 struct parametro
@@ -61,6 +64,12 @@ struct command newCommand(std::string _type, std::vector<parametro> _params)
 
         else if (_params[i].tipo == "__FS")
             x.fs = _params[i].valor;
+
+        else if (_params[i].tipo == "__RUTA")
+            x.ruta = _params[i].valor;
+
+        else if (_params[i].tipo == "__ROOT")
+            x.root = _params[i].valor;
 
         else
             std::cout << "Parámetro no válido: " + _params[i].valor << std::endl;

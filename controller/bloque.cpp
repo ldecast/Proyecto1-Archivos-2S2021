@@ -4,8 +4,9 @@
 #include "./disks/mkdisk.cpp"
 #include "./disks/rmdisk.cpp"
 #include "./disks/fdisk.cpp"
+#include "./reports/classifier.cpp"
 
-int bloque(struct command x) //Falta que lleve el usuario, grupo, etc
+int bloque(struct command x)
 {
     if (x.keyword == "__MKDISK")
         return makeDisk(x.size, x.fit, x.unit, x.path);
@@ -15,6 +16,9 @@ int bloque(struct command x) //Falta que lleve el usuario, grupo, etc
 
     if (x.keyword == "__FDISK")
         return formatDisk(x.size, x.unit, x.path, x.type, x.fit, x.delet, x.name, x.add);
+
+    if (x.keyword == "__REP")
+        return classifier(x.name, x.path, x.id, x.ruta, x.root);
 
     return 0;
 }

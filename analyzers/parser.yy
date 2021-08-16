@@ -48,6 +48,10 @@ struct command x;
 %token <std::string> ID "pr_ID"
 %token <std::string> FS "pr_FS"
 
+%token <std::string> RUTA "pr_RUTA"
+%token <std::string> ROOT "pr_ROOT"
+
+
 %token <std::string> MKDISK "pr_MKDISK"
 %token <std::string> RMDISK "pr_RMDISK"
 %token <std::string> FDISK "pr_FDISK"
@@ -58,7 +62,8 @@ struct command x;
 %token <std::string> STRING_DOUBLE "tk_string_d"
 %token <std::string> STRING_SINGLE "tk_string_s"
 %token <std::string> PATH_DIR "tk_path"
-%token <std::string> RUN_EXEC "tk_exec"
+%token <std::string> RUN_EXEC "pr_exec"
+%token <std::string> RUN_REPORT "pr_rep"
 %token <std::string> IDENTIFICADOR "tk_identifier"
 %token <std::string> SPACE "tk_space"
 %token <std::string> NUMERO "tk_number"
@@ -69,6 +74,7 @@ struct command x;
 %type PARAMS
 %type DISCOS
 %type EXEC
+%type REPORT
 %type <std::string> PARAM
 %type <std::string> STRING
 %type <std::string> DATA
@@ -94,25 +100,29 @@ DATA: STRING {$$=$1;}
 
 E: EXEC
  | DISCOS
+ | REPORT
 ;
 
-EXEC: "tk_exec" PARAMS {x = newCommand("__EXEC",parametros);}
+EXEC: "pr_exec" PARAMS {x = newCommand("__EXEC",parametros);}
 ;
 
-DISCOS: "pr_MKDISK" PARAMS { x = newCommand("__MKDISK",parametros); }
-      | "pr_RMDISK" PARAMS { x = newCommand("__RMDISK",parametros); }
-      | "pr_FDISK" PARAMS { x = newCommand("__FDISK",parametros); }
-      | "pr_MOUNT" PARAMS { x = newCommand("__MOUNT",parametros); }
-      | "pr_UMOUNT" PARAMS { x = newCommand("__UMOUNT",parametros); }
-      | "pr_MKFS" PARAMS { x = newCommand("__MKFS",parametros); }
+DISCOS: "pr_MKDISK" PARAMS {x = newCommand("__MKDISK",parametros);}
+      | "pr_RMDISK" PARAMS {x = newCommand("__RMDISK",parametros);}
+      | "pr_FDISK" PARAMS {x = newCommand("__FDISK",parametros);}
+      | "pr_MOUNT" PARAMS {x = newCommand("__MOUNT",parametros);}
+      | "pr_UMOUNT" PARAMS {x = newCommand("__UMOUNT",parametros);}
+      | "pr_MKFS" PARAMS {x = newCommand("__MKFS",parametros);}
 ;
 
-PARAMS: PARAMS "tk_space" "tk_HYPHEN" PARAM "tk_EQUAL" DATA { parametros.push_back({$4, $6}); }
-      | "tk_space" "tk_HYPHEN" PARAM "tk_EQUAL" DATA { parametros.clear(); parametros.push_back({$3, $5}); }
+REPORT: "pr_rep" PARAMS {x = newCommand("__REP",parametros);}
+;
+
+PARAMS: PARAMS "tk_space" "tk_HYPHEN" PARAM "tk_EQUAL" DATA {parametros.push_back({$4, $6});}
+      | "tk_space" "tk_HYPHEN" PARAM "tk_EQUAL" DATA {parametros.clear(); parametros.push_back({$3, $5});}
 ;
 
 PARAM: "pr_SIZE" {$$ = "__SIZE";}
-      | "pr_FIT" { $$ = "__FIT";}
+      | "pr_FIT" {$$ = "__FIT";}
       | "pr_UNIT" {$$ = "__UNIT";}
       | "pr_PATH" {$$ = "__PATH";}
       | "pr_TYPE" {$$ = "__TYPE";}
@@ -121,6 +131,8 @@ PARAM: "pr_SIZE" {$$ = "__SIZE";}
       | "pr_ADD" {$$ = "__ADD";}
       | "pr_ID" {$$ = "__ID";}
       | "pr_FS" {$$ = "__FS";}
+      | "pr_RUTA" {$$ = "__RUTA";}
+      | "pr_ROOT" {$$ = "__ROOT";}
 ;
 
 %%

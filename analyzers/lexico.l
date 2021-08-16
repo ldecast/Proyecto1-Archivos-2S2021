@@ -21,7 +21,7 @@ SPACE " "+
 DIGITO [0-9]
 LETRA [a-zA-ZñÑ]
 NUMERO "-"?{DIGITO}+("."{DIGITO}+)?
-IDENTIFICADOR {LETRA}({LETRA}|{DIGITO}|"_")*
+IDENTIFICADOR ({LETRA}|{DIGITO}|"_")+
 DELIMITADOR [\t\r\n\f]
 PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 
@@ -38,6 +38,11 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "add"           {return yy::class_parser::make_ADD(yytext, loc);}
 "id"            {return yy::class_parser::make_ID(yytext, loc);}
 "fs"            {return yy::class_parser::make_FS(yytext, loc);}
+
+"ruta"            {return yy::class_parser::make_RUTA(yytext, loc);}
+"root"            {return yy::class_parser::make_ROOT(yytext, loc);}
+
+
 "mkdisk"		    {return yy::class_parser::make_MKDISK(yytext, loc);}
 "rmdisk"		    {return yy::class_parser::make_RMDISK(yytext, loc);}
 "fdisk"		      {return yy::class_parser::make_FDISK(yytext, loc);}
@@ -45,6 +50,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "umount"		    {return yy::class_parser::make_UMOUNT(yytext, loc);}
 "mkfs"		      {return yy::class_parser::make_MKFS(yytext, loc);}
 "exec"		      {return yy::class_parser::make_RUN_EXEC(yytext, loc);}
+"rep"           {return yy::class_parser::make_RUN_REPORT(yytext, loc);}
 
 {HYPHEN}        {return yy::class_parser::make_HYPHEN(yytext, loc);}
 {STRING_DOUBLE} {return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}
