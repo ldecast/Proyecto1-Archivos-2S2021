@@ -39,8 +39,8 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "id"            {return yy::class_parser::make_ID(yytext, loc);}
 "fs"            {return yy::class_parser::make_FS(yytext, loc);}
 
-"ruta"            {return yy::class_parser::make_RUTA(yytext, loc);}
-"root"            {return yy::class_parser::make_ROOT(yytext, loc);}
+"ruta"          {return yy::class_parser::make_RUTA(yytext, loc);}
+"root"          {return yy::class_parser::make_ROOT(yytext, loc);}
 
 
 "mkdisk"		    {return yy::class_parser::make_MKDISK(yytext, loc);}
@@ -51,6 +51,8 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "mkfs"		      {return yy::class_parser::make_MKFS(yytext, loc);}
 "exec"		      {return yy::class_parser::make_RUN_EXEC(yytext, loc);}
 "rep"           {return yy::class_parser::make_RUN_REPORT(yytext, loc);}
+
+"__quit__"      {exit(1);}
 
 {HYPHEN}        {return yy::class_parser::make_HYPHEN(yytext, loc);}
 {STRING_DOUBLE} {return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}

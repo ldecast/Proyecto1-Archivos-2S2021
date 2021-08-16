@@ -49,6 +49,7 @@ struct MOUNTED
     EBR logica;
 };
 
+int _number_id = 0;
 std::vector<MOUNTED> _particiones_montadas;
 
 #endif

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include <algorithm>
+#include "../partitions/func.h"
 #include "mbr.cpp"
 // #include "disk.cpp"
 
@@ -12,9 +13,7 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
     transform(_name.begin(), _name.end(), _name.begin(), ::tolower);
     std::string n_path = buildPath(_path);
 
-    Disk_id disk_id;
-    disk_id._number_id = std::stoi(_id.substr(2, 1));
-    disk_id._letter_id = _id[_id.length() - 1];
+    Disk_id disk_id = buildID(_id);
 
     if (_name == "mbr")
         return ReportMBR(n_path, disk_id);
