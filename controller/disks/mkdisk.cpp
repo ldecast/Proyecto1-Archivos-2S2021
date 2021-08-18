@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <time.h>
 #include "../../model/structures.h"
 #include "../handler.h"
 
@@ -17,15 +18,16 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
 
     file = fopen(sc, "wb");
     fwrite("\0", 1, 1, file);
-    /*se pone el puntero en el tamaño deseado del archivo y esto automaticamente 
-	hace que el archivo tenga ese size*/
-    fseek(file, tam, SEEK_SET); // objeto file, size de cuanto se quiere mover, al inicio
+    fseek(file, tam, SEEK_SET);
     fwrite("\0", 1, 1, file);
+
+    auto curr_time = std::chrono::system_clock::now();
+    std::time_t curr_time_t = std::chrono::system_clock::to_time_t(curr_time);
 
     //////MBR//////
     MBR mbr;
     mbr.mbr_tamano = tam;
-    mbr.mbr_fecha_creacion = time(0);
+    mbr.mbr_fecha_creacion = curr_time_t;
     mbr.mbr_disk_signature = rand() % 1000;
     mbr.disk_fit = _fit;
     for (int i = 0; i < 4; i++)
@@ -44,7 +46,7 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
     fclose(file);
 
     std::cout << "--------------------DISCO CREADO--------------------" << std::endl;
-    std::cout << "Fecha de creación: " << asctime(gmtime(&mbr.mbr_fecha_creacion));
+    std::cout << "Fecha de creación: " << ctime(&mbr.mbr_fecha_creacion);
     std::cout << "Signature: " << mbr.mbr_disk_signature << std::endl;
     std::cout << "Tamaño: " << mbr.mbr_tamano << std::endl;
     std::cout << "Fit: " << mbr.disk_fit << std::endl;

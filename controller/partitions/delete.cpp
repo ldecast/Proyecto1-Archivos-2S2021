@@ -59,8 +59,8 @@ int BorrarParticion(char _delete, std::string _path, std::string _name)
         fwrite(&_ebr_previous, sizeof(EBR), 1, pFile);
         if (_delete == 'C')
         {
-            fseek(pFile, _ebr_to_delete.part_start, SEEK_SET);
-            fwrite("\0", _ebr_to_delete.part_size, 1, pFile);
+            fseek(pFile, _ebr_to_delete.part_start + sizeof(EBR), SEEK_SET);
+            fwrite("\0", _ebr_to_delete.part_size - sizeof(EBR), 1, pFile);
         }
     }
     fclose(pFile);

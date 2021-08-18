@@ -24,7 +24,7 @@ void CrearExtendida(int _size, int _nstart, char _fit, FILE *_file)
     ebr.part_status = '0';
     fseek(_file, _nstart, SEEK_SET);
     fwrite(&ebr, sizeof(EBR), 1, _file);
-    fwrite("\0", _size, 1, _file);
+    // fwrite("\0", _size, 1, _file);
 }
 
 int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
@@ -67,7 +67,7 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
         strcpy(ebr_new.part_name, _name.c_str());
         ebr_new.part_next = -1;
         ebr_new.part_size = _size;
-        ebr_new.part_start = ebr_final.part_start + sizeof(EBR) + ebr_final.part_size; // Tomo en cuenta el EBR del anterior más el size de la partición lógica, sera el probelma?
+        ebr_new.part_start = ebr_final.part_start + ebr_final.part_size; // + sizeof(EBR)
         ebr_new.part_status = '1';
 
         ebr_final.part_next = ebr_new.part_start; // +1?
@@ -95,7 +95,7 @@ int CrearParticion(int _size, char _unit, std::string _path, char _type, char _f
     fread(&mbr, sizeof(MBR), 1, pFile);
 
     int tam = getSize(_unit, _size);
-    int nstart = mbr.mbr_partition[0].part_start;
+    int nstart = sizeof(MBR);
     if (_type == 'L')
     {
         return CrearLogica(mbr, tam, pFile, _fit, _name);
@@ -105,9 +105,10 @@ int CrearParticion(int _size, char _unit, std::string _path, char _type, char _f
         int options[] = {-1, -1, -1, -1};
         for (int i = 0; i < 4; i++)
         {
+            /* nstart += mbr.mbr_partition[i].part_start + mbr.mbr_partition[i].part_size; */
+            nstart += mbr.mbr_partition[i].part_size;
             if (mbr.mbr_partition[i].part_status == '0')
             {
-                nstart = mbr.mbr_partition[i].part_start + sizeof(MBR);
                 if (!Validations(mbr, i, nstart, tam)) //return coutError("Ya no se encuentra espacio disponible para crear la partición.", pFile);
                     continue;
                 if (_type == 'E' && existeExtendida(mbr) > -1)
@@ -130,6 +131,7 @@ int CrearParticion(int _size, char _unit, std::string _path, char _type, char _f
                         options[i] = 0;
                 }
             }
+            // std::cout << mbr.mbr_partition[i].part_size << std::endl;
         }
 
         int i = getPartitionByFit(options, _fit); //ahora toca con el EBR

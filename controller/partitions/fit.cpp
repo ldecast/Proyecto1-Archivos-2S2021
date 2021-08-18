@@ -88,7 +88,7 @@ EBR getLogicByFit(EBR _ebr_initial, char _fit, FILE *_file, int _size)
             }
             break;
         default:
-            return {};
+            return {part_status : '!'};
         }
     }
     std::cout << "ret.part_name: " + std::string(ret.part_name) << std::endl;

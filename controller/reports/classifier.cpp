@@ -11,12 +11,17 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
         return coutError("Error: faltan parámetros obligatorios.", NULL);
 
     transform(_name.begin(), _name.end(), _name.begin(), ::tolower);
-    std::string n_path = buildPath(_path);
+    std::string dir_output = buildPath(_path);
 
     Disk_id disk_id = buildID(_id);
 
+    if (!existMountedID(disk_id))
+        return coutError("No se encuentra ninguna partición montada con el id '" + _id + "'.", NULL);
+
+    MOUNTED mounted = getMountedByID(disk_id);
+
     if (_name == "mbr")
-        return ReportMBR(n_path, disk_id);
+        return ReportMBR(mounted, dir_output);
 
     // if (_name == "disk")
     //     return ReportDisk();

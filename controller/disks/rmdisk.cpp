@@ -18,11 +18,11 @@ int removeDisk(std::string _path)
     std::string np = getPath(_path);
     if (!isDir(np))
         return coutError("Error: el disco no existe.", NULL);
-    char ans;
-    std::cout << "¿Desea eliminar el disco ubicado en: '" + np + "?' [Y/n]" << std::endl;
-    std::cin >> ans;
-    if (ans == 'Y' || ans == 'y')
-        return BorrarDisco(np);
-    else
-        return 1;
+    // char ans;
+    // std::cout << "¿Desea eliminar el disco ubicado en: '" + np + "?' [Y/n]" << std::endl;
+    // std::cin >> ans;
+    // if (ans == 'Y' || ans == 'y')
+    return BorrarDisco(np);
+    // else
+    //     return 1;
 }
