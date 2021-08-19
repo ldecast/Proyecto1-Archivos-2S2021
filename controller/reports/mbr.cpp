@@ -127,7 +127,7 @@ string getDotEBR(EBR _ebr, int _index, string _node, string _dot, FILE *_file)
 {
     _index++;
     string new_node = "\"EBR_" + std::to_string(_index) + " Report\"";
-    _dot += _node + " -> " + new_node;
+    _dot += _node + " -> " + new_node + "\n";
     _dot +=
         string(new_node + " [ label = <\n") +
         "<TABLE BGCOLOR=\"#48D1CC\" BORDER=\"2\" COLOR=\"BLACK\" CELLBORDER=\"1\" CELLSPACING=\"0\">\n" +

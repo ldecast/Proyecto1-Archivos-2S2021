@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "../partitions/func.h"
 #include "mbr.cpp"
-// #include "disk.cpp"
+#include "disk.cpp"
 
 int classifier(std::string _name, std::string _path, std::string _id, std::string _ruta, std::string _root)
 {
@@ -23,8 +23,8 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
     if (_name == "mbr")
         return ReportMBR(mounted, dir_output);
 
-    // if (_name == "disk")
-    //     return ReportDisk();
+    if (_name == "disk")
+        return ReportDisk(mounted, dir_output);
 
     return coutError("El nombre del reporte a generar no es válido: " + _name, NULL);
 }
