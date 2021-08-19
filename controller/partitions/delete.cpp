@@ -21,7 +21,6 @@ int BorrarParticion(char _delete, std::string _path, std::string _name)
     if (type == 'P' || type == 'E')
     {
         int i = getPartitionIndex(mbr, _name, pFile);
-        int _presize = mbr.mbr_partition[i].part_size;
         mbr.mbr_partition[i].part_fit = mbr.disk_fit;
         strcpy(mbr.mbr_partition[i].part_name, "");
         // mbr.mbr_partition[i].part_size = 0;
@@ -31,8 +30,8 @@ int BorrarParticion(char _delete, std::string _path, std::string _name)
         fwrite(&mbr, sizeof(MBR), 1, pFile);
         if (_delete == 'C')
         {
-            fseek(pFile, mbr.mbr_partition[i].part_start, SEEK_SET);
-            fwrite("\0", _presize, 1, pFile);
+            fseek(pFile, mbr.mbr_partition[i].part_start + sizeof(partition), SEEK_SET);
+            fwrite("\0", mbr.mbr_partition[i].part_size - sizeof(partition), 1, pFile);
         }
     }
     else if (type == 'L') //borrar referencia del EBR anterior

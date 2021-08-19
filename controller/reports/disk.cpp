@@ -9,14 +9,8 @@
 
 using std::string;
 
-struct _s
-{
-    string dot = "";
-    int free;
-};
-
 string getDotPartitions(MBR _mbr, string _path, FILE *_file);
-_s getDotLogics(EBR _ebr, int _mbr_tamano, FILE *_file, string _color, _s retorno);
+string getDotLogics(EBR _ebr, int _mbr_tamano, FILE *_file, string _color, string _dot, int _free);
 
 int ReportDisk(MOUNTED _mounted, string _dirOutput)
 {
@@ -30,7 +24,6 @@ int ReportDisk(MOUNTED _mounted, string _dirOutput)
 
     grafo += "}";
 
-    // std::cout << grafo << std::endl;
     writeDot(grafo);
     generateReport(_dirOutput);
 
@@ -41,9 +34,7 @@ int ReportDisk(MOUNTED _mounted, string _dirOutput)
 
 string getPorcentaje(int _free, int _mbr_tamano)
 {
-    // std::cout << "_mbr_tamano: " + std::to_string(_mbr_tamano) << std::endl;
-    // std::cout << "_free: " + std::to_string(_free) << std::endl;
-    float tmp = static_cast<float>(_free) / static_cast<float>(_mbr_tamano) * 100.0; //????????'
+    float tmp = static_cast<float>(_free) / static_cast<float>(_mbr_tamano) * 100.0;
     return std::to_string((int)round(tmp)) + "%";
 }
 
@@ -51,6 +42,7 @@ int getSizeBeforeFree(MBR _mbr, int _num)
 {
     while (_num >= 0)
     {
+        // std::cout << "______: " + std::to_string(_mbr.mbr_partition[_num].part_start) + "////" + std::to_string(_mbr.mbr_partition[_num].part_size) << std::endl;
         if (_mbr.mbr_partition[_num].part_size != 0)
         {
             return _mbr.mbr_tamano + sizeof(MBR) - (_mbr.mbr_partition[_num].part_start + _mbr.mbr_partition[_num].part_size);
@@ -66,20 +58,20 @@ string getDotPartitions(MBR _mbr, string _path, FILE *_file)
     string type;
     int free = _mbr.mbr_tamano;
 
-    string colors[] = {"#1abc9c", "#839192", "#e59866", "#7fb3d5", "#f5b041"};
+    string colors[] = {"#229954", "#2471a3", "#5d6d7e", "#8e44ad", "#b7950b"};
 
     dot +=
         string("\"Disk report\" [ label = <") +
         "<TABLE CELLBORDER=\"2\" BGCOLOR=\"BLACK\" BORDER=\"2\" COLOR=\"BLACK\"  CELLSPACING=\"0\">" +
         "\n\n" +
         "<TR>" +
-        "<TD BGCOLOR=\"#b7950b\" COLSPAN=\"100\">" +
-        "<FONT POINT-SIZE=\"20\">Disk Report of: " + _path.substr(root.length()) + "</FONT>" +
+        "<TD BGCOLOR=\"#1c2833\" COLSPAN=\"100\">" +
+        "<FONT POINT-SIZE=\"20\" COLOR=\"#f2f3f4\">Disk Report of: " + _path.substr(root.length()) + "</FONT>" +
         "</TD>" +
         "</TR>" +
         "<TR>" +
         "\n\n" +
-        "<TD HEIGHT=\"150\" WIDTH=\"75\" BGCOLOR=\"#cd6155\">MBR</TD>" +
+        "<TD HEIGHT=\"150\" WIDTH=\"75\" BGCOLOR=\"#c0392b\">MBR</TD>" +
         "\n\n";
 
     for (int i = 0; i < 4; i++)
@@ -87,6 +79,8 @@ string getDotPartitions(MBR _mbr, string _path, FILE *_file)
         partition _particion = _mbr.mbr_partition[i];
         if (_particion.part_size != 0)
             free = _particion.part_size;
+        else
+            free = getSizeBeforeFree(_mbr, i);
         if (_particion.part_type == 'P' && _particion.part_status != '0')
             type = "Primaria";
         else if (_particion.part_type == 'E')
@@ -96,8 +90,9 @@ string getDotPartitions(MBR _mbr, string _path, FILE *_file)
             type = "Libre";
             // free = _mbr.mbr_tamano - _particion.part_start - _particion.part_size;
             // free = _mbr.mbr_tamano - free;
-            free = getSizeBeforeFree(_mbr, i);
+            // free = getSizeBeforeFree(_mbr, i);
             std::cout << "free after Found libre: " + std::to_string(free) << std::endl;
+            std::cout << "free after Found libre: " + std::to_string(_particion.part_size) << std::endl;
         }
 
         dot += string("<TD HEIGHT=\"160\" WIDTH=\"150\" BGCOLOR=\"" + colors[i] + "\">") +
@@ -117,14 +112,10 @@ string getDotPartitions(MBR _mbr, string _path, FILE *_file)
             EBR ebr;
             fseek(_file, _particion.part_start, SEEK_SET);
             fread(&ebr, sizeof(EBR), 1, _file);
-            _s _retorno;
-            _s _retorno_2;
-            _retorno.free = ebr.part_size;
+            free = ebr.part_size;
             if (ebr.part_size != 0)
-                _retorno_2 = getDotLogics(ebr, _mbr.mbr_tamano, _file, colors[i], _retorno);
-            // free = _retorno_2.free;
-            dot += _retorno_2.dot;
-            std::cout << "free after Logics: " + std::to_string(free) << std::endl;
+                dot += getDotLogics(ebr, _mbr.mbr_tamano, _file, colors[i], "", free);
+            // std::cout << "free after Logics: " + std::to_string(free) << std::endl;
         }
     }
     free = _mbr.mbr_tamano - getPartitionsSize(_mbr);
@@ -144,15 +135,13 @@ string getDotPartitions(MBR _mbr, string _path, FILE *_file)
     return dot;
 }
 
-_s getDotLogics(EBR _ebr, int _mbr_tamano, FILE *_file, string _color, _s retorno)
+string getDotLogics(EBR _ebr, int _mbr_tamano, FILE *_file, string _color, string _dot, int _free)
 {
-    // retorno.dot = _dot;
-    // retorno.free = _free;
     if (_ebr.part_size == 0)
-        retorno.free = _ebr.part_next - _ebr.part_start - _ebr.part_size;
+        _free = _ebr.part_next - _ebr.part_start - _ebr.part_size;
     else
-        retorno.free = _ebr.part_size;
-    retorno.dot +=
+        _free = _ebr.part_size;
+    _dot +=
         string("<TD HEIGHT=\"160\" WIDTH=\"40\" BGCOLOR=\"" + _color + "\">") +
         "EBR" +
         "</TD>" +
@@ -161,15 +150,15 @@ _s getDotLogics(EBR _ebr, int _mbr_tamano, FILE *_file, string _color, _s retorn
         "Lógica" +
         "<br/>" +
         "<br/>" +
-        "<b>" + getPorcentaje(retorno.free, _mbr_tamano) + "</b>" +
+        "<b>" + getPorcentaje(_free, _mbr_tamano) + "</b>" +
         "<br/>" +
         "</TD>" +
         "\n\n";
 
     if (_ebr.part_next != -1 && _ebr.part_next - _ebr.part_start - _ebr.part_size > 0)
     {
-        // retorno.free = _ebr.part_next - _ebr.part_start - _ebr.part_size;
-        retorno.dot +=
+        // _free = _ebr.part_next - _ebr.part_start - _ebr.part_size;
+        _dot +=
             string("<TD HEIGHT=\"160\" WIDTH=\"80\" BGCOLOR=\"") + _color + "\">" +
             "<br/>" +
             "Libre" +
@@ -181,17 +170,13 @@ _s getDotLogics(EBR _ebr, int _mbr_tamano, FILE *_file, string _color, _s retorn
             "\n\n";
     }
 
-    // retorno.free = _ebr.part_size;
+    // _free = _ebr.part_size;
     if (_ebr.part_next != -1)
     {
         fseek(_file, _ebr.part_next, SEEK_SET);
         fread(&_ebr, sizeof(EBR), 1, _file);
-        return getDotLogics(_ebr, _mbr_tamano, _file, _color, retorno);
+        return getDotLogics(_ebr, _mbr_tamano, _file, _color, _dot, _free);
     }
-    std::cout << "_free: " + std::to_string(retorno.free) << std::endl;
-    return retorno;
-    // return {
-    //     dot : _dot,
-    //     free : _free
-    // };
+    // std::cout << "_free: " + std::to_string(_free) << std::endl;
+    return _dot;
 }
