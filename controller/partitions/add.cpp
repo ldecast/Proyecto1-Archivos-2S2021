@@ -22,10 +22,10 @@ int AdministrarEspacio(int _add, char _unit, std::string _path, std::string _nam
     if (type == 'P' || type == 'E')
     {
         int i = getPartitionIndex(mbr, _name, pFile);
-        if (!Validations(mbr, i, mbr.mbr_partition[i].part_start, size))
+        partition _particion = mbr.mbr_partition[i];
+        if (!Validations(mbr, i, _particion.part_start, size))
             return coutError("El parámetro '-add' debe dejar espacio positivo y no exceder los límites de la partición.", pFile);
 
-        partition _particion = getPartition(mbr, _name, pFile);
         std::cout << "_particion.part_size: " + std::to_string(_particion.part_size) << std::endl;
         // if (getPartitionsSize(mbr) + size > mbr.mbr_tamano)
         //     return coutError("El tamaño que se desea agregar excede el tamaño del disco.", pFile);

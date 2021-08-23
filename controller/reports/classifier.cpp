@@ -15,10 +15,11 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
 
     Disk_id disk_id = buildID(_id);
 
-    if (!existMountedID(disk_id))
+    int index = existMountedID(disk_id);
+    if (index == -1)
         return coutError("No se encuentra ninguna partición montada con el id '" + _id + "'.", NULL);
 
-    MOUNTED mounted = getMountedByID(disk_id);
+    MOUNTED mounted = _particiones_montadas[index];
 
     if (_name == "mbr")
         return ReportMBR(mounted, dir_output);

@@ -23,7 +23,7 @@ int DesmontarParticion(Disk_id _disk_id)
     for (int i = _particiones_montadas.size() - 1; i >= 0; i--)
     {
         mounted = _particiones_montadas[i];
-        if (mounted.id._number_id == _disk_id._number_id && mounted.id._letter_id == _disk_id._letter_id)
+        if (mounted.id._carnet == _disk_id._carnet && mounted.id._number_id == _disk_id._number_id && mounted.id._letter_id == _disk_id._letter_id)
         {
             _particiones_montadas.erase(_particiones_montadas.begin() + i);
             // Imprimir montadas

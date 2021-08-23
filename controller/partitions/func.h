@@ -9,32 +9,33 @@
 Disk_id buildID(std::string _id)
 {
     Disk_id disk_id;
+    disk_id._carnet = _id.substr(0, 2);
     disk_id._number_id = std::stoi(_id.substr(2, 1));
     disk_id._letter_id = _id[_id.length() - 1];
 
     return disk_id;
 }
 
-bool existMountedID(Disk_id _disk_id)
+int existMountedID(Disk_id _disk_id)
 {
     for (int i = 0; i < _particiones_montadas.size(); i++)
     {
-        MOUNTED montada = _particiones_montadas[i];
-        if (montada.id._number_id == _disk_id._number_id && montada.id._letter_id == _disk_id._letter_id)
-            return true;
+        MOUNTED mounted = _particiones_montadas[i];
+        if (mounted.id._carnet == _disk_id._carnet && mounted.id._number_id == _disk_id._number_id && mounted.id._letter_id == _disk_id._letter_id)
+            return i;
     }
-    return false;
+    return -1;
 }
 
-MOUNTED getMountedByID(Disk_id _disk_id)
+/* MOUNTED getMountedByID(Disk_id _disk_id)
 {
     for (int i = 0; i < _particiones_montadas.size(); i++)
     {
-        MOUNTED montada = _particiones_montadas[i];
-        if (montada.id._number_id == _disk_id._number_id && montada.id._letter_id == _disk_id._letter_id)
-            return montada;
+        MOUNTED mounted = _particiones_montadas[i];
+        if (mounted.id._carnet == _disk_id._carnet && mounted.id._number_id == _disk_id._number_id && mounted.id._letter_id == _disk_id._letter_id)
+            return mounted;
     }
     return {};
-}
+} */
 
 #endif

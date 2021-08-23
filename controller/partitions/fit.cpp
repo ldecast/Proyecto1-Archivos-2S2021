@@ -8,7 +8,7 @@
 int getPartitionByFit(int _options[], char _fit)
 {
     int n = _options[0];
-    int ret = 0;
+    int ret = -1;
     for (int i = 0; i < 4; i++)
     {
         if (_options[i] != -1)
@@ -18,7 +18,7 @@ int getPartitionByFit(int _options[], char _fit)
             case 'F':
                 return i;
             case 'W':
-                if (_options[i] > n)
+                if (_options[i] > n || ret == -1)
                 {
                     n = _options[i];
                     ret = i;
@@ -36,7 +36,6 @@ int getPartitionByFit(int _options[], char _fit)
             }
         }
     }
-    // std::cout << ret;
     return ret;
 }
 
