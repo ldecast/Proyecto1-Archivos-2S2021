@@ -92,7 +92,7 @@ int printMOUNTED()
         MOUNTED _mounted = _particiones_montadas[i];
         string tmp = _mounted.id._carnet + std::to_string(_mounted.id._number_id) + _mounted.id._letter_id;
         string name = (_mounted.type == 'L') ? _mounted.logica.part_name : _mounted.particion.part_name;
-        std::cout << _mounted.path + "|" + name + "|" + tmp << std::endl;
+        std::cout << "\033[1;33m" + _mounted.path + "|" + name + "|" + tmp + "\033[0m\n";
     }
     return 1;
 }

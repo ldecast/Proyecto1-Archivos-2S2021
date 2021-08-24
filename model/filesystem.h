@@ -69,4 +69,14 @@ struct ApuntadoresBlock
     int b_pointers[16]; // Array con los apuntadores hacia bloques (de archivo o carpeta)
 };
 
+struct Journaling
+{
+    char type_operation[10] = "-";
+    char type = '-';
+    char path[40] = "-";
+    char content[137] = "-";
+    time_t date;
+    int size = 0;
+};
+
 #endif

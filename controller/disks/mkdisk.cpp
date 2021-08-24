@@ -45,11 +45,11 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
     fwrite(&mbr, sizeof(MBR), 1, file);
     fclose(file);
 
-    std::cout << "--------------------DISCO CREADO--------------------" << std::endl;
+    /* std::cout << "--------------------DISCO CREADO--------------------" << std::endl;
     std::cout << "Fecha de creación: " << ctime(&mbr.mbr_fecha_creacion);
     std::cout << "Signature: " << mbr.mbr_disk_signature << std::endl;
     std::cout << "Tamaño: " << mbr.mbr_tamano << std::endl;
-    std::cout << "Fit: " << mbr.disk_fit << std::endl;
+    std::cout << "Fit: " << mbr.disk_fit << std::endl; */
     return 1;
 }
 

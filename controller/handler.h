@@ -19,13 +19,13 @@ int coutError(std::string err, FILE *_file)
         fclose(_file);
         _file = NULL;
     }
-    std::cout << err << std::endl;
+    std::cout << "\033[1;31m" + err + "\033[0m\n";
     return 0;
 }
 
 void exitFailure(std::string err)
 {
-    std::cout << err << std::endl;
+    std::cout << "\033[1;31m" + err + "\033[0m\n";
     exit(EXIT_FAILURE);
 }
 

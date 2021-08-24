@@ -6,26 +6,25 @@
 #include "driver.h"
 #include <bits/stdc++.h>
 
-using namespace std;
-
-int RunAnalyzer(std::string _filename)
+void RunAnalyzer(std::string _filename)
 {
   parser_driver driver;
-  return driver.parse(_filename);
+  if (driver.parse(_filename))
+    std::cout << "\033[1;32mSuccessfully\033[0m\n";
 }
 
 int exec(std::string _path)
 {
   std::ifstream file(_path);
   std::string line;
-  string filename = "exec.txt";
+  std::string filename = "exec.txt";
   while (std::getline(file, line))
   {
     if (line != "" && line[0] != '#')
     {
       std::cout << std::endl;
       std::cout << ">> " + line << std::endl;
-      // std::this_thread::sleep_for(0.1s);
+      std::this_thread::sleep_for(std::chrono::milliseconds(350));
       std::ofstream MyFile(filename);
       MyFile << line;
       MyFile.close();
@@ -38,15 +37,15 @@ int exec(std::string _path)
 int main()
 {
   exec("/home/ldecast/Escritorio/run.sh");
-  string input, output;
-  string filename = "command.txt";
+  std::string input, output;
+  std::string filename = "command.txt";
   while (true)
   {
-    cout << "\n>> ";
-    getline(cin, input);
-    if (strstr(input.c_str(), string("exec").c_str()))
+    std::cout << "\n>> ";
+    getline(std::cin, input);
+    if (strstr(input.c_str(), std::string("exec").c_str()))
     {
-      string path = input.substr(input.find("-path") + 6);
+      std::string path = input.substr(input.find("-path") + 6);
       exec(path);
       continue;
     }
@@ -61,7 +60,7 @@ int main()
     if (input == "")
       continue;
 
-    ofstream MyFile(filename);
+    std::ofstream MyFile(filename);
     MyFile << input;
     MyFile.close();
 

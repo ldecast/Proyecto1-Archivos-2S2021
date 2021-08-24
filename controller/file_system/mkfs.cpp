@@ -6,9 +6,6 @@
 
 using std::string;
 
-// int crearEXT2(int _part_size, int _part_start, int _bm_start_inodes, string _path);
-// int crearEXT3(int _part_size, int _part_start, int _bm_start_inodes, string _path);
-
 int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
 {
     int part_size;
@@ -64,38 +61,42 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
 
     /* CREACIÓN DEL BITMAP DE INODOS */
     char bitmap_inodes[n];
-    for (int i = 0; i < n; i++)
-    {
-        if (i >= 2)
-            bitmap_inodes[i] = '0';
-        else
-            bitmap_inodes[i] = '1';
-    }
+    for (int i = 2; i < n; i++)
+        bitmap_inodes[i] = '0';
+    bitmap_inodes[0] = '1';
+    bitmap_inodes[1] = '1';
 
     /* CREACIÓN DEL BITMAP DE BLOQUES */
     char bitmap_blocks[3 * n];
-    for (int i = 0; i < 3 * n; i++)
-    {
-        if (i >= 2)
-            bitmap_blocks[i] = '0';
-        else
-            bitmap_blocks[i] = '1';
-    }
+    for (int i = 2; i < 3 * n; i++)
+        bitmap_blocks[i] = '0';
+    bitmap_blocks[0] = '1';
+    bitmap_blocks[1] = '1';
 
     /* CREACIÓN DE JOURNALING */
-    //Journaling
+    Journaling journaling;
 
     /* ESCRITURA DEL SISTEMA EXT2 */
     FILE *_file = fopen(_mounted.path.c_str(), "rb+");
     fseek(_file, part_start, SEEK_SET); // Mover el puntero al inicio de la partición (primaria o lógica)
 
     fwrite(&super_bloque, sizeof(Superbloque), 1, _file); // 1. Superbloque
-    // if (super_bloque.s_filesystem_type == 3)
-    // fwrite(&journaling, 100 * 64, 1, _file); // 2. Bitmap de inodos
-    fwrite(&bitmap_inodes, n, 1, _file);           // 3. Bitmap de inodos
-    fwrite(&bitmap_blocks, 3 * n, 1, _file);       // 4. Bitmap de bloques
-    fwrite(&inodo, sizeof(InodosTable), n, _file); // 5. Inodos
-    fwrite("\0", 64, 3 * n, _file);                // 6. Bloques (Hay distintos tipos de bloque, todos de 64 bytes)
+
+    if (super_bloque.s_filesystem_type == 3)
+    { // fwrite("\0", 1, 1, _file);
+        for (int i = 0; i < 32; i++)
+            fwrite(&journaling, sizeof(Journaling), 1, _file); // 2. Journaling
+    }
+
+    fwrite(&bitmap_inodes, n, 1, _file); // 3. Bitmap de inodos
+
+    fwrite(&bitmap_blocks, 3 * n, 1, _file); // 4. Bitmap de bloques
+
+    for (int i = 0; i < n; i++)
+        fwrite(&inodo, sizeof(InodosTable), 1, _file); // 5. Inodos
+
+    for (int i = 0; i < 3 * n; i++)
+        fwrite("\0", 64, 1, _file); // 6. Bloques (Hay distintos tipos de bloque, todos de 64 bytes)
 
     fclose(_file);
     _file = NULL;
@@ -119,48 +120,3 @@ int mkfs(string _id, string _type, string _fs)
 
     return CrearSistemaArchivos(mounted, type, fs);
 }
-
-// int crearEXT2(Superbloque _super_bloque, char _bitmap_inodes[], char _bitmap_blocks[], InodosTable _inode, int _size_of_blocks, int _part_start, string _path)
-// {
-//     FILE *_file = fopen(_path.c_str(), "rb+");
-
-//     /* ESCRITURA DEL SISTEMA EXT2 */
-//     fseek(_file, _part_start, SEEK_SET);                  // Mover el puntero al inicio de la partición (primaria o lógica)
-//     fwrite(&super_bloque, sizeof(Superbloque), 1, _file); // 1. Superbloque
-//     fwrite(&bitmap_inodes, n, 1, _file);                  // 2. Bitmap de inodos
-//     fwrite(&bitmap_blocks, 3 * n, 1, _file);              // 3. Bitmap de bloques
-//     fwrite(&inodo, sizeof(InodosTable), n, _file);        // 4. Inodos
-//     fwrite('\0', 64, 3 * n, _file);                       // 5. Bloques (Hay distintos tipos de bloque, todos de 64 bytes)
-
-//     fclose(_file);
-//     _file = NULL;
-//     return 1;
-// }
-
-// int crearEXT3(int _part_size, int _part_start, int _bm_start_inodes, string _path)
-// {
-//     Superbloque super_bloque;
-//     int n = _number_inodos(_part_size);
-//     auto curr_time = std::chrono::system_clock::now();
-
-//     /* CREACIÓN DEL SUPERBLOQUE */
-//     super_bloque.s_filesystem_type = 3;
-//     super_bloque.s_inodes_count = n;
-//     super_bloque.s_blocks_count = 3 * n;
-//     super_bloque.s_free_inodes_count = super_bloque.s_inodes_count - 2;
-//     super_bloque.s_free_blocks_count = super_bloque.s_blocks_count - 2;
-//     super_bloque.s_mtime = std::chrono::system_clock::to_time_t(curr_time);
-//     super_bloque.s_umtime = NULL;
-//     super_bloque.s_mnt_count = 1;
-//     super_bloque.s_magic = 61267;
-//     super_bloque.s_inode_size = sizeof(InodosTable);
-//     super_bloque.s_block_size = 64;
-//     super_bloque.s_first_ino = 2;
-//     super_bloque.s_first_blo = 2;
-//     super_bloque.s_bm_inode_start = _bm_start_inodes;
-//     super_bloque.s_bm_block_start = super_bloque.s_bm_inode_start + n;
-//     super_bloque.s_inode_start = super_bloque.s_bm_block_start + 3 * n;
-//     super_bloque.s_block_start = super_bloque.s_inode_start + n * sizeof(InodosTable);
-
-//     return super_bloque;
-// }
