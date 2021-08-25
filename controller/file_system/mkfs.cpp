@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include "../../model/filesystem.h"
+#include "../../model/users_groups.h"
 #include "../handler.h"
 #include "func.h"
 
@@ -83,8 +84,8 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     fwrite(&super_bloque, sizeof(Superbloque), 1, _file); // 1. Superbloque
 
     if (super_bloque.s_filesystem_type == 3)
-    { // fwrite("\0", 1, 1, _file);
-        for (int i = 0; i < 32; i++)
+    {
+        for (int i = 0; i < 64; i++)
             fwrite(&journaling, sizeof(Journaling), 1, _file); // 2. Journaling
     }
 
@@ -97,6 +98,53 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
 
     for (int i = 0; i < 3 * n; i++)
         fwrite("\0", 64, 1, _file); // 6. Bloques (Hay distintos tipos de bloque, todos de 64 bytes)
+
+    /* 
+    CREACIÓN DE CARPETA RAÍZ
+    */
+    CarpetasBlock root_folder; // Nuevo bloque carpeta
+    Content root_content;      // Nuevo bloque contenido
+    InodosTable inode_folder;  // Nuevo inodo
+
+    root_content.b_inodo = 0;
+    strcpy(root_content.b_name, ".");
+    root_folder.b_content[0] = root_content;
+
+    strcpy(root_content.b_name, "..");
+    root_folder.b_content[1] = root_content;
+
+    inode_folder.i_block[0] = 0;
+    inode_folder.i_size = 0;
+    inode_folder.i_type = '0';
+    inode_folder.i_gid = 1;
+    inode_folder.i_uid = 1;
+
+    /* CREACIÓN DE ARCHIVO USERS.TXT */
+    ArchivosBlock users_file;
+    InodosTable users_inode;
+    Groups group;
+    Users user;
+    string txt = getData(group, user);
+    users_inode.i_uid = 1;
+    users_inode.i_gid = 1;
+    users_inode.i_size = sizeof(CarpetasBlock) + sizeof(txt.c_str());
+    users_inode.i_type = 1;
+    users_inode.i_perm = 664;
+    users_inode.i_block[0] = 1;
+
+    strcpy(root_content.b_name, "users.txt");
+    root_content.b_inodo = 1;
+    root_folder.b_content[2] = root_content;
+    strcpy(users_file.b_content, txt.c_str());
+
+    /* ESCRITURA */
+    fseek(_file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
+    fwrite(&inode_folder, sizeof(InodosTable), 1, _file);
+    fwrite(&users_inode, sizeof(InodosTable), 1, _file);
+
+    fseek(_file, super_bloque.s_block_start, SEEK_SET); // Mover el puntero al inicio de la tabla de bloques
+    fwrite(&root_folder, sizeof(CarpetasBlock), 1, _file);
+    fwrite(&users_file, sizeof(ArchivosBlock), 1, _file);
 
     fclose(_file);
     _file = NULL;

@@ -33,22 +33,23 @@ struct Superbloque
 
 struct InodosTable
 {
-    int i_uid;       // UID del usuario propietario del archivo o carpeta
-    int i_gid;       // GID del grupo al que pertenece el archivo o carpeta
-    int i_size;      // Tamaño del archivo en bytes
-    time_t i_atime;  // Última fecha en que se leyó el inodo sin modificarlo
-    time_t i_ctime;  // Fecha en la que se creó el inodo
-    time_t i_mtime;  // Úlitma fecha en la que se modificó el inodo
-    int i_block[15]; /* Array en los que los primeros 12 registros son bloques directos. 
-                        El 13 será el número del bloque simple indirecto.
-                        El 14 será el número del bloque doble indirecto.
-                        El 15 será el número del bloque triple indirecto.
-                        Si no son utilizados tendrá el valor -1 */
-    char i_type;     // Indica si es archivo o carpeta. 1=archivo, 0=carpeta
-    int i_perm;      // Guardará los permisos del archivo o carpeta a nivel de bits
+    int i_uid;      // UID del usuario propietario del archivo o carpeta
+    int i_gid;      // GID del grupo al que pertenece el archivo o carpeta
+    int i_size;     // Tamaño del archivo en bytes
+    time_t i_atime; // Última fecha en que se leyó el inodo sin modificarlo
+    time_t i_ctime; // Fecha en la que se creó el inodo
+    time_t i_mtime; // Úlitma fecha en la que se modificó el inodo
+    int i_block[15] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+    /* Array en los que los primeros 12 registros son bloques directos. 
+    El 13 será el número del bloque simple indirecto.
+    El 14 será el número del bloque doble indirecto.
+    El 15 será el número del bloque triple indirecto.
+    Si no son utilizados tendrá el valor -1 */
+    char i_type; // Indica si es archivo o carpeta. 1=archivo, 0=carpeta
+    int i_perm;  // Guardará los permisos del archivo o carpeta a nivel de bits
 };
 
-struct content
+struct Content
 {
     char b_name[12]; // Nombre de la carpeta o archivo
     int b_inodo;     // Apuntador hacia un inodo asociado al archivo o carpeta
@@ -56,7 +57,7 @@ struct content
 
 struct CarpetasBlock
 {
-    content b_content[4]; // Array con el contenido de la carpeta
+    Content b_content[4]; // Array con el contenido de la carpeta
 };
 
 struct ArchivosBlock
@@ -71,12 +72,7 @@ struct ApuntadoresBlock
 
 struct Journaling
 {
-    char type_operation[10] = "-";
-    char type = '-';
-    char path[40] = "-";
-    char content[137] = "-";
-    time_t date;
-    int size = 0;
+    char command[100] = "-";
 };
 
 #endif
