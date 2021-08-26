@@ -20,6 +20,7 @@ struct Users
     string contrasena = "123";
     bool logged_in = false;
     MOUNTED mounted;
+    int permisos = 777;
 };
 
 std::string getData(Groups _group, Users _user)
