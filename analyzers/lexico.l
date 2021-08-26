@@ -54,6 +54,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 
 "login"         {return yy::class_parser::make_LOGIN(yytext, loc);}
 "logout"        {return yy::class_parser::make_LOGOUT(yytext, loc);}
+"mkgrp"         {return yy::class_parser::make_MKGRP(yytext, loc);}
 {HYPHEN}("user"|"usr")  {return yy::class_parser::make_USER(yytext, loc);}
 {HYPHEN}"pwd"           {return yy::class_parser::make_PWD(yytext, loc);}
 

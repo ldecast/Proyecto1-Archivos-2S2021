@@ -44,7 +44,7 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
     fseek(file, 0, SEEK_SET);
     fwrite(&mbr, sizeof(MBR), 1, file);
     fclose(file);
-
+    file = NULL;
     /* std::cout << "--------------------DISCO CREADO--------------------" << std::endl;
     std::cout << "Fecha de creación: " << ctime(&mbr.mbr_fecha_creacion);
     std::cout << "Signature: " << mbr.mbr_disk_signature << std::endl;

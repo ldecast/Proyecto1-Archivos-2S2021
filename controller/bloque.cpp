@@ -9,6 +9,7 @@
 #include "./file_system/mkfs.cpp"
 #include "./admin_gu/login.cpp"
 #include "./admin_gu/logout.cpp"
+#include "./admin_gu/mkgrp.cpp"
 #include "./reports/classifier.cpp"
 
 int bloque(struct command x)
@@ -39,6 +40,9 @@ int bloque(struct command x)
 
     if (x.keyword == "__LOGOUT")
         return logout();
+
+    if (x.keyword == "__MKGRP")
+        return mkgrp(x.name);
 
     return 0;
 }

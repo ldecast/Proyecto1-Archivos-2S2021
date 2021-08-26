@@ -63,6 +63,8 @@ int MontarParticion(string _path, string _name)
         return coutError("No se encuentra ninguna partición con ese nombre asignado.", _file);
 
     _particiones_montadas.push_back(_mounted);
+    fclose(_file);
+    _file = NULL;
     return printMOUNTED();
 }
 

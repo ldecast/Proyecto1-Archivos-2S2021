@@ -8,6 +8,32 @@
 #include "../partitions/func.h"
 #include "../handler.h"
 
+Superbloque getSuperBloque(MOUNTED _mounted)
+{
+    Superbloque super_bloque;
+    FILE *file = fopen(_mounted.path.c_str(), "rb");
+
+    int sb_start;
+    switch (_mounted.type)
+    {
+    case 'P':
+        sb_start = _mounted.particion.part_start;
+        break;
+    case 'L':
+        sb_start = _mounted.logica.part_start;
+        break;
+    default:
+        break;
+    }
+
+    fseek(file, sb_start, SEEK_SET);                    // Mover el puntero al inicio del superbloque
+    fread(&super_bloque, sizeof(Superbloque), 1, file); // Leer el superbloque
+
+    fclose(file);
+    file = NULL;
+    return super_bloque;
+}
+
 char charFormat(std::string _format)
 {
     char nformat = 'N';

@@ -50,6 +50,8 @@ struct command x;
 
 %token <std::string> LOGIN "pr_login"
 %token <std::string> LOGOUT "pr_logout"
+%token <std::string> MKGRP "pr_MKGRP"
+
 %token <std::string> USER "pr_USER"
 %token <std::string> PWD "pr_PWD"
 
@@ -123,6 +125,7 @@ DISCOS: "pr_MKDISK" PARAMS {x = newCommand("__MKDISK",parametros);}
 
 ADMIN_USERS_GROUPS: "pr_login" PARAMS {x = newCommand("__LOGIN",parametros);}
                   | "pr_logout" {x = newCommand("__LOGOUT",parametros);}
+                  | "pr_MKGRP" PARAMS {x = newCommand("__MKGRP",parametros);}
 ;
 
 REPORT: "pr_rep" PARAMS {x = newCommand("__REP",parametros);}

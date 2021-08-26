@@ -19,6 +19,7 @@ struct Users
     string nombre = "root";
     string contrasena = "123";
     bool logged_in = false;
+    MOUNTED mounted;
 };
 
 std::string getData(Groups _group, Users _user)
