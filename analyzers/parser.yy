@@ -35,7 +35,7 @@ struct command x;
 %define api.token.prefix {TOK_}
 
 //Listadode Terminales
-%token <std::string> HYPHEN "tk_HYPHEN"
+// %token <std::string> HYPHEN "tk_HYPHEN"
 %token <std::string> EQUAL "tk_EQUAL"
 %token <std::string> FIT "pr_FIT"
 %token <std::string> UNIT "pr_UNIT"
@@ -47,6 +47,11 @@ struct command x;
 %token <std::string> ADD "pr_ADD"
 %token <std::string> ID "pr_ID"
 %token <std::string> FS "pr_FS"
+
+%token <std::string> LOGIN "pr_login"
+%token <std::string> LOGOUT "pr_logout"
+%token <std::string> USER "pr_USER"
+%token <std::string> PWD "pr_PWD"
 
 %token <std::string> RUTA "pr_RUTA"
 %token <std::string> ROOT "pr_ROOT"
@@ -65,7 +70,7 @@ struct command x;
 %token <std::string> RUN_EXEC "pr_exec"
 %token <std::string> RUN_REPORT "pr_rep"
 %token <std::string> IDENTIFICADOR "tk_identifier"
-%token <std::string> SPACE "tk_space"
+// %token <std::string> SPACE "tk_space"
 %token <std::string> NUMERO "tk_number"
 %token FIN 0 "eof"
 
@@ -73,6 +78,7 @@ struct command x;
 %type E
 %type PARAMS
 %type DISCOS
+%type ADMIN_USERS_GROUPS
 %type EXEC
 %type REPORT
 %type <std::string> PARAM
@@ -100,6 +106,7 @@ DATA: STRING {$$=$1;}
 
 E: EXEC
  | DISCOS
+ | ADMIN_USERS_GROUPS
  | REPORT
 ;
 
@@ -114,11 +121,15 @@ DISCOS: "pr_MKDISK" PARAMS {x = newCommand("__MKDISK",parametros);}
       | "pr_MKFS" PARAMS {x = newCommand("__MKFS",parametros);}
 ;
 
+ADMIN_USERS_GROUPS: "pr_login" PARAMS {x = newCommand("__LOGIN",parametros);}
+                  | "pr_logout" {x = newCommand("__LOGOUT",parametros);}
+;
+
 REPORT: "pr_rep" PARAMS {x = newCommand("__REP",parametros);}
 ;
 
-PARAMS: PARAMS "tk_space" "tk_HYPHEN" PARAM "tk_EQUAL" DATA {parametros.push_back({$4, $6});}
-      | "tk_space" "tk_HYPHEN" PARAM "tk_EQUAL" DATA {parametros.clear(); parametros.push_back({$3, $5});}
+PARAMS: PARAMS PARAM "tk_EQUAL" DATA {parametros.push_back({$2, $4});}
+      | PARAM "tk_EQUAL" DATA {parametros.clear(); parametros.push_back({$1, $3});}
 ;
 
 PARAM: "pr_SIZE" {$$ = "__SIZE";}
@@ -133,6 +144,8 @@ PARAM: "pr_SIZE" {$$ = "__SIZE";}
       | "pr_FS" {$$ = "__FS";}
       | "pr_RUTA" {$$ = "__RUTA";}
       | "pr_ROOT" {$$ = "__ROOT";}
+      | "pr_USER" {$$ = "__USER";}
+      | "pr_PWD" {$$ = "__PWD";}
 ;
 
 %%

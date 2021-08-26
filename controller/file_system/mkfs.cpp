@@ -127,8 +127,8 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     string txt = getData(group, user);
     users_inode.i_uid = 1;
     users_inode.i_gid = 1;
-    users_inode.i_size = sizeof(CarpetasBlock) + sizeof(txt.c_str());
-    users_inode.i_type = 1;
+    users_inode.i_size = sizeof(txt.c_str()); // + sizeof(CarpetasBlock);
+    users_inode.i_type = '1';
     users_inode.i_perm = 664;
     users_inode.i_block[0] = 1;
 
@@ -160,7 +160,7 @@ int mkfs(string _id, string _type, string _fs)
 
     int index = existMountedID(disk_id);
     if (index == -1)
-        exitFailure("No se encuentra ninguna partición montada con el id '" + _id + "'.");
+        return coutError("No se encuentra ninguna partición montada con el id '" + _id + "'.", NULL);
     MOUNTED mounted = _particiones_montadas[index];
 
     char type = charFormat(_type);

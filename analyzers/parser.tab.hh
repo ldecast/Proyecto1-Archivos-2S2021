@@ -390,7 +390,6 @@ namespace yy {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
-      // "tk_HYPHEN"
       // "tk_EQUAL"
       // "pr_FIT"
       // "pr_UNIT"
@@ -402,6 +401,10 @@ namespace yy {
       // "pr_ADD"
       // "pr_ID"
       // "pr_FS"
+      // "pr_login"
+      // "pr_logout"
+      // "pr_USER"
+      // "pr_PWD"
       // "pr_RUTA"
       // "pr_ROOT"
       // "pr_MKDISK"
@@ -416,7 +419,6 @@ namespace yy {
       // "pr_exec"
       // "pr_rep"
       // "tk_identifier"
-      // "tk_space"
       // "tk_number"
       // STRING
       // DATA
@@ -470,34 +472,36 @@ namespace yy {
       enum yytokentype
       {
         TOK_FIN = 0,
-        TOK_HYPHEN = 258,
-        TOK_EQUAL = 259,
-        TOK_FIT = 260,
-        TOK_UNIT = 261,
-        TOK_PATH = 262,
-        TOK_SIZE = 263,
-        TOK_TYPE = 264,
-        TOK_DELETE = 265,
-        TOK_NAME = 266,
-        TOK_ADD = 267,
-        TOK_ID = 268,
-        TOK_FS = 269,
-        TOK_RUTA = 270,
-        TOK_ROOT = 271,
-        TOK_MKDISK = 272,
-        TOK_RMDISK = 273,
-        TOK_FDISK = 274,
-        TOK_MOUNT = 275,
-        TOK_UMOUNT = 276,
-        TOK_MKFS = 277,
-        TOK_STRING_DOUBLE = 278,
-        TOK_STRING_SINGLE = 279,
-        TOK_PATH_DIR = 280,
-        TOK_RUN_EXEC = 281,
-        TOK_RUN_REPORT = 282,
-        TOK_IDENTIFICADOR = 283,
-        TOK_SPACE = 284,
-        TOK_NUMERO = 285
+        TOK_EQUAL = 258,
+        TOK_FIT = 259,
+        TOK_UNIT = 260,
+        TOK_PATH = 261,
+        TOK_SIZE = 262,
+        TOK_TYPE = 263,
+        TOK_DELETE = 264,
+        TOK_NAME = 265,
+        TOK_ADD = 266,
+        TOK_ID = 267,
+        TOK_FS = 268,
+        TOK_LOGIN = 269,
+        TOK_LOGOUT = 270,
+        TOK_USER = 271,
+        TOK_PWD = 272,
+        TOK_RUTA = 273,
+        TOK_ROOT = 274,
+        TOK_MKDISK = 275,
+        TOK_RMDISK = 276,
+        TOK_FDISK = 277,
+        TOK_MOUNT = 278,
+        TOK_UMOUNT = 279,
+        TOK_MKFS = 280,
+        TOK_STRING_DOUBLE = 281,
+        TOK_STRING_SINGLE = 282,
+        TOK_PATH_DIR = 283,
+        TOK_RUN_EXEC = 284,
+        TOK_RUN_REPORT = 285,
+        TOK_IDENTIFICADOR = 286,
+        TOK_NUMERO = 287
       };
     };
 
@@ -587,37 +591,39 @@ namespace yy {
         // Type destructor.
 switch (yytype)
     {
-      case 3: // "tk_HYPHEN"
-      case 4: // "tk_EQUAL"
-      case 5: // "pr_FIT"
-      case 6: // "pr_UNIT"
-      case 7: // "pr_PATH"
-      case 8: // "pr_SIZE"
-      case 9: // "pr_TYPE"
-      case 10: // "pr_DELETE"
-      case 11: // "pr_NAME"
-      case 12: // "pr_ADD"
-      case 13: // "pr_ID"
-      case 14: // "pr_FS"
-      case 15: // "pr_RUTA"
-      case 16: // "pr_ROOT"
-      case 17: // "pr_MKDISK"
-      case 18: // "pr_RMDISK"
-      case 19: // "pr_FDISK"
-      case 20: // "pr_MOUNT"
-      case 21: // "pr_UMOUNT"
-      case 22: // "pr_MKFS"
-      case 23: // "tk_string_d"
-      case 24: // "tk_string_s"
-      case 25: // "tk_path"
-      case 26: // "pr_exec"
-      case 27: // "pr_rep"
-      case 28: // "tk_identifier"
-      case 29: // "tk_space"
-      case 30: // "tk_number"
-      case 33: // STRING
-      case 34: // DATA
-      case 40: // PARAM
+      case 3: // "tk_EQUAL"
+      case 4: // "pr_FIT"
+      case 5: // "pr_UNIT"
+      case 6: // "pr_PATH"
+      case 7: // "pr_SIZE"
+      case 8: // "pr_TYPE"
+      case 9: // "pr_DELETE"
+      case 10: // "pr_NAME"
+      case 11: // "pr_ADD"
+      case 12: // "pr_ID"
+      case 13: // "pr_FS"
+      case 14: // "pr_login"
+      case 15: // "pr_logout"
+      case 16: // "pr_USER"
+      case 17: // "pr_PWD"
+      case 18: // "pr_RUTA"
+      case 19: // "pr_ROOT"
+      case 20: // "pr_MKDISK"
+      case 21: // "pr_RMDISK"
+      case 22: // "pr_FDISK"
+      case 23: // "pr_MOUNT"
+      case 24: // "pr_UMOUNT"
+      case 25: // "pr_MKFS"
+      case 26: // "tk_string_d"
+      case 27: // "tk_string_s"
+      case 28: // "tk_path"
+      case 29: // "pr_exec"
+      case 30: // "pr_rep"
+      case 31: // "tk_identifier"
+      case 32: // "tk_number"
+      case 35: // STRING
+      case 36: // DATA
+      case 43: // PARAM
         value.template destroy< std::string > ();
         break;
 
@@ -710,13 +716,13 @@ switch (yytype)
       symbol_type (int tok, std::string v, location_type l)
         : super_type(token_type (tok), std::move (v), std::move (l))
       {
-        YY_ASSERT (tok == token::TOK_HYPHEN || tok == token::TOK_EQUAL || tok == token::TOK_FIT || tok == token::TOK_UNIT || tok == token::TOK_PATH || tok == token::TOK_SIZE || tok == token::TOK_TYPE || tok == token::TOK_DELETE || tok == token::TOK_NAME || tok == token::TOK_ADD || tok == token::TOK_ID || tok == token::TOK_FS || tok == token::TOK_RUTA || tok == token::TOK_ROOT || tok == token::TOK_MKDISK || tok == token::TOK_RMDISK || tok == token::TOK_FDISK || tok == token::TOK_MOUNT || tok == token::TOK_UMOUNT || tok == token::TOK_MKFS || tok == token::TOK_STRING_DOUBLE || tok == token::TOK_STRING_SINGLE || tok == token::TOK_PATH_DIR || tok == token::TOK_RUN_EXEC || tok == token::TOK_RUN_REPORT || tok == token::TOK_IDENTIFICADOR || tok == token::TOK_SPACE || tok == token::TOK_NUMERO);
+        YY_ASSERT (tok == token::TOK_EQUAL || tok == token::TOK_FIT || tok == token::TOK_UNIT || tok == token::TOK_PATH || tok == token::TOK_SIZE || tok == token::TOK_TYPE || tok == token::TOK_DELETE || tok == token::TOK_NAME || tok == token::TOK_ADD || tok == token::TOK_ID || tok == token::TOK_FS || tok == token::TOK_LOGIN || tok == token::TOK_LOGOUT || tok == token::TOK_USER || tok == token::TOK_PWD || tok == token::TOK_RUTA || tok == token::TOK_ROOT || tok == token::TOK_MKDISK || tok == token::TOK_RMDISK || tok == token::TOK_FDISK || tok == token::TOK_MOUNT || tok == token::TOK_UMOUNT || tok == token::TOK_MKFS || tok == token::TOK_STRING_DOUBLE || tok == token::TOK_STRING_SINGLE || tok == token::TOK_PATH_DIR || tok == token::TOK_RUN_EXEC || tok == token::TOK_RUN_REPORT || tok == token::TOK_IDENTIFICADOR || tok == token::TOK_NUMERO);
       }
 #else
       symbol_type (int tok, const std::string& v, const location_type& l)
         : super_type(token_type (tok), v, l)
       {
-        YY_ASSERT (tok == token::TOK_HYPHEN || tok == token::TOK_EQUAL || tok == token::TOK_FIT || tok == token::TOK_UNIT || tok == token::TOK_PATH || tok == token::TOK_SIZE || tok == token::TOK_TYPE || tok == token::TOK_DELETE || tok == token::TOK_NAME || tok == token::TOK_ADD || tok == token::TOK_ID || tok == token::TOK_FS || tok == token::TOK_RUTA || tok == token::TOK_ROOT || tok == token::TOK_MKDISK || tok == token::TOK_RMDISK || tok == token::TOK_FDISK || tok == token::TOK_MOUNT || tok == token::TOK_UMOUNT || tok == token::TOK_MKFS || tok == token::TOK_STRING_DOUBLE || tok == token::TOK_STRING_SINGLE || tok == token::TOK_PATH_DIR || tok == token::TOK_RUN_EXEC || tok == token::TOK_RUN_REPORT || tok == token::TOK_IDENTIFICADOR || tok == token::TOK_SPACE || tok == token::TOK_NUMERO);
+        YY_ASSERT (tok == token::TOK_EQUAL || tok == token::TOK_FIT || tok == token::TOK_UNIT || tok == token::TOK_PATH || tok == token::TOK_SIZE || tok == token::TOK_TYPE || tok == token::TOK_DELETE || tok == token::TOK_NAME || tok == token::TOK_ADD || tok == token::TOK_ID || tok == token::TOK_FS || tok == token::TOK_LOGIN || tok == token::TOK_LOGOUT || tok == token::TOK_USER || tok == token::TOK_PWD || tok == token::TOK_RUTA || tok == token::TOK_ROOT || tok == token::TOK_MKDISK || tok == token::TOK_RMDISK || tok == token::TOK_FDISK || tok == token::TOK_MOUNT || tok == token::TOK_UMOUNT || tok == token::TOK_MKFS || tok == token::TOK_STRING_DOUBLE || tok == token::TOK_STRING_SINGLE || tok == token::TOK_PATH_DIR || tok == token::TOK_RUN_EXEC || tok == token::TOK_RUN_REPORT || tok == token::TOK_IDENTIFICADOR || tok == token::TOK_NUMERO);
       }
 #endif
     };
@@ -769,21 +775,6 @@ switch (yytype)
       make_FIN (const location_type& l)
       {
         return symbol_type (token::TOK_FIN, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_HYPHEN (std::string v, location_type l)
-      {
-        return symbol_type (token::TOK_HYPHEN, std::move (v), std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_HYPHEN (const std::string& v, const location_type& l)
-      {
-        return symbol_type (token::TOK_HYPHEN, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -949,6 +940,66 @@ switch (yytype)
       make_FS (const std::string& v, const location_type& l)
       {
         return symbol_type (token::TOK_FS, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_LOGIN (std::string v, location_type l)
+      {
+        return symbol_type (token::TOK_LOGIN, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_LOGIN (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::TOK_LOGIN, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_LOGOUT (std::string v, location_type l)
+      {
+        return symbol_type (token::TOK_LOGOUT, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_LOGOUT (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::TOK_LOGOUT, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_USER (std::string v, location_type l)
+      {
+        return symbol_type (token::TOK_USER, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_USER (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::TOK_USER, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_PWD (std::string v, location_type l)
+      {
+        return symbol_type (token::TOK_PWD, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_PWD (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::TOK_PWD, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1159,21 +1210,6 @@ switch (yytype)
       make_IDENTIFICADOR (const std::string& v, const location_type& l)
       {
         return symbol_type (token::TOK_IDENTIFICADOR, v, l);
-      }
-#endif
-#if 201103L <= YY_CPLUSPLUS
-      static
-      symbol_type
-      make_SPACE (std::string v, location_type l)
-      {
-        return symbol_type (token::TOK_SPACE, std::move (v), std::move (l));
-      }
-#else
-      static
-      symbol_type
-      make_SPACE (const std::string& v, const location_type& l)
-      {
-        return symbol_type (token::TOK_SPACE, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1497,10 +1533,10 @@ switch (yytype)
     enum
     {
       yyeof_ = 0,
-      yylast_ = 42,     ///< Last index in yytable_.
-      yynnts_ = 10,  ///< Number of nonterminal symbols.
-      yyfinal_ = 24, ///< Termination state number.
-      yyntokens_ = 31  ///< Number of tokens.
+      yylast_ = 54,     ///< Last index in yytable_.
+      yynnts_ = 11,  ///< Number of nonterminal symbols.
+      yyfinal_ = 42, ///< Termination state number.
+      yyntokens_ = 33  ///< Number of tokens.
     };
 
 
@@ -1546,9 +1582,9 @@ switch (yytype)
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30
+      25,    26,    27,    28,    29,    30,    31,    32
     };
-    const int user_token_number_max_ = 285;
+    const int user_token_number_max_ = 287;
 
     if (t <= 0)
       return yyeof_;
@@ -1568,37 +1604,39 @@ switch (yytype)
   {
     switch (this->type_get ())
     {
-      case 3: // "tk_HYPHEN"
-      case 4: // "tk_EQUAL"
-      case 5: // "pr_FIT"
-      case 6: // "pr_UNIT"
-      case 7: // "pr_PATH"
-      case 8: // "pr_SIZE"
-      case 9: // "pr_TYPE"
-      case 10: // "pr_DELETE"
-      case 11: // "pr_NAME"
-      case 12: // "pr_ADD"
-      case 13: // "pr_ID"
-      case 14: // "pr_FS"
-      case 15: // "pr_RUTA"
-      case 16: // "pr_ROOT"
-      case 17: // "pr_MKDISK"
-      case 18: // "pr_RMDISK"
-      case 19: // "pr_FDISK"
-      case 20: // "pr_MOUNT"
-      case 21: // "pr_UMOUNT"
-      case 22: // "pr_MKFS"
-      case 23: // "tk_string_d"
-      case 24: // "tk_string_s"
-      case 25: // "tk_path"
-      case 26: // "pr_exec"
-      case 27: // "pr_rep"
-      case 28: // "tk_identifier"
-      case 29: // "tk_space"
-      case 30: // "tk_number"
-      case 33: // STRING
-      case 34: // DATA
-      case 40: // PARAM
+      case 3: // "tk_EQUAL"
+      case 4: // "pr_FIT"
+      case 5: // "pr_UNIT"
+      case 6: // "pr_PATH"
+      case 7: // "pr_SIZE"
+      case 8: // "pr_TYPE"
+      case 9: // "pr_DELETE"
+      case 10: // "pr_NAME"
+      case 11: // "pr_ADD"
+      case 12: // "pr_ID"
+      case 13: // "pr_FS"
+      case 14: // "pr_login"
+      case 15: // "pr_logout"
+      case 16: // "pr_USER"
+      case 17: // "pr_PWD"
+      case 18: // "pr_RUTA"
+      case 19: // "pr_ROOT"
+      case 20: // "pr_MKDISK"
+      case 21: // "pr_RMDISK"
+      case 22: // "pr_FDISK"
+      case 23: // "pr_MOUNT"
+      case 24: // "pr_UMOUNT"
+      case 25: // "pr_MKFS"
+      case 26: // "tk_string_d"
+      case 27: // "tk_string_s"
+      case 28: // "tk_path"
+      case 29: // "pr_exec"
+      case 30: // "pr_rep"
+      case 31: // "tk_identifier"
+      case 32: // "tk_number"
+      case 35: // STRING
+      case 36: // DATA
+      case 43: // PARAM
         value.move< std::string > (std::move (that.value));
         break;
 
@@ -1617,37 +1655,39 @@ switch (yytype)
   {
     switch (this->type_get ())
     {
-      case 3: // "tk_HYPHEN"
-      case 4: // "tk_EQUAL"
-      case 5: // "pr_FIT"
-      case 6: // "pr_UNIT"
-      case 7: // "pr_PATH"
-      case 8: // "pr_SIZE"
-      case 9: // "pr_TYPE"
-      case 10: // "pr_DELETE"
-      case 11: // "pr_NAME"
-      case 12: // "pr_ADD"
-      case 13: // "pr_ID"
-      case 14: // "pr_FS"
-      case 15: // "pr_RUTA"
-      case 16: // "pr_ROOT"
-      case 17: // "pr_MKDISK"
-      case 18: // "pr_RMDISK"
-      case 19: // "pr_FDISK"
-      case 20: // "pr_MOUNT"
-      case 21: // "pr_UMOUNT"
-      case 22: // "pr_MKFS"
-      case 23: // "tk_string_d"
-      case 24: // "tk_string_s"
-      case 25: // "tk_path"
-      case 26: // "pr_exec"
-      case 27: // "pr_rep"
-      case 28: // "tk_identifier"
-      case 29: // "tk_space"
-      case 30: // "tk_number"
-      case 33: // STRING
-      case 34: // DATA
-      case 40: // PARAM
+      case 3: // "tk_EQUAL"
+      case 4: // "pr_FIT"
+      case 5: // "pr_UNIT"
+      case 6: // "pr_PATH"
+      case 7: // "pr_SIZE"
+      case 8: // "pr_TYPE"
+      case 9: // "pr_DELETE"
+      case 10: // "pr_NAME"
+      case 11: // "pr_ADD"
+      case 12: // "pr_ID"
+      case 13: // "pr_FS"
+      case 14: // "pr_login"
+      case 15: // "pr_logout"
+      case 16: // "pr_USER"
+      case 17: // "pr_PWD"
+      case 18: // "pr_RUTA"
+      case 19: // "pr_ROOT"
+      case 20: // "pr_MKDISK"
+      case 21: // "pr_RMDISK"
+      case 22: // "pr_FDISK"
+      case 23: // "pr_MOUNT"
+      case 24: // "pr_UMOUNT"
+      case 25: // "pr_MKFS"
+      case 26: // "tk_string_d"
+      case 27: // "tk_string_s"
+      case 28: // "tk_path"
+      case 29: // "pr_exec"
+      case 30: // "pr_rep"
+      case 31: // "tk_identifier"
+      case 32: // "tk_number"
+      case 35: // STRING
+      case 36: // DATA
+      case 43: // PARAM
         value.copy< std::string > (YY_MOVE (that.value));
         break;
 
@@ -1673,37 +1713,39 @@ switch (yytype)
     super_type::move (s);
     switch (this->type_get ())
     {
-      case 3: // "tk_HYPHEN"
-      case 4: // "tk_EQUAL"
-      case 5: // "pr_FIT"
-      case 6: // "pr_UNIT"
-      case 7: // "pr_PATH"
-      case 8: // "pr_SIZE"
-      case 9: // "pr_TYPE"
-      case 10: // "pr_DELETE"
-      case 11: // "pr_NAME"
-      case 12: // "pr_ADD"
-      case 13: // "pr_ID"
-      case 14: // "pr_FS"
-      case 15: // "pr_RUTA"
-      case 16: // "pr_ROOT"
-      case 17: // "pr_MKDISK"
-      case 18: // "pr_RMDISK"
-      case 19: // "pr_FDISK"
-      case 20: // "pr_MOUNT"
-      case 21: // "pr_UMOUNT"
-      case 22: // "pr_MKFS"
-      case 23: // "tk_string_d"
-      case 24: // "tk_string_s"
-      case 25: // "tk_path"
-      case 26: // "pr_exec"
-      case 27: // "pr_rep"
-      case 28: // "tk_identifier"
-      case 29: // "tk_space"
-      case 30: // "tk_number"
-      case 33: // STRING
-      case 34: // DATA
-      case 40: // PARAM
+      case 3: // "tk_EQUAL"
+      case 4: // "pr_FIT"
+      case 5: // "pr_UNIT"
+      case 6: // "pr_PATH"
+      case 7: // "pr_SIZE"
+      case 8: // "pr_TYPE"
+      case 9: // "pr_DELETE"
+      case 10: // "pr_NAME"
+      case 11: // "pr_ADD"
+      case 12: // "pr_ID"
+      case 13: // "pr_FS"
+      case 14: // "pr_login"
+      case 15: // "pr_logout"
+      case 16: // "pr_USER"
+      case 17: // "pr_PWD"
+      case 18: // "pr_RUTA"
+      case 19: // "pr_ROOT"
+      case 20: // "pr_MKDISK"
+      case 21: // "pr_RMDISK"
+      case 22: // "pr_FDISK"
+      case 23: // "pr_MOUNT"
+      case 24: // "pr_UMOUNT"
+      case 25: // "pr_MKFS"
+      case 26: // "tk_string_d"
+      case 27: // "tk_string_s"
+      case 28: // "tk_path"
+      case 29: // "pr_exec"
+      case 30: // "pr_rep"
+      case 31: // "tk_identifier"
+      case 32: // "tk_number"
+      case 35: // STRING
+      case 36: // DATA
+      case 43: // PARAM
         value.move< std::string > (YY_MOVE (s.value));
         break;
 
@@ -1763,7 +1805,7 @@ switch (yytype)
 
 #line 6 "parser.yy"
 } // yy
-#line 1767 "parser.tab.hh"
+#line 1809 "parser.tab.hh"
 
 
 

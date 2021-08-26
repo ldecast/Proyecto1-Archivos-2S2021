@@ -7,6 +7,8 @@
 #include "./disks/mount.cpp"
 #include "./disks/umount.cpp"
 #include "./file_system/mkfs.cpp"
+#include "./admin_gu/login.cpp"
+#include "./admin_gu/logout.cpp"
 #include "./reports/classifier.cpp"
 
 int bloque(struct command x)
@@ -29,8 +31,14 @@ int bloque(struct command x)
     if (x.keyword == "__MKFS")
         return mkfs(x.id, x.type, x.fs);
 
-    if (x.keyword == "__REP")
-        return classifier(x.name, x.path, x.id, x.ruta, x.root);
+    if (x.keyword == "__MKFS")
+        return mkfs(x.id, x.type, x.fs);
+
+    if (x.keyword == "__LOGIN")
+        return login(x.user, x.pwd, x.id);
+
+    if (x.keyword == "__LOGOUT")
+        return logout();
 
     return 0;
 }

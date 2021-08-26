@@ -5,31 +5,36 @@
 #include <vector>
 #include <stdio.h>
 
+using std::string;
+
 struct command
 {
-    std::string keyword;
-    std::string size;
-    std::string fit;
-    std::string unit;
-    std::string path;
-    std::string type;
-    std::string delet;
-    std::string name;
-    std::string add;
-    std::string id;
-    std::string fs;
+    string keyword;
+    string size;
+    string fit;
+    string unit;
+    string path;
+    string type;
+    string delet;
+    string name;
+    string add;
+    string id;
+    string fs;
 
-    std::string ruta;
-    std::string root;
+    string user;
+    string pwd;
+
+    string ruta;
+    string root;
 };
 
 struct parametro
 {
-    std::string tipo;
-    std::string valor;
+    string tipo;
+    string valor;
 };
 
-struct command newCommand(std::string _type, std::vector<parametro> _params)
+struct command newCommand(string _type, std::vector<parametro> _params)
 {
     struct command x;
     x.keyword = _type;
@@ -64,6 +69,12 @@ struct command newCommand(std::string _type, std::vector<parametro> _params)
 
         else if (_params[i].tipo == "__FS")
             x.fs = _params[i].valor;
+
+        else if (_params[i].tipo == "__USER")
+            x.user = _params[i].valor;
+
+        else if (_params[i].tipo == "__PWD")
+            x.pwd = _params[i].valor;
 
         else if (_params[i].tipo == "__RUTA")
             x.ruta = _params[i].valor;
