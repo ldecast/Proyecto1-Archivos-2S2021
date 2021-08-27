@@ -34,12 +34,12 @@ int mkgrp(string _name)
     fread(&users_file, sizeof(ArchivosBlock), 1, file); // Leer el bloque
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
+    // std::cout << users_file.b_content << std::endl;
     std::istringstream f(users_file.b_content);
     string line;
     int gid = 1;
     while (getline(f, line))
     {
-        std::cout << line << std::endl;
         int count = 0;
         for (int i = 0; (i = line.find(',', i)) != std::string::npos; i++)
             count++;
@@ -55,8 +55,8 @@ int mkgrp(string _name)
 
             group_tmp.nombre = line.substr(0, line.find_first_of('\n'));
 
-            if (group_tmp.nombre == group_to_create.nombre)
-                return coutError("Error: El nombre del grupo ya existe.", NULL);
+            if (group_tmp.nombre == group_to_create.nombre && group_tmp.GID != 0)
+                return coutError("Error: El nombre del grupo ya existe.", file);
             break;
         default:
             break;

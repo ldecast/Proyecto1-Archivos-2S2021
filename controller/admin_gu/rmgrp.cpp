@@ -33,12 +33,12 @@ int rmgrp(string _name)
     fread(&users_file, sizeof(ArchivosBlock), 1, file); // Leer el bloque
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
+    // std::cout << users_file.b_content << std::endl;
     std::istringstream f(users_file.b_content);
     string line, tmp = "";
     int gid = 1;
     while (getline(f, line))
     {
-        std::cout << line << std::endl;
         int count = 0;
         for (int i = 0; (i = line.find(',', i)) != std::string::npos; i++)
             count++;
@@ -55,17 +55,23 @@ int rmgrp(string _name)
             group_tmp.nombre = line.substr(0, line.find_first_of('\n'));
 
             if (group_tmp.nombre == group_to_remove.nombre)
+            {
+                // if (group_tmp.GID == 0)
+                //     std::cout << "\033[1;31mEl grupo: '" + _name + "' ya se encuentra eliminado.\033[0m\n";
+                if (group_tmp.nombre == "root")
+                    return coutError("Error: No se puede eliminar el grupo root.", file);
                 tmp = std::to_string(group_tmp.GID) + "," + group_tmp.tipo + "," + group_tmp.nombre + "\n";
+            }
             break;
         default:
             break;
         }
     }
     if (tmp == "")
-        return coutError("Error: No existe ningún grupo con el nombre: '" + _name + "'.", NULL);
+        return coutError("Error: No existe ningún grupo con el nombre: '" + _name + "'.", file);
 
     string aux = string(users_file.b_content);
-    aux.erase(aux.find(tmp), tmp.length());
+    aux.replace(aux.find(tmp), tmp.find_first_of(','), "0");
     strcpy(users_file.b_content, aux.c_str());
     users_inode.i_size = sizeof(aux.c_str());
 
