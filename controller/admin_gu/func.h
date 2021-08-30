@@ -8,6 +8,23 @@
 #include "../../model/filesystem.h"
 #include "../file_system/func.h"
 
+std::string GetAllFile(FILE *_file, InodosTable _inode, int _s_block_start)
+{
+    std::string content = "";
+    for (int i = 0; i < 15; i++)
+    {
+        if (_inode.i_block[i] != -1)
+        {
+            char src[64];
+            fseek(_file, _s_block_start + _inode.i_block[i] * 64, SEEK_SET);
+            fread(&src, 64, 1, _file);
+            std::cout << "+++" << std::string(src) << std::endl;
+            content += string(src);
+        }
+    }
+    return content;
+}
+
 // int freeBlockInode(InodosTable _inode)
 // {
 //     for (int i = 0; i < 12; i++)
@@ -73,34 +90,15 @@ ArchivosBlock searchBlock(MOUNTED _mounted, int _index)
     return file_block;
 }
 
-ArchivosBlock LastFileBlock(FILE *_file, InodosTable _inode, Superbloque _super_bloque)
+int ByteLastFileBlock(InodosTable _inode)
 {
-    ArchivosBlock fblock;
-    strcpy(fblock.b_content, "-");
     for (int i = 0; i < 15; i++)
     {
-        std::cout << _inode.i_block[i] << std::endl;
-        if (_inode.i_block[i] != -1)
-        {
-            fseek(_file, _super_bloque.s_block_start, SEEK_SET);
-            fseek(_file, _inode.i_block[i] * 64, SEEK_CUR);
-            ArchivosBlock file_block;
-            fread(&file_block, sizeof(ArchivosBlock), 1, _file);
-            std::cout << "¡¡¡¡¡¡¡¡¡" << file_block.b_content << "!!!!!!!!" << std::endl;
-        }
-
+        std::cout << "\033[1;32m" + std::to_string(_inode.i_block[i]) + "\033[0m\n";
         if (_inode.i_block[i] == -1)
-        {
-            fseek(_file, _super_bloque.s_block_start, SEEK_SET);
-            fseek(_file, _inode.i_block[i - 1] * 64, SEEK_CUR);
-            ArchivosBlock file_block;
-            fread(&file_block, sizeof(ArchivosBlock), 1, _file);
-
-            // fblock = searchBlock(_mounted, _inode.i_block[i - 1]);
-            return file_block;
-        }
+            return _inode.i_block[i - 1] * 64;
     }
-    return fblock;
+    return -1;
 }
 
 int numberOfFileBlocks(int _size)
@@ -112,11 +110,11 @@ int numberOfFileBlocks(int _size)
 std::vector<std::string> Separate64Chars(std::string _content)
 {
     std::vector<std::string> vector_s;
-    while (_content.length() > 64)
+    while (_content.length() >= 64)
     {
         std::string tmp = _content.substr(0, 64);
         vector_s.push_back(tmp);
-        _content.erase(0, 64);
+        _content = _content.substr(64);
     }
     if (_content.length() > 0)
         vector_s.push_back(_content);

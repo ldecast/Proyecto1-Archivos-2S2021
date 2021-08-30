@@ -94,9 +94,9 @@ void UpdateInode(InodosTable _inode, int _inode_index, int _block_written)
     {
         if (_inode.i_block[i] == -1)
         {
-            _inode.i_block[i] == _block_written;
+            _inode.i_block[i] = _block_written;
             updated = true;
-            std::cout << i << _block_written << std::endl;
+            std::cout << "i:" << i << "block:" << _block_written << std::endl;
             break;
         }
     }
@@ -132,6 +132,7 @@ void UpdateInode(InodosTable _inode, int _inode_index, int _block_written)
         coutError("Error: no se encontró ningún inodo libre para guardar el contenido", NULL);
 
     _inode.i_mtime = getCurrentTime();
+    std::cout << "\033[1;31m" + string(ctime(&_inode.i_mtime)) + "\033[0m\n";
     /* Sobreescribir el inodo */
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, _inode_index * sizeof(InodosTable), SEEK_CUR);
@@ -156,13 +157,15 @@ int writeBlock(int _type, string _content, int _block_reference)
     int block_free = super_bloque.s_first_blo;
     int seek_free = super_bloque.s_block_start + (block_free * 64);
     fseek(file, seek_free, SEEK_SET);
+    ArchivosBlock archivo;
     ApuntadoresBlock apuntadores;
-    const char *tmp = _content.c_str();
+    // const char *tmp = _content.c_str();
     switch (_type)
     {
     case 0: //_inode = UpdateInode(super_bloque, _inode, block_free);
-        fwrite(&tmp, 64, 1, file);
-        std::cout << tmp << std::endl;
+        strcpy(archivo.b_content, _content.c_str());
+        fwrite(&archivo, 64, 1, file);
+        std::cout << "\033[1;33m" + string(archivo.b_content) + "\033[0m\n";
         break;
     case 1:
         apuntadores.b_pointers[0] = _block_reference; // Apunta a bloque de archivo o carpeta
@@ -181,7 +184,10 @@ int writeBlock(int _type, string _content, int _block_reference)
     fwrite(&super_bloque, sizeof(Superbloque), 1, file);
 
     fseek(file, super_bloque.s_bm_block_start, SEEK_SET);
-    fwrite(&bm_block, 64, 1, file);
+    fwrite(&bm_block, 3 * super_bloque.s_inodes_count, 1, file);
+
+    fclose(file);
+    file = NULL;
 
     return block_free; // Retornamos el número de bloque creado
 }
@@ -219,9 +225,9 @@ int searchFreeBlock(char bitmap_block[])
 {
     for (int i = 0; i < 64; i++)
     {
-        std::cout << "\n"
-                  << bitmap_block[i] << "\n"
-                  << std::endl;
+        // std::cout << "\n"
+        //           << bitmap_block[i] << "\n"
+        //           << std::endl;
         if (bitmap_block[i] == '0')
             return i;
     }
