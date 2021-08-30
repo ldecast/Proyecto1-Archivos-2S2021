@@ -8,8 +8,9 @@
 #include "../../model/filesystem.h"
 #include "../file_system/func.h"
 
-std::string GetAllFile(FILE *_file, InodosTable _inode, int _s_block_start)
+std::string GetAllFile(InodosTable _inode, int _s_block_start)
 {
+    FILE *_file = fopen(_user_logged.mounted.path.c_str(), "rb");
     std::string content = "";
     for (int i = 0; i < 15; i++)
     {
@@ -18,83 +19,19 @@ std::string GetAllFile(FILE *_file, InodosTable _inode, int _s_block_start)
             char src[64];
             fseek(_file, _s_block_start + _inode.i_block[i] * 64, SEEK_SET);
             fread(&src, 64, 1, _file);
-            std::cout << "+++" << std::string(src) << std::endl;
-            content += string(src);
+            content += std::string(src);
         }
     }
+    fclose(_file);
+    _file = NULL;
     return content;
-}
-
-// int freeBlockInode(InodosTable _inode)
-// {
-//     for (int i = 0; i < 12; i++)
-//     {
-//         if (_inode.i_block[i] == -1)
-//             return i;
-//     }
-//     // buscar el inodo
-//     FILE *file = fopen(_user_logged.mounted.path.c_str(), "rb");
-//     Superbloque sb = getSuperBloque(_user_logged.mounted);
-//     fseek(file, sb.s_block_start, SEEK_SET);
-//     fseek(file, _inode.i_block[12], SEEK_SET);
-
-//     /* APUNTADOR DE NIVEL 1 */
-//     if (_inode.i_block[12] != -1)
-//     {
-//         fseek(file, _inode.i_block[12] * 64, SEEK_CUR);
-//         ApuntadoresBlock nivel_1;
-//         fread(&nivel_1, sizeof(ApuntadoresBlock), 1, file);
-//     }
-
-//     /* APUNTADOR DE NIVEL 2 */
-//     if (_inode.i_block[13] != -1)
-//     {
-//         fseek(file, _inode.i_block[13] * 64, SEEK_CUR);
-//         ApuntadoresBlock nivel_2;
-//         fread(&nivel_2, sizeof(ApuntadoresBlock), 1, file);
-//     }
-
-//     /* APUNTADOR DE NIVEL 3 */
-//     if (_inode.i_block[14] != -1)
-//     {
-//         fseek(file, _inode.i_block[14] * 64, SEEK_CUR);
-//         ApuntadoresBlock nivel_3;
-//         fread(&nivel_3, sizeof(ApuntadoresBlock), 1, file);
-//     }
-
-//     for (int i = 0; i < 16; i++)
-//     {
-//         if (_inode.i_block[12] != -1)
-//         {
-//             if ()
-//         }
-//     }
-
-//     return -1;
-// }
-
-ArchivosBlock searchBlock(MOUNTED _mounted, int _index)
-{
-    Superbloque super_bloque = getSuperBloque(_mounted);
-    FILE *file = fopen(_mounted.path.c_str(), "rb+");
-    fseek(file, super_bloque.s_block_start, SEEK_SET);
-    fseek(file, _index * sizeof(ArchivosBlock), SEEK_CUR);
-
-    ArchivosBlock file_block;
-    fread(&file_block, sizeof(ArchivosBlock), 1, file);
-
-    // std::cout << file_block.b_content << std::endl;
-
-    fclose(file);
-    file = NULL;
-    return file_block;
 }
 
 int ByteLastFileBlock(InodosTable _inode)
 {
     for (int i = 0; i < 15; i++)
     {
-        std::cout << "\033[1;32m" + std::to_string(_inode.i_block[i]) + "\033[0m\n";
+        // std::cout << "\033[1;32m" + std::to_string(_inode.i_block[i]) + "\033[0m\n";
         if (_inode.i_block[i] == -1)
             return _inode.i_block[i - 1] * 64;
     }

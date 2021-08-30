@@ -26,26 +26,25 @@ int mkgrp(string _name)
     fseek(file, startByteSuperBloque(), SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
 
-    /* Lectura del inodo usuarios */
+    /* Lectura del inodo de usuarios */
     InodosTable users_inode;
     fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
     fseek(file, sizeof(InodosTable), SEEK_CUR);        // Mover el puntero al segundo inodo que corresponde al archivo de users.txt
     fread(&users_inode, sizeof(InodosTable), 1, file); // Leer el inodo
+    // std::cout << "\033[1;33m" + string(ctime(&users_inode.i_mtime)) + "\033[0m\n";
+    fclose(file);
+    file = NULL;
 
-    std::cout << "\033[1;33m" + string(ctime(&users_inode.i_mtime)) + "\033[0m\n";
-
-    // ArchivosBlock users_file;
-    // fseek(file, super_bloque.s_block_start, SEEK_SET);  // Mover el puntero al inicio de la tabla de bloques
-    // fseek(file, 64, SEEK_CUR);                          // Mover el puntero al segundo bloque que corresponde al archivo de users.txt
-    // fread(&users_file, sizeof(ArchivosBlock), 1, file); // Leer el bloque
-
-    string content_file = GetAllFile(file, users_inode, super_bloque.s_block_start); // Obtener el último bloque de archivo
+    /* Obtener todo el archivo concatenado */
+    string content_file = GetAllFile(users_inode, super_bloque.s_block_start);
+    file = fopen((_user_logged.mounted.path).c_str(), "rb+");
 
     ArchivosBlock users_file; // Obtener el último bloque de archivo
-    // int seek_last_file_block = ByteLastFileBlock(users_inode);
-    // fseek(file, super_bloque.s_block_start, SEEK_SET);
-    // fseek(file, seek_last_file_block, SEEK_CUR);
-    // fread(&users_file, sizeof(ArchivosBlock), 1, file);
+    int seek_last_file_block = ByteLastFileBlock(users_inode);
+    fseek(file, super_bloque.s_block_start, SEEK_SET);
+    fseek(file, seek_last_file_block, SEEK_CUR);
+    fread(&users_file, sizeof(ArchivosBlock), 1, file);
+
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
     std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
     std::istringstream f(content_file);
@@ -75,14 +74,19 @@ int mkgrp(string _name)
             break;
         }
     }
-    string tmp = content_file + std::to_string(gid) + ",G," + group_to_create.nombre + "\n";
+    string tmp = std::to_string(gid) + ",G," + group_to_create.nombre + "\n"; //content_file +
     string extra = "-";
-    if (tmp.length() > 64)
+    if (string(users_file.b_content).length() + tmp.length() > 64)
     {
+        tmp = string(users_file.b_content) + tmp;
+        // std::cout << "\033[1;31m(" + string(tmp) + ")\033[0m\n";
         extra = tmp.substr(64);
         tmp = tmp.substr(0, 64);
     }
-
+    else
+    {
+        tmp = string(users_file.b_content) + tmp;
+    }
     strcpy(users_file.b_content, tmp.c_str());
     users_inode.i_size = sizeof(tmp.c_str());
 
@@ -92,12 +96,12 @@ int mkgrp(string _name)
     fwrite(&users_inode, sizeof(InodosTable), 1, file);
 
     fseek(file, super_bloque.s_block_start, SEEK_SET);
-    fseek(file, sizeof(CarpetasBlock), SEEK_CUR);
+    fseek(file, seek_last_file_block, SEEK_CUR);
     fwrite(&users_file, sizeof(ArchivosBlock), 1, file);
     fclose(file);
     file = NULL;
 
-    if (extra != "-")
+    if (extra != "-") // Si excede los 64 char, crear más bloques de contenido y asignarlo al inodo
     {
         writeBlocks(users_inode, extra, 1);
     }
