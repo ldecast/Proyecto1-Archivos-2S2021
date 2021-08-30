@@ -28,13 +28,14 @@ int mkgrp(string _name)
     fseek(file, sizeof(InodosTable), SEEK_CUR);        // Mover el puntero al segundo inodo que corresponde al archivo de users.txt
     fread(&users_inode, sizeof(InodosTable), 1, file); // Leer el inodo
 
-    ArchivosBlock users_file;
-    fseek(file, super_bloque.s_block_start, SEEK_SET);  // Mover el puntero al inicio de la tabla de bloques
-    fseek(file, 64, SEEK_CUR);                          // Mover el puntero al segundo bloque que corresponde al archivo de users.txt
-    fread(&users_file, sizeof(ArchivosBlock), 1, file); // Leer el bloque
+    // ArchivosBlock users_file;
+    // fseek(file, super_bloque.s_block_start, SEEK_SET);  // Mover el puntero al inicio de la tabla de bloques
+    // fseek(file, 64, SEEK_CUR);                          // Mover el puntero al segundo bloque que corresponde al archivo de users.txt
+    // fread(&users_file, sizeof(ArchivosBlock), 1, file); // Leer el bloque
+    ArchivosBlock users_file = LastFileBlock(file, users_inode, super_bloque); // Obtener el último bloque de archivo
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    // std::cout << users_file.b_content << std::endl;
+    std::cout << users_file.b_content << std::endl;
     std::istringstream f(users_file.b_content);
     string line;
     int gid = 1;
@@ -63,6 +64,15 @@ int mkgrp(string _name)
         }
     }
     string tmp = users_file.b_content + std::to_string(gid) + ",G," + group_to_create.nombre + "\n";
+    string extra = "";
+    // int number_file_blocks = numberOfFileBlocks(string(users_file.b_content).length() + tmp.length());
+    // std::cout << number_file_blocks << std::endl;
+    if (tmp.length() > 64)
+    {
+        extra = tmp.substr(64);
+        tmp = tmp.substr(0, 64);
+    }
+
     strcpy(users_file.b_content, tmp.c_str());
     users_inode.i_size = sizeof(tmp.c_str());
 
@@ -74,6 +84,9 @@ int mkgrp(string _name)
     fseek(file, super_bloque.s_block_start, SEEK_SET);
     fseek(file, sizeof(CarpetasBlock), SEEK_CUR);
     fwrite(&users_file, sizeof(ArchivosBlock), 1, file);
+
+    if (extra != "")
+        writeBlocks(users_inode, extra, 1);
 
     fclose(file);
     file = NULL;

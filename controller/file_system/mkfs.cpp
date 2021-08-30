@@ -42,13 +42,12 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     Superbloque super_bloque;
     InodosTable inodo;
     int n = _number_inodos(part_size);
-    auto curr_time = std::chrono::system_clock::now();
     super_bloque.s_filesystem_type = _fs;
     super_bloque.s_inodes_count = n;
     super_bloque.s_blocks_count = 3 * n;
     super_bloque.s_free_inodes_count = super_bloque.s_inodes_count - 2;
     super_bloque.s_free_blocks_count = super_bloque.s_blocks_count - 2;
-    super_bloque.s_mtime = std::chrono::system_clock::to_time_t(curr_time);
+    super_bloque.s_mtime = getCurrentTime();
     super_bloque.s_mnt_count = 1;
     super_bloque.s_magic = 61267;
     super_bloque.s_inode_size = sizeof(InodosTable);
@@ -118,6 +117,9 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     inode_folder.i_type = '0';
     inode_folder.i_gid = 1;
     inode_folder.i_uid = 1;
+    inode_folder.i_ctime = getCurrentTime();
+    inode_folder.i_mtime = inode_folder.i_ctime;
+    inode_folder.i_atime = inode_folder.i_ctime;
 
     /* CREACIÓN DE ARCHIVO USERS.TXT */
     ArchivosBlock users_file;
@@ -131,6 +133,9 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     users_inode.i_type = '1';
     users_inode.i_perm = 664;
     users_inode.i_block[0] = 1;
+    users_inode.i_ctime = getCurrentTime();
+    users_inode.i_mtime = users_inode.i_ctime;
+    users_inode.i_atime = users_inode.i_ctime;
 
     strcpy(root_content.b_name, "users.txt");
     root_content.b_inodo = 1;

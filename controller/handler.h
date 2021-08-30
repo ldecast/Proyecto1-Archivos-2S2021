@@ -148,4 +148,11 @@ char charDelete(std::string _delete)
     return ndelete;
 }
 
+time_t getCurrentTime()
+{
+    auto curr_time = std::chrono::system_clock::now();
+    std::time_t curr_time_t = std::chrono::system_clock::to_time_t(curr_time);
+    return curr_time_t;
+}
+
 #endif

@@ -7,8 +7,6 @@
 int _max_bloques_por_inodo = 4380;
 int _capacidad_carpeta = 17518;
 int _capacidad_archivo = 280320;
-std::string _carpeta_raiz = "/";
-std::string _users_path = _carpeta_raiz + "users.txt";
 
 struct Superbloque
 {
@@ -39,7 +37,7 @@ struct InodosTable
     time_t i_atime; // Última fecha en que se leyó el inodo sin modificarlo
     time_t i_ctime; // Fecha en la que se creó el inodo
     time_t i_mtime; // Úlitma fecha en la que se modificó el inodo
-    int i_block[15] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+    int i_block[15] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}; // Hace referencia al bloque apunta
     /* Array en los que los primeros 12 registros son bloques directos. 
     El 13 será el número del bloque simple indirecto.
     El 14 será el número del bloque doble indirecto.
@@ -67,7 +65,7 @@ struct ArchivosBlock
 
 struct ApuntadoresBlock
 {
-    int b_pointers[16]; // Array con los apuntadores hacia bloques (de archivo o carpeta)
+    int b_pointers[16] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 };
 
 struct Journaling

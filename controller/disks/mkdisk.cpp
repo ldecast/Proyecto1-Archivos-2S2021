@@ -21,13 +21,10 @@ int CrearDisco(int _size, char _fit, char _unit, std::string _path)
     fseek(file, tam, SEEK_SET);
     fwrite("\0", 1, 1, file);
 
-    auto curr_time = std::chrono::system_clock::now();
-    std::time_t curr_time_t = std::chrono::system_clock::to_time_t(curr_time);
-
     //////MBR//////
     MBR mbr;
     mbr.mbr_tamano = tam;
-    mbr.mbr_fecha_creacion = curr_time_t;
+    mbr.mbr_fecha_creacion = getCurrentTime();
     mbr.mbr_disk_signature = rand() % 1000;
     mbr.disk_fit = _fit;
     for (int i = 0; i < 4; i++)
