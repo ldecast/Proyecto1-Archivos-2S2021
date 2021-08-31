@@ -19,7 +19,7 @@ int mkgrp(string _name)
     Groups group_to_create;
     group_to_create.nombre = _name;
 
-    FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
+    FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb");
     Groups group_tmp;
     /* Lectura del superbloque */
     Superbloque super_bloque;
@@ -46,7 +46,7 @@ int mkgrp(string _name)
     fread(&users_file, sizeof(ArchivosBlock), 1, file);
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
+    // std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
     std::istringstream f(content_file);
     string line;
     int gid = 1;
