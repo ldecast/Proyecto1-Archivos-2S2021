@@ -12,7 +12,7 @@ std::string GetAllFile(InodosTable _inode, int _s_block_start)
 {
     FILE *_file = fopen(_user_logged.mounted.path.c_str(), "rb");
     std::string content = "";
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 12; i++) //agregar indirectos
     {
         if (_inode.i_block[i] != -1)
         {

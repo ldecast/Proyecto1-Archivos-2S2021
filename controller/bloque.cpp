@@ -11,6 +11,8 @@
 #include "./admin_gu/logout.cpp"
 #include "./admin_gu/mkgrp.cpp"
 #include "./admin_gu/rmgrp.cpp"
+#include "./admin_gu/mkusr.cpp"
+#include "./admin_gu/rmusr.cpp"
 #include "./reports/classifier.cpp"
 
 int bloque(struct command x)
@@ -47,6 +49,12 @@ int bloque(struct command x)
 
     if (x.keyword == "__RMGRP")
         return rmgrp(x.name);
+
+    if (x.keyword == "__MKUSR")
+        return mkusr(x.user, x.pwd, x.grp);
+
+    if (x.keyword == "__RMUSR")
+        return rmusr(x.user);
 
     return 0;
 }

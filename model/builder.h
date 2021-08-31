@@ -23,6 +23,7 @@ struct command
 
     string user;
     string pwd;
+    string grp;
 
     string ruta;
     string root;
@@ -75,6 +76,9 @@ struct command newCommand(string _type, std::vector<parametro> _params)
 
         else if (_params[i].tipo == "__PWD")
             x.pwd = _params[i].valor;
+
+        else if (_params[i].tipo == "__GRP")
+            x.grp = _params[i].valor;
 
         else if (_params[i].tipo == "__RUTA")
             x.ruta = _params[i].valor;

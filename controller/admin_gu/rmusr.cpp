@@ -7,7 +7,7 @@
 
 using std::string;
 
-int rmgrp(string _name)
+int rmusr(string _name)
 {
     if (_name == "")
         return coutError("Error: faltan parámetros obligatorios.", NULL);
@@ -16,13 +16,13 @@ int rmgrp(string _name)
         return coutError("Error: solamente se puede ejecutar el comando rmgrp con el usuario root.", NULL);
 
     if (_name == "root")
-        return coutError("Error: No se puede eliminar el grupo root.", NULL);
+        return coutError("Error: No se puede eliminar el usuario root.", NULL);
 
-    Groups group_to_remove;
-    group_to_remove.nombre = _name;
+    Users user_to_remove;
+    user_to_remove.nombre = _name;
+    Users user_tmp;
 
     FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb");
-    Groups group_tmp;
     /* Lectura del superbloque */
     Superbloque super_bloque;
     fseek(file, startByteSuperBloque(), SEEK_SET);
@@ -33,7 +33,6 @@ int rmgrp(string _name)
     fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
     fseek(file, sizeof(InodosTable), SEEK_CUR);        // Mover el puntero al segundo inodo que corresponde al archivo de users.txt
     fread(&users_inode, sizeof(InodosTable), 1, file); // Leer el inodo
-    // std::cout << "\033[1;33m" + string(ctime(&users_inode.i_mtime)) + "\033[0m\n";
     fclose(file);
     file = NULL;
 
@@ -42,9 +41,9 @@ int rmgrp(string _name)
     file = fopen((_user_logged.mounted.path).c_str(), "rb+");
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    // std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
+    std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
     std::istringstream f(content_file);
-    int gid = 1;
+    int uid = 1;
     string line, tmp = "";
     while (getline(f, line))
     {
@@ -53,19 +52,24 @@ int rmgrp(string _name)
             count++;
         switch (count)
         {
-        case 2:
-            gid++;
-            group_tmp.GID = std::stoi(line.substr(0, line.find_first_of(',')));
+        case 4:
+            uid++;
+            user_tmp.UID = std::stoi(line.substr(0, line.find_first_of(',')));
             line = line.substr(line.find_first_of(',') + 1);
 
-            group_tmp.tipo = line.substr(0, line.find_first_of(','))[0];
+            user_tmp.tipo = line.substr(0, line.find_first_of(','))[0];
             line = line.substr(line.find_first_of(',') + 1);
 
-            group_tmp.nombre = line.substr(0, line.find_first_of('\n'));
+            user_tmp.grupo = line.substr(0, line.find_first_of(','));
+            line = line.substr(line.find_first_of(',') + 1);
 
-            if (group_tmp.nombre == group_to_remove.nombre && group_tmp.GID != 0)
+            user_tmp.nombre = line.substr(0, line.find_first_of(','));
+            line = line.substr(line.find_first_of(',') + 1);
+
+            user_tmp.contrasena = line.substr(0, line.find_first_of('\n'));
+            if (user_tmp.nombre == user_to_remove.nombre && user_tmp.UID != 0)
             {
-                tmp = std::to_string(group_tmp.GID) + "," + group_tmp.tipo + "," + group_tmp.nombre + "\n";
+                tmp = std::to_string(user_tmp.UID) + ",U," + user_tmp.grupo + "," + user_tmp.nombre + "," + user_tmp.contrasena + "\n";
             }
             break;
         default:
@@ -73,7 +77,7 @@ int rmgrp(string _name)
         }
     }
     if (tmp == "")
-        return coutError("Error: No existe ningún grupo activo con el nombre: '" + _name + "'.", file);
+        return coutError("Error: No existe ningún usuario activo con el nombre: '" + _name + "'.", file);
 
     content_file.replace(content_file.find(tmp), tmp.find_first_of(','), "0");
 

@@ -52,9 +52,12 @@ struct command x;
 %token <std::string> LOGOUT "pr_logout"
 %token <std::string> MKGRP "pr_MKGRP"
 %token <std::string> RMGRP "pr_RMGRP"
+%token <std::string> MKUSR "pr_MKUSR"
+%token <std::string> RMUSR "pr_RMUSR"
 
 %token <std::string> USER "pr_USER"
 %token <std::string> PWD "pr_PWD"
+%token <std::string> GRP "pr_GRP"
 
 %token <std::string> RUTA "pr_RUTA"
 %token <std::string> ROOT "pr_ROOT"
@@ -128,6 +131,8 @@ ADMIN_USERS_GROUPS: "pr_login" PARAMS {x = newCommand("__LOGIN",parametros);}
                   | "pr_logout" {x = newCommand("__LOGOUT",parametros);}
                   | "pr_MKGRP" PARAMS {x = newCommand("__MKGRP",parametros);}
                   | "pr_RMGRP" PARAMS {x = newCommand("__RMGRP",parametros);}
+                  | "pr_MKUSR" PARAMS {x = newCommand("__MKUSR",parametros);}
+                  | "pr_RMUSR" PARAMS {x = newCommand("__RMUSR",parametros);}
 ;
 
 REPORT: "pr_rep" PARAMS {x = newCommand("__REP",parametros);}
@@ -151,6 +156,7 @@ PARAM: "pr_SIZE" {$$ = "__SIZE";}
       | "pr_ROOT" {$$ = "__ROOT";}
       | "pr_USER" {$$ = "__USER";}
       | "pr_PWD" {$$ = "__PWD";}
+      | "pr_GRP" {$$ = "__GRP";}
 ;
 
 %%
