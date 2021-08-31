@@ -59,6 +59,13 @@ struct command x;
 %token <std::string> PWD "pr_PWD"
 %token <std::string> GRP "pr_GRP"
 
+%token <std::string> TOUCH "pr_TOUCH"
+%token <std::string> CHMOD "pr_CHMOD"
+%token <std::string> R "pr_R"
+%token <std::string> CONT "pr_CONT"
+%token <std::string> UGO "pr_UGO"
+%token <std::string> STDIN "pr_STDIN"
+
 %token <std::string> RUTA "pr_RUTA"
 %token <std::string> ROOT "pr_ROOT"
 
@@ -85,9 +92,11 @@ struct command x;
 %type PARAMS
 %type DISCOS
 %type ADMIN_USERS_GROUPS
+%type FILESYSTEM
 %type EXEC
 %type REPORT
 %type <std::string> PARAM
+%type <std::string> BOOLEAN_PARAM
 %type <std::string> STRING
 %type <std::string> DATA
 
@@ -113,6 +122,7 @@ DATA: STRING {$$=$1;}
 E: EXEC
  | DISCOS
  | ADMIN_USERS_GROUPS
+ | FILESYSTEM
  | REPORT
 ;
 
@@ -135,11 +145,17 @@ ADMIN_USERS_GROUPS: "pr_login" PARAMS {x = newCommand("__LOGIN",parametros);}
                   | "pr_RMUSR" PARAMS {x = newCommand("__RMUSR",parametros);}
 ;
 
+FILESYSTEM: "pr_CHMOD" PARAMS {x = newCommand("__CHMOD",parametros);}
+            | "pr_TOUCH" PARAMS {x = newCommand("__TOUCH",parametros);}
+;
+
 REPORT: "pr_rep" PARAMS {x = newCommand("__REP",parametros);}
 ;
 
 PARAMS: PARAMS PARAM "tk_EQUAL" DATA {parametros.push_back({$2, $4});}
+      | PARAMS BOOLEAN_PARAM {parametros.push_back({$2, "true"});}
       | PARAM "tk_EQUAL" DATA {parametros.clear(); parametros.push_back({$1, $3});}
+      | BOOLEAN_PARAM {parametros.clear(); parametros.push_back({$1, "true"});}
 ;
 
 PARAM: "pr_SIZE" {$$ = "__SIZE";}
@@ -157,6 +173,12 @@ PARAM: "pr_SIZE" {$$ = "__SIZE";}
       | "pr_USER" {$$ = "__USER";}
       | "pr_PWD" {$$ = "__PWD";}
       | "pr_GRP" {$$ = "__GRP";}
+      | "pr_UGO" {$$ = "__UGO";}
+      | "pr_CONT" {$$ = "__CONT";}
+;
+
+BOOLEAN_PARAM: "pr_R" {$$ = "__R";}
+            | "pr_STDIN" {$$ = "__STDIN";}
 ;
 
 %%

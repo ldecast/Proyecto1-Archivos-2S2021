@@ -25,6 +25,11 @@ struct command
     string pwd;
     string grp;
 
+    string ugo;
+    string r;
+    string cont;
+    string _stdin;
+
     string ruta;
     string root;
 };
@@ -85,6 +90,18 @@ struct command newCommand(string _type, std::vector<parametro> _params)
 
         else if (_params[i].tipo == "__ROOT")
             x.root = _params[i].valor;
+
+        else if (_params[i].tipo == "__UGO")
+            x.ugo = _params[i].valor;
+
+        else if (_params[i].tipo == "__R")
+            x.r = _params[i].valor;
+
+        else if (_params[i].tipo == "__CONT")
+            x.cont = _params[i].valor;
+
+        else if (_params[i].tipo == "__STDIN")
+            x._stdin = _params[i].valor;
 
         else
             std::cout << "Parámetro no válido: " + _params[i].valor << std::endl;

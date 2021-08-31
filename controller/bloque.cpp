@@ -13,6 +13,8 @@
 #include "./admin_gu/rmgrp.cpp"
 #include "./admin_gu/mkusr.cpp"
 #include "./admin_gu/rmusr.cpp"
+#include "./file_system/chmod.cpp"
+#include "./file_system/touch.cpp"
 #include "./reports/classifier.cpp"
 
 int bloque(struct command x)
@@ -55,6 +57,12 @@ int bloque(struct command x)
 
     if (x.keyword == "__RMUSR")
         return rmusr(x.user);
+
+    if (x.keyword == "__CHMOD")
+        return chmod(x.path, x.ugo, x.r);
+
+    if (x.keyword == "__TOUCH")
+        return touch(x.path, x.r, x.size, x.cont, x._stdin);
 
     return 0;
 }
