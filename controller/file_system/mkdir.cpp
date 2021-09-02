@@ -9,9 +9,8 @@ using std::string;
 
 struct FolderReference
 {
-    // InodosTable inode;
-    int inode;
-    int block;
+    int inode = 0;
+    int block = 0;
 };
 
 FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks);
@@ -65,12 +64,8 @@ int CrearCarpeta(string _path, string _name, bool _p)
     /* Lectura de la última carpeta padre */
     FolderReference fr;
     std::vector<string> folders = SplitPath(_path);
-    // if (folders.size() == 0)
-    // {
-    fr.inode = 0;
-    fr.block = 0;
-    // }
     if (folders.size() > 0)
+    {
         for (int i = 0; i < folders.size(); i++)
         {
             fr = getFather(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
@@ -81,6 +76,13 @@ int CrearCarpeta(string _path, string _name, bool _p)
                 // else: Crear la carpeta
             }
         }
+    }
+
+    /* Lectura del inodo de carpeta padre */
+    InodosTable inode_father;
+    fseek(file, super_bloque.s_inode_start, SEEK_SET);
+    fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
+    fread(&inode_father, sizeof(InodosTable), 1, file);
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock folder_father;
     bool cupo = false;
@@ -98,13 +100,62 @@ int CrearCarpeta(string _path, string _name, bool _p)
             fseek(file, fr.block * 64, SEEK_CUR);
             fwrite(&folder_father, 64, 1, file);
             cupo = true;
+            break;
         }
     }
     if (!cupo)
-    {
+    {                                // usar el siguiente i_block disponible del inodo_father
+        for (int i = 0; i < 12; i++) //agregar indirectos
+        {
+            if (inode_father.i_block[i] != -1 && !cupo)
+            {
+                CarpetasBlock tmp_block;
+                fseek(file, super_bloque.s_block_start, SEEK_SET);
+                fseek(file, inode_father.i_block[i] * 64, SEEK_CUR);
+                fread(&tmp_block, 64, 1, file);
+                for (int j = 0; j < 4; j++)
+                {
+                    if (tmp_block.b_content[j].b_inodo == -1)
+                    {
+                        tmp_block.b_content[j].b_inodo = free_inode;
+                        strcpy(tmp_block.b_content[j].b_name, _name.c_str());
+                        fseek(file, super_bloque.s_block_start, SEEK_SET);
+                        fseek(file, inode_father.i_block[i] * 64, SEEK_CUR);
+                        fwrite(&tmp_block, 64, 1, file);
+                        cupo = true;
+                        inode_father.i_atime = getCurrentTime();
+                        break;
+                    }
+                }
+            }
+            else if (inode_father.i_block[i] == -1 && !cupo) //
+            {
+                CarpetasBlock new_block;
+                new_block.b_content[0].b_inodo = free_inode;
+                strcpy(new_block.b_content[0].b_name, _name.c_str());
+                fseek(file, super_bloque.s_block_start, SEEK_SET);
+                fseek(file, free_block * 64, SEEK_CUR);
+                fwrite(&new_block, 64, 1, file);
+
+                inode_father.i_block[i] = free_block;
+                inode_father.i_mtime = getCurrentTime();
+
+                bm_blocks[free_block] = '1';
+                super_bloque.s_first_blo = searchFreeIndex(bm_blocks, 3 * super_bloque.s_inodes_count);
+                super_bloque.s_free_blocks_count--;
+                free_block = super_bloque.s_first_blo;
+                cupo = true;
+                break;
+            }
+        }
         std::cout << "no cupo\n";
-        // usar el siguiente i_block disponible del inodo_father
     }
+    fseek(file, super_bloque.s_inode_start, SEEK_SET);
+    fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
+    fwrite(&inode_father, sizeof(InodosTable), 1, file);
+
+    if (!cupo)
+        std::cout << "\033[1;31mNo se encontró espacio para crear la carpeta.\033[0m\n";
 
     /* Llenar con la información de la carpeta */
     folder_content.b_inodo = free_inode;
@@ -137,10 +188,6 @@ int CrearCarpeta(string _path, string _name, bool _p)
     fseek(file, free_inode * sizeof(InodosTable), SEEK_CUR);
     fwrite(&new_inode, sizeof(InodosTable), 1, file);
 
-    /* fseek(file, super_bloque.s_block_start, SEEK_SET);
-    fseek(file, byte_father * 64, SEEK_CUR);
-    fwrite(&father, 64, 1, file); */
-
     fseek(file, super_bloque.s_block_start, SEEK_SET); // Mover el puntero al inicio de la tabla de bloques
     fseek(file, free_block * 64, SEEK_CUR);
     fwrite(&folder_to_create, 64, 1, file);
@@ -164,11 +211,8 @@ int mkdir(string _path, string _p)
 }
 
 FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks)
-{ // Retorna el inodo carpeta de la carpeta padre
+{ // Retorna el los índices de inodo y bloque de la carpeta padre
     InodosTable inode;
-    // fseek(_file, _start_inodes, SEEK_SET);
-    // fseek(_file, _fr.inode * sizeof(InodosTable), SEEK_CUR);
-    // fread(&inode, sizeof(InodosTable), 1, _file);
     CarpetasBlock folder_block;
     fseek(_file, _start_blocks, SEEK_SET);
     fseek(_file, _fr.block * 64, SEEK_CUR);
@@ -182,23 +226,20 @@ FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int 
             fseek(_file, _start_inodes, SEEK_SET);
             fseek(_file, folder_block.b_content[i].b_inodo * sizeof(InodosTable), SEEK_CUR);
             fread(&inode, sizeof(InodosTable), 1, _file);
-            for (int i = 0; i < 12; i++)
+            for (int j = 0; j < 12; j++)
             {
-                if (inode.i_block[i] != -1)
+                if (inode.i_block[j] != -1)
                 {
                     fseek(_file, _start_blocks, SEEK_SET);
-                    fseek(_file, inode.i_block[i] * 64, SEEK_CUR);
+                    fseek(_file, inode.i_block[j] * 64, SEEK_CUR);
                     fread(&folder_block, 64, 1, _file);
                     if (folder_block.b_content[0].b_inodo == _fr.inode)
                     {
-                        _fr.block = inode.i_block[i];
+                        _fr.block = inode.i_block[j];
                         return _fr;
                     }
                 }
             }
-            // std::cout << folder_block.b_content[i].b_name << std::endl;
-            // _fr.block = folder_block.b_content[i].b_inodo;
-            // return getFather(_fr, _folder, _file, _start_inodes, _start_blocks);
         }
     }
 
