@@ -28,7 +28,7 @@ int login(string _user, string _pwd, string _id)
     user_to_login.contrasena = _pwd;
 
     Superbloque super_bloque = getSuperBloque(mounted);
-    FILE *file = fopen(mounted.path.c_str(), "rb+");
+    FILE *file = fopen(mounted.path.c_str(), "rb");
 
     InodosTable users_inode;
     fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
@@ -39,9 +39,15 @@ int login(string _user, string _pwd, string _id)
     fseek(file, super_bloque.s_block_start, SEEK_SET);  // Mover el puntero al inicio de la tabla de bloques
     fseek(file, 64, SEEK_CUR);                          // Mover el puntero al segundo bloque que corresponde al archivo de users.txt
     fread(&users_file, sizeof(ArchivosBlock), 1, file); // Leer el bloque
+    fclose(file);
+    file = NULL;
+
+    /* Obtener todo el archivo concatenado */
+    string content_file = GetAllFile(users_inode, super_bloque.s_block_start, mounted.path);
+    file = fopen((mounted.path).c_str(), "rb");
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    std::istringstream f(users_file.b_content);
+    std::istringstream f(content_file);
     string line;
     while (getline(f, line))
     {
@@ -73,6 +79,7 @@ int login(string _user, string _pwd, string _id)
                 _user_logged = user_tmp;
                 fclose(file);
                 file = NULL;
+                _user_logged.GID = getGroupByName(user_tmp.grupo, users_inode, super_bloque.s_block_start, mounted.path).GID;
                 /* std::cout << _user_logged.UID << std::endl;
                 std::cout << _user_logged.tipo << std::endl;
                 std::cout << _user_logged.grupo << std::endl;

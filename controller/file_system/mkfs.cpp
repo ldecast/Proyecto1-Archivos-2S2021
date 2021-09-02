@@ -104,8 +104,8 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     CarpetasBlock root_folder; // Nuevo bloque carpeta
     Content root_content;      // Nuevo bloque contenido
     InodosTable inode_folder;  // Nuevo inodo
-
     root_content.b_inodo = 0;
+
     strcpy(root_content.b_name, ".");
     root_folder.b_content[0] = root_content;
 
@@ -117,6 +117,7 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     inode_folder.i_type = '0';
     inode_folder.i_gid = 1;
     inode_folder.i_uid = 1;
+    inode_folder.i_perm = 664;
     inode_folder.i_ctime = getCurrentTime();
     inode_folder.i_mtime = inode_folder.i_ctime;
     inode_folder.i_atime = inode_folder.i_ctime;

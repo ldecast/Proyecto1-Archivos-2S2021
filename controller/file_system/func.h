@@ -14,9 +14,10 @@ struct InodeReference
     int block;
 };
 
-int searchFreeBlock(char bitmap_block[]);
+int searchFreeIndex(char bitmap[], int n);
 int startByteSuperBloque();
 int GetFreePointer(int b_pointers[]);
+// InodosTable readPath(string _path);
 
 int _number_inodos(int _part_size) // falta ext3
 {
@@ -60,7 +61,8 @@ int writeBlock(int _type, string _content, int _block_reference)
         break;
     }
     bm_block[block_free] = '1';
-    super_bloque.s_first_blo = searchFreeBlock(bm_block);
+    super_bloque.s_first_blo = searchFreeIndex(bm_block, 3 * super_bloque.s_inodes_count);
+    super_bloque.s_free_blocks_count--;
     // std::cout << "!" << super_bloque.s_first_blo << "!" << block_free << std::endl;
     fseek(file, startByteSuperBloque(), SEEK_SET);
     fwrite(&super_bloque, sizeof(Superbloque), 1, file);
@@ -164,11 +166,21 @@ int GetFreePointer(int b_pointers[]) // Agregar si es un bloque de apuntadores d
     return -1;
 }
 
-int searchFreeBlock(char bitmap_block[])
+int GetFreeI_Block(InodosTable _inode) // Agregar indirectos
 {
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i < 12; i++)
     {
-        if (bitmap_block[i] == '0')
+        if (_inode.i_block[i] == -1)
+            return i;
+    }
+    return -1;
+}
+
+int searchFreeIndex(char bitmap[], int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        if (bitmap[i] == '0')
             return i;
     }
     return -1;
@@ -245,6 +257,64 @@ void UpdateSuperBloque(Superbloque _super_bloque)
     fwrite(&_super_bloque, sizeof(Superbloque), 1, file); // Reescribir el bloque nuevo
     fclose(file);                                         // Cerrar el archivo
     file = NULL;                                          // Limpiar el puntero
+}
+
+// InodosTable readPath(string _path)
+// {
+//     FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb");
+//     /* Lectura del superbloque */
+//     Superbloque super_bloque;
+//     fseek(file, startByteSuperBloque(), SEEK_SET);
+//     fread(&super_bloque, sizeof(Superbloque), 1, file);
+//     /* Lectura del inodo de carpeta raíz */
+//     InodosTable root_inode;
+//     fseek(file, super_bloque.s_inode_start, SEEK_SET);
+//     fread(&root_inode, sizeof(InodosTable), 1, file);
+
+//     for (int i = 0; i < 15; i++)
+//     {
+//         /* code */
+//     }
+
+//     /* Posicionarse en el espacio del bloque disponible */
+//     int block_free = super_bloque.s_first_blo;
+//     int seek_free = super_bloque.s_block_start + (block_free * 64);
+//     fseek(file, seek_free, SEEK_SET);
+//     ArchivosBlock archivo;
+//     ApuntadoresBlock apuntadores;
+// }
+
+void ReadBlocks(InodosTable _inode, char *block)
+{
+    /*string
+    for (int i = 0; i < 12; i++)
+    {
+        if
+    }
+    
+    FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
+    fseek(file, _super_bloque.s_bm_block_start, SEEK_SET);
+    fread(&bitmap, sizeof(3 * _super_bloque.s_inodes_count), 1, file);
+    fclose(file);
+    file = NULL; */
+}
+
+std::vector<std::string> SplitPath(std::string _path)
+{
+    std::vector<std::string> spl;
+    size_t pos = 0;
+    std::string tmp;
+    // spl.push_back("/");
+    while ((pos = _path.find("/")) != std::string::npos)
+    {
+        tmp = _path.substr(0, pos);
+        if (tmp != "")
+            spl.push_back(tmp);
+        _path.erase(0, pos + 1);
+    }
+    if (_path != "")
+        spl.push_back(_path);
+    return spl;
 }
 
 #endif

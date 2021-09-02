@@ -8,9 +8,9 @@
 #include "../../model/filesystem.h"
 #include "../file_system/func.h"
 
-std::string GetAllFile(InodosTable _inode, int _s_block_start)
+std::string GetAllFile(InodosTable _inode, int _s_block_start, string _path)
 {
-    FILE *_file = fopen(_user_logged.mounted.path.c_str(), "rb");
+    FILE *_file = fopen(_path.c_str(), "rb");
     std::string content = "";
     for (int i = 0; i < 12; i++) //agregar indirectos
     {
@@ -67,6 +67,47 @@ void writeBlocks(InodosTable _inode, std::string _content, int _number_inode)
         int block_written = writeBlock(0, chars[i], -1);
         UpdateInode(_inode, _number_inode, block_written);
     }
+}
+
+Groups getGroupByName(string _name, InodosTable users_inode, int s_block_start, string _path)
+{
+    /* Obtener todo el archivo concatenado */
+    string content_file = GetAllFile(users_inode, s_block_start, _path);
+    FILE *file = fopen(_path.c_str(), "rb");
+    Groups group_tmp;
+    /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
+    std::istringstream f(content_file);
+    string line;
+    while (getline(f, line))
+    {
+        int count = 0;
+        for (int i = 0; (i = line.find(',', i)) != std::string::npos; i++)
+            count++;
+        switch (count)
+        {
+        case 2:
+            group_tmp.GID = std::stoi(line.substr(0, line.find_first_of(',')));
+            line = line.substr(line.find_first_of(',') + 1);
+
+            group_tmp.tipo = line.substr(0, line.find_first_of(','))[0];
+            line = line.substr(line.find_first_of(',') + 1);
+
+            group_tmp.nombre = line.substr(0, line.find_first_of('\n'));
+
+            if (group_tmp.nombre == _name && group_tmp.GID != 0)
+            {
+                fclose(file);
+                file = NULL;
+                return group_tmp;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    fclose(file);
+    file = NULL;
+    return group_tmp;
 }
 
 #endif
