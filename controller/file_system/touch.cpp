@@ -17,12 +17,8 @@ int touch(string _path, string _r, string _size, string _cont, string _stdin)
 {
     if (_path == "")
         return coutError("Error: faltan parámetros obligatorios.", NULL);
+    if (!_user_logged.logged_in)
+        return coutError("Error: No se encuentra ninguna sesión activa.", NULL);
     int preSize = (_size == "" || _cont != "") ? -1 : std::stoi(_size);
     return CrearArchivo(_path, _r != "", getSize('b', preSize), _cont, _stdin != "");
-    /* std::cout << _path << std::endl;
-    std::cout << _r << std::endl;
-    std::cout << _size << std::endl;
-    std::cout << _cont << std::endl;
-    std::cout << _stdin << std::endl;
-    std::cout << "\n"; */
 }

@@ -9,12 +9,7 @@ using std::string;
 
 int CambiarPermisos(string _path, int _u, int _g, int _o, bool _r)
 {
-    std::cout << _path << std::endl;
-    std::cout << _u << std::endl;
-    std::cout << _g << std::endl;
-    std::cout << _o << std::endl;
-    std::cout << _r << std::endl;
-    std::cout << "\n";
+
     return 1;
 }
 
@@ -22,6 +17,9 @@ int chmod(string _path, string _ugo, string _r)
 {
     if (_path == "" || _ugo == "")
         return coutError("Error: faltan parámetros obligatorios.", NULL);
+
+    if (!_user_logged.logged_in)
+        return coutError("Error: No se encuentra ninguna sesión activa.", NULL);
 
     if (_ugo.length() != 3)
         return coutError("Error: parámetro 'ugo' no válido, deben ser tres números enteros.", NULL);

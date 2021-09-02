@@ -61,7 +61,9 @@ struct command x;
 
 %token <std::string> TOUCH "pr_TOUCH"
 %token <std::string> CHMOD "pr_CHMOD"
+%token <std::string> MKDIR "pr_MKDIR"
 %token <std::string> R "pr_R"
+%token <std::string> P "pr_P"
 %token <std::string> CONT "pr_CONT"
 %token <std::string> UGO "pr_UGO"
 %token <std::string> STDIN "pr_STDIN"
@@ -147,6 +149,7 @@ ADMIN_USERS_GROUPS: "pr_login" PARAMS {x = newCommand("__LOGIN",parametros);}
 
 FILESYSTEM: "pr_CHMOD" PARAMS {x = newCommand("__CHMOD",parametros);}
             | "pr_TOUCH" PARAMS {x = newCommand("__TOUCH",parametros);}
+            | "pr_MKDIR" PARAMS {x = newCommand("__MKDIR",parametros);}
 ;
 
 REPORT: "pr_rep" PARAMS {x = newCommand("__REP",parametros);}
@@ -178,6 +181,7 @@ PARAM: "pr_SIZE" {$$ = "__SIZE";}
 ;
 
 BOOLEAN_PARAM: "pr_R" {$$ = "__R";}
+            | "pr_P" {$$ = "__R";}
             | "pr_STDIN" {$$ = "__STDIN";}
 ;
 

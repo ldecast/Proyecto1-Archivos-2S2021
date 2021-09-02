@@ -39,7 +39,7 @@ int mkusr(string _usr, string _pwd, string _grp)
     file = NULL;
 
     /* Obtener todo el archivo concatenado */
-    string content_file = GetAllFile(users_inode, super_bloque.s_block_start);
+    string content_file = GetAllFile(users_inode, super_bloque.s_block_start, _user_logged.mounted.path);
     file = fopen((_user_logged.mounted.path).c_str(), "rb+");
 
     ArchivosBlock users_file; // Obtener el último bloque de archivo

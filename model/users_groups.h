@@ -14,6 +14,7 @@ struct Groups
 struct Users
 {
     int UID = 1;
+    int GID = 1;
     char tipo = 'U';
     string grupo = "root";
     string nombre = "root";
