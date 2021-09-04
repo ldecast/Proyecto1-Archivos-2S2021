@@ -60,7 +60,7 @@ struct CarpetasBlock
 
 struct ArchivosBlock
 {
-    char b_content[64]; // Array con el contenido del archivo
+    char b_content[64] = ""; // Array con el contenido del archivo
 };
 
 struct ApuntadoresBlock

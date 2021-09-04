@@ -2,6 +2,7 @@
 #include <string.h>
 #include "../../model/filesystem.h"
 #include "../../model/users_groups.h"
+#include "../admin_gu/func.h"
 #include "../handler.h"
 #include "func.h"
 
@@ -14,9 +15,11 @@ struct FolderReference
 };
 
 FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks);
+int mkdir(string _path, string _p);
 
 int CrearCarpeta(string _path, string _name, bool _p)
 {
+    // std::cout << _path << _name << std::endl;
     /* CREACIÓN DE CARPETA */
     CarpetasBlock folder_to_create; // Nuevo bloque carpeta
     Content folder_content;         // Nuevo bloque contenido
@@ -56,42 +59,57 @@ int CrearCarpeta(string _path, string _name, bool _p)
     new_inode.i_type = '0';
     new_inode.i_gid = _user_logged.GID;
     new_inode.i_uid = _user_logged.UID;
+    new_inode.i_perm = 664;
     new_inode.i_ctime = getCurrentTime();
     new_inode.i_mtime = new_inode.i_ctime;
     new_inode.i_atime = new_inode.i_ctime;
-    // int free_i_block = GetFreeI_Block(root_inode); // if == -1
 
     /* Lectura de la última carpeta padre */
-    FolderReference fr;
+    FolderReference fr, exist;
     std::vector<string> folders = SplitPath(_path);
-    if (folders.size() > 0)
+    for (int i = 0; i < folders.size(); i++)
     {
-        for (int i = 0; i < folders.size(); i++)
+        // std::cout << folders[i] << std::endl;
+        string tmp = _path.substr(0, _path.find(folders[i]));
+        fr = getFather(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
+        if (fr.inode == -1)
         {
-            fr = getFather(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
-            if (fr.inode == -1)
+            std::cout << "Not found: " + folders[i] + "\n";
+            if (!_p)
+                return coutError("Error: la ruta no existe y no se ha indicado el comando -p.", file);
+            fclose(file);
+            file = NULL;
+            for (int j = i; j < folders.size(); j++)
             {
-                if (!_p)
-                    return coutError("Error: la ruta no existe y no se ha indicado el comando -p.", file);
-                // else: Crear la carpeta
+                // std::cout << _path.substr(0, _path.find(folders[j])) + folders[j] << std::endl; //solo leer y luego esribir
+                int p = mkdir(_path.substr(0, _path.find(folders[j])) + folders[j], "");
+                if (!p)
+                    return coutError("Ha ocurrido un error", NULL);
             }
+            // std::cout << _path + "/" + _name + "\n";
+            return mkdir(_path + "/" + _name, "");
         }
     }
+    // exist = getFather(fr, _name, file, super_bloque.s_inode_start, super_bloque.s_block_start);
+    // if (exist.inode != -1)
+    //     return coutError("Error: La carpeta ya existe.", file);
 
     /* Lectura del inodo de carpeta padre */
     InodosTable inode_father;
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode_father, sizeof(InodosTable), 1, file);
+    if (!HasPermission(_user_logged, inode_father, 2))
+        return coutError("El usuario no posee los permisos de escritura sobre la carpeta padre.", NULL);
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock folder_father;
     bool cupo = false;
     fseek(file, super_bloque.s_block_start, SEEK_SET);
     fseek(file, fr.block * 64, SEEK_CUR);
     fread(&folder_father, 64, 1, file);
+    /* Escritura del nuevo bloque carpera que hace referencia al inodo carpeta */
     for (int i = 0; i < 4; i++)
-    {
-        // std::cout << folder_father.b_content[i].b_name << std::endl;
+    { // std::cout << folder_father.b_content[i].b_name << std::endl;
         if (folder_father.b_content[i].b_inodo == -1)
         {
             folder_father.b_content[i].b_inodo = free_inode;
@@ -103,11 +121,11 @@ int CrearCarpeta(string _path, string _name, bool _p)
             break;
         }
     }
-    if (!cupo)
-    {                                // usar el siguiente i_block disponible del inodo_father
+    if (!cupo) // usar el siguiente i_block disponible del inodo_father
+    {
         for (int i = 0; i < 12; i++) //agregar indirectos
         {
-            if (inode_father.i_block[i] != -1 && !cupo)
+            if (inode_father.i_block[i] != -1 && !cupo) // revisar si existe espacio disponible en un bloque carpeta
             {
                 CarpetasBlock tmp_block;
                 fseek(file, super_bloque.s_block_start, SEEK_SET);
@@ -128,7 +146,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
                     }
                 }
             }
-            else if (inode_father.i_block[i] == -1 && !cupo) //
+            else if (inode_father.i_block[i] == -1 && !cupo) // crear un nuevo bloque carpeta
             {
                 CarpetasBlock new_block;
                 new_block.b_content[0].b_inodo = free_inode;
@@ -148,7 +166,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
                 break;
             }
         }
-        std::cout << "no cupo\n";
+        // std::cout << "no cupo\n";
     }
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
@@ -194,6 +212,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
 
     fclose(file);
     file = NULL;
+    std::cout << "se creó: " + _path + "/" + _name + "\n";
     return 1;
 }
 
@@ -219,7 +238,7 @@ FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int 
     fread(&folder_block, 64, 1, _file);
 
     for (int i = 2; i < 4; i++)
-    { // std::cout << folder_block.b_content[k].b_name << std::endl;
+    { // std::cout << folder_block.b_content[k].b_name << std::endl; revisar?
         if (string(folder_block.b_content[i].b_name) == _folder)
         {
             _fr.inode = folder_block.b_content[i].b_inodo;
@@ -242,9 +261,6 @@ FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int 
             }
         }
     }
-
     _fr.inode = -1;
     return _fr;
 }
-
-// int

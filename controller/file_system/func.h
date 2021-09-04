@@ -259,46 +259,6 @@ void UpdateSuperBloque(Superbloque _super_bloque)
     file = NULL;                                          // Limpiar el puntero
 }
 
-// InodosTable readPath(string _path)
-// {
-//     FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb");
-//     /* Lectura del superbloque */
-//     Superbloque super_bloque;
-//     fseek(file, startByteSuperBloque(), SEEK_SET);
-//     fread(&super_bloque, sizeof(Superbloque), 1, file);
-//     /* Lectura del inodo de carpeta raíz */
-//     InodosTable root_inode;
-//     fseek(file, super_bloque.s_inode_start, SEEK_SET);
-//     fread(&root_inode, sizeof(InodosTable), 1, file);
-
-//     for (int i = 0; i < 15; i++)
-//     {
-//         /* code */
-//     }
-
-//     /* Posicionarse en el espacio del bloque disponible */
-//     int block_free = super_bloque.s_first_blo;
-//     int seek_free = super_bloque.s_block_start + (block_free * 64);
-//     fseek(file, seek_free, SEEK_SET);
-//     ArchivosBlock archivo;
-//     ApuntadoresBlock apuntadores;
-// }
-
-void ReadBlocks(InodosTable _inode, char *block)
-{
-    /*string
-    for (int i = 0; i < 12; i++)
-    {
-        if
-    }
-    
-    FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
-    fseek(file, _super_bloque.s_bm_block_start, SEEK_SET);
-    fread(&bitmap, sizeof(3 * _super_bloque.s_inodes_count), 1, file);
-    fclose(file);
-    file = NULL; */
-}
-
 std::vector<std::string> SplitPath(std::string _path)
 {
     std::vector<std::string> spl;

@@ -110,4 +110,39 @@ Groups getGroupByName(string _name, InodosTable users_inode, int s_block_start, 
     return group_tmp;
 }
 
+bool HasPermission(Users _user, InodosTable _inode, int _req)
+{
+    char u;
+    // std::cout << ctime(&_inode.i_ctime) << std::endl;
+    /* Propietario */
+    if (_user.UID == _inode.i_uid)
+        u = std::to_string(_inode.i_perm)[0];
+    /* Grupo */
+    else if (_user.GID == _inode.i_gid)
+        u = std::to_string(_inode.i_perm)[1];
+    /* Otros */
+    else
+        u = std::to_string(_inode.i_perm)[2];
+
+    if (u == '7' || u == '0')
+        return u == '7';
+    switch (_req)
+    {
+    case 1:
+        return u == '1' || u == '3' || u == '5' || u == '7';
+    case 2:
+        return u == '2' || u == '3' || u == '6' || u == '7';
+    case 3:
+        return u == '3' || u == '7';
+    case 4:
+        return u == '4' || u == '5' || u == '6' || u == '7';
+    case 5:
+        return u == '5' || u == '7';
+    case 6:
+        return u == '6' || u == '7';
+    default:
+        return false;
+    }
+}
+
 #endif
