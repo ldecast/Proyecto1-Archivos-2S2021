@@ -8,13 +8,6 @@
 
 using std::string;
 
-struct FolderReference
-{
-    int inode = 0;
-    int block = 0;
-};
-
-FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks);
 int mkdir(string _path, string _p);
 
 int CrearCarpeta(string _path, string _name, bool _p)
@@ -29,7 +22,8 @@ int CrearCarpeta(string _path, string _name, bool _p)
 
     /* Lectura del superbloque */
     Superbloque super_bloque;
-    fseek(file, startByteSuperBloque(), SEEK_SET);
+    int start_byte_sb = startByteSuperBloque(_user_logged.mounted);
+    fseek(file, start_byte_sb, SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
 
     int free_inode = super_bloque.s_first_ino;
@@ -193,7 +187,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
     super_bloque.s_free_blocks_count--;
 
     /* ESCRITURA */
-    fseek(file, startByteSuperBloque(), SEEK_SET);
+    fseek(file, start_byte_sb, SEEK_SET);
     fwrite(&super_bloque, sizeof(Superbloque), 1, file);
 
     fseek(file, super_bloque.s_bm_inode_start, SEEK_SET);
@@ -227,40 +221,4 @@ int mkdir(string _path, string _p)
     string name_folder = _path.substr(_path.find_last_of('/') + 1);
 
     return CrearCarpeta(npath, name_folder, _p != "");
-}
-
-FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks)
-{ // Retorna el los índices de inodo y bloque de la carpeta padre
-    InodosTable inode;
-    CarpetasBlock folder_block;
-    fseek(_file, _start_blocks, SEEK_SET);
-    fseek(_file, _fr.block * 64, SEEK_CUR);
-    fread(&folder_block, 64, 1, _file);
-
-    for (int i = 2; i < 4; i++)
-    { // std::cout << folder_block.b_content[k].b_name << std::endl; revisar?
-        if (string(folder_block.b_content[i].b_name) == _folder)
-        {
-            _fr.inode = folder_block.b_content[i].b_inodo;
-            fseek(_file, _start_inodes, SEEK_SET);
-            fseek(_file, folder_block.b_content[i].b_inodo * sizeof(InodosTable), SEEK_CUR);
-            fread(&inode, sizeof(InodosTable), 1, _file);
-            for (int j = 0; j < 12; j++)
-            {
-                if (inode.i_block[j] != -1)
-                {
-                    fseek(_file, _start_blocks, SEEK_SET);
-                    fseek(_file, inode.i_block[j] * 64, SEEK_CUR);
-                    fread(&folder_block, 64, 1, _file);
-                    if (folder_block.b_content[0].b_inodo == _fr.inode)
-                    {
-                        _fr.block = inode.i_block[j];
-                        return _fr;
-                    }
-                }
-            }
-        }
-    }
-    _fr.inode = -1;
-    return _fr;
 }

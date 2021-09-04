@@ -27,7 +27,7 @@ int mkusr(string _usr, string _pwd, string _grp)
     FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb");
     /* Lectura del superbloque */
     Superbloque super_bloque;
-    fseek(file, startByteSuperBloque(), SEEK_SET);
+    fseek(file, startByteSuperBloque(_user_logged.mounted), SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
 
     /* Lectura del inodo de usuarios */

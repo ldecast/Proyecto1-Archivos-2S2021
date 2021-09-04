@@ -27,8 +27,11 @@ int login(string _user, string _pwd, string _id)
     user_to_login.nombre = _user;
     user_to_login.contrasena = _pwd;
 
-    Superbloque super_bloque = getSuperBloque(mounted);
     FILE *file = fopen(mounted.path.c_str(), "rb");
+    /* Lectura del superbloque */
+    Superbloque super_bloque;
+    fseek(file, startByteSuperBloque(mounted), SEEK_SET);
+    fread(&super_bloque, sizeof(Superbloque), 1, file);
 
     InodosTable users_inode;
     fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos

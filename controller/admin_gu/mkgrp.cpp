@@ -23,7 +23,7 @@ int mkgrp(string _name)
     Groups group_tmp;
     /* Lectura del superbloque */
     Superbloque super_bloque;
-    fseek(file, startByteSuperBloque(), SEEK_SET);
+    fseek(file, startByteSuperBloque(_user_logged.mounted), SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
 
     /* Lectura del inodo de usuarios */

@@ -8,28 +8,58 @@
 #include "../partitions/func.h"
 #include "../handler.h"
 
-struct InodeReference
-{
-    int type; // 0,1,2,3
-    int block;
-};
-
 int searchFreeIndex(char bitmap[], int n);
-int startByteSuperBloque();
+int startByteSuperBloque(MOUNTED _mounted);
 int GetFreePointer(int b_pointers[]);
-// InodosTable readPath(string _path);
 
 int _number_inodos(int _part_size) // falta ext3
 {
     return (int)floor((_part_size - sizeof(Superbloque) / (1 + 3 + sizeof(InodosTable) + 3 * 64)));
 }
 
+FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks)
+{ // Retorna el los índices de inodo y bloque de la carpeta padre
+    InodosTable inode;
+    CarpetasBlock folder_block;
+    fseek(_file, _start_blocks, SEEK_SET);
+    fseek(_file, _fr.block * 64, SEEK_CUR);
+    fread(&folder_block, 64, 1, _file);
+
+    for (int i = 2; i < 4; i++)
+    { // std::cout << folder_block.b_content[k].b_name << std::endl; revisar?
+        if (string(folder_block.b_content[i].b_name) == _folder)
+        {
+            _fr.inode = folder_block.b_content[i].b_inodo;
+            fseek(_file, _start_inodes, SEEK_SET);
+            fseek(_file, folder_block.b_content[i].b_inodo * sizeof(InodosTable), SEEK_CUR);
+            fread(&inode, sizeof(InodosTable), 1, _file);
+            for (int j = 0; j < 12; j++)
+            {
+                if (inode.i_block[j] != -1)
+                {
+                    fseek(_file, _start_blocks, SEEK_SET);
+                    fseek(_file, inode.i_block[j] * 64, SEEK_CUR);
+                    fread(&folder_block, 64, 1, _file);
+                    if (folder_block.b_content[0].b_inodo == _fr.inode)
+                    {
+                        _fr.block = inode.i_block[j];
+                        return _fr;
+                    }
+                }
+            }
+        }
+    }
+    _fr.inode = -1;
+    return _fr;
+}
+
 int writeBlock(int _type, string _content, int _block_reference)
 {
     FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
+    int start_byte_sb = startByteSuperBloque(_user_logged.mounted);
     /* Lectura del superbloque */
     Superbloque super_bloque;
-    fseek(file, startByteSuperBloque(), SEEK_SET);
+    fseek(file, start_byte_sb, SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
     /* Lectura del bitmap de bloques */
     char bm_block[3 * super_bloque.s_inodes_count];
@@ -64,7 +94,7 @@ int writeBlock(int _type, string _content, int _block_reference)
     super_bloque.s_first_blo = searchFreeIndex(bm_block, 3 * super_bloque.s_inodes_count);
     super_bloque.s_free_blocks_count--;
     // std::cout << "!" << super_bloque.s_first_blo << "!" << block_free << std::endl;
-    fseek(file, startByteSuperBloque(), SEEK_SET);
+    fseek(file, start_byte_sb, SEEK_SET);
     fwrite(&super_bloque, sizeof(Superbloque), 1, file);
 
     fseek(file, super_bloque.s_bm_block_start, SEEK_SET);
@@ -81,7 +111,7 @@ void UpdateInode(InodosTable _inode, int _inode_index, int _block_written)
     FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
     /* Lectura del superbloque */
     Superbloque super_bloque;
-    fseek(file, startByteSuperBloque(), SEEK_SET);
+    fseek(file, startByteSuperBloque(_user_logged.mounted), SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
 
     bool updated = false;
@@ -139,16 +169,16 @@ void UpdateInode(InodosTable _inode, int _inode_index, int _block_written)
     file = NULL;
 }
 
-int startByteSuperBloque()
+int startByteSuperBloque(MOUNTED _mounted)
 {
     int sb_start;
-    switch (_user_logged.mounted.type)
+    switch (_mounted.type)
     {
     case 'P':
-        sb_start = _user_logged.mounted.particion.part_start;
+        sb_start = _mounted.particion.part_start;
         break;
     case 'L':
-        sb_start = _user_logged.mounted.logica.part_start;
+        sb_start = _mounted.logica.part_start;
         break;
     default:
         break;
@@ -166,16 +196,6 @@ int GetFreePointer(int b_pointers[]) // Agregar si es un bloque de apuntadores d
     return -1;
 }
 
-int GetFreeI_Block(InodosTable _inode) // Agregar indirectos
-{
-    for (int i = 0; i < 12; i++)
-    {
-        if (_inode.i_block[i] == -1)
-            return i;
-    }
-    return -1;
-}
-
 int searchFreeIndex(char bitmap[], int n)
 {
     for (int i = 0; i < n; i++)
@@ -184,38 +204,6 @@ int searchFreeIndex(char bitmap[], int n)
             return i;
     }
     return -1;
-}
-
-Superbloque getSuperBloque(MOUNTED _mounted)
-{
-    Superbloque super_bloque;
-    FILE *file = fopen(_mounted.path.c_str(), "rb");
-    int sb_start;
-    switch (_mounted.type)
-    {
-    case 'P':
-        sb_start = _mounted.particion.part_start;
-        break;
-    case 'L':
-        sb_start = _mounted.logica.part_start;
-        break;
-    default:
-        break;
-    }
-    fseek(file, sb_start, SEEK_SET);                    // Mover el puntero al inicio del superbloque
-    fread(&super_bloque, sizeof(Superbloque), 1, file); // Leer el superbloque
-    fclose(file);
-    file = NULL;
-    return super_bloque;
-}
-
-void GetBitMapBlocks(Superbloque _super_bloque, char *bitmap)
-{
-    FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
-    fseek(file, _super_bloque.s_bm_block_start, SEEK_SET);
-    fread(&bitmap, sizeof(3 * _super_bloque.s_inodes_count), 1, file);
-    fclose(file);
-    file = NULL;
 }
 
 char charFormat(std::string _format)
@@ -238,25 +226,6 @@ int _2_or_3fs(std::string _fs)
     if (_fs == "3fs")
         nfs = 3; //ext3
     return nfs;
-}
-
-void UpdateSuperBloque(Superbloque _super_bloque)
-{
-    FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
-    int sb_start;
-    switch (_user_logged.mounted.type)
-    {
-    case 'P':
-        sb_start = _user_logged.mounted.particion.part_start;
-        break;
-    case 'L':
-        sb_start = _user_logged.mounted.logica.part_start;
-        break;
-    }
-    fseek(file, sb_start, SEEK_SET);                      // Mover al inicio del superbloque
-    fwrite(&_super_bloque, sizeof(Superbloque), 1, file); // Reescribir el bloque nuevo
-    fclose(file);                                         // Cerrar el archivo
-    file = NULL;                                          // Limpiar el puntero
 }
 
 std::vector<std::string> SplitPath(std::string _path)

@@ -8,6 +8,12 @@ int _max_bloques_por_inodo = 4380;
 int _capacidad_carpeta = 17518;
 int _capacidad_archivo = 280320;
 
+struct FolderReference
+{
+    int inode = 0;
+    int block = 0;
+};
+
 struct Superbloque
 {
     int s_filesystem_type;   // Guarda el número que identifica el sistema de archivos utilizado
