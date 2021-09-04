@@ -128,18 +128,20 @@ bool HasPermission(Users _user, InodosTable _inode, int _req)
         return u == '7';
     switch (_req)
     {
-    case 1:
+    case 1: // Ejecución
         return u == '1' || u == '3' || u == '5' || u == '7';
-    case 2:
+    case 2: // Escritura
         return u == '2' || u == '3' || u == '6' || u == '7';
-    case 3:
+    case 3: // Escritura y ejecución
         return u == '3' || u == '7';
-    case 4:
+    case 4: // Lectura
         return u == '4' || u == '5' || u == '6' || u == '7';
-    case 5:
+    case 5: // Lectura
         return u == '5' || u == '7';
-    case 6:
+    case 6: // Lectura y escritura
         return u == '6' || u == '7';
+    case 7: // Escritura, lectura y ejecución
+        return u == '7';
     default:
         return false;
     }
