@@ -17,15 +17,38 @@ int _number_inodos(int _part_size) // falta ext3
     return (int)floor((_part_size - sizeof(Superbloque) / (1 + 3 + sizeof(InodosTable) + 3 * 64)));
 }
 
-FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks)
-{ // Retorna el los índices de inodo y bloque de la carpeta padre
+bool fileExists(InodosTable _inode, string _filename, FILE *_file, int _start_blocks)
+{
+    CarpetasBlock file_block;
+    for (int i = 0; i < 12; i++) // falta indirectos
+    {
+        if (_inode.i_block[i] != -1)
+        {
+            fseek(_file, _start_blocks, SEEK_SET);
+            fseek(_file, _inode.i_block[i] * 64, SEEK_CUR);
+            fread(&file_block, 64, 1, _file);
+            for (int j = 0; j < 4; j++)
+            {
+                if (string(file_block.b_content[j].b_name) == _filename)
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks) // hacerlo recursivo, siempre verificará carpetasblock
+{                                                                                                                 // Retorna el los índices de inodo y bloque de la carpeta padre
     InodosTable inode;
+    // fseek(_file, _start_inodes, SEEK_SET);
+    // fseek(_file, _fr.inode * sizeof(InodosTable), SEEK_CUR);
+    // fread(&inode, sizeof(InodosTable), 1, _file);
     CarpetasBlock folder_block;
     fseek(_file, _start_blocks, SEEK_SET);
     fseek(_file, _fr.block * 64, SEEK_CUR);
     fread(&folder_block, 64, 1, _file);
 
-    for (int i = 2; i < 4; i++)
+    for (int i = 0; i < 4; i++)
     { // std::cout << folder_block.b_content[k].b_name << std::endl; revisar?
         if (string(folder_block.b_content[i].b_name) == _folder)
         {
@@ -51,6 +74,38 @@ FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int 
     }
     _fr.inode = -1;
     return _fr;
+}
+
+FolderReference getFatherReference(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks)
+{
+    // _fr = getFather(_fr, _folder, _file, _start_inodes, _start_blocks); // En caso de que esté en los primeros b_content de la raíz
+    // if (_fr.inode != -1)
+    //     return _fr;
+    FolderReference fr;
+    InodosTable inode;
+    fseek(_file, _start_inodes, SEEK_SET);
+    fseek(_file, _fr.inode * sizeof(InodosTable), SEEK_CUR);
+    fread(&inode, sizeof(InodosTable), 1, _file);
+    CarpetasBlock folder_block;
+    fseek(_file, _start_blocks, SEEK_SET);
+    fseek(_file, _fr.block * 64, SEEK_CUR);
+    fread(&folder_block, 64, 1, _file);
+    for (int i = 0; i < 12; i++)
+    {
+        if (inode.i_block[i] != -1)
+        {
+            fseek(_file, _start_blocks, SEEK_SET);
+            fseek(_file, inode.i_block[i] * 64, SEEK_CUR);
+            fread(&folder_block, 64, 1, _file);
+            _fr.block = inode.i_block[i];
+            fr = getFather(_fr, _folder, _file, _start_inodes, _start_blocks);
+            if (fr.inode != -1)
+                return fr;
+            // _fr.inode = folder_block.b_content[0].b_inodo;
+        }
+    }
+    fr.inode = -1;
+    return fr;
 }
 
 int writeBlock(int _type, string _content, int _block_reference)

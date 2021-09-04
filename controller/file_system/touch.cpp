@@ -57,6 +57,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
             content += line;
         }
     }
+    /* Llenado del contenido con dígitos 0-9 */
     else
     {
         int j = 0;
@@ -81,13 +82,12 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     new_inode.i_atime = new_inode.i_ctime;
 
     /* Lectura de la última carpeta padre */
-    FolderReference fr, exist;
+    FolderReference fr;
     std::vector<string> folders = SplitPath(_path);
     for (int i = 0; i < folders.size(); i++)
     {
-        // std::cout << folders[i] << std::endl;
         string tmp = _path.substr(0, _path.find(folders[i]));
-        fr = getFather(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
+        fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {
             std::cout << "Not found: " + folders[i] + "\n";
@@ -98,17 +98,13 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
             for (int j = i; j < folders.size(); j++)
             {
                 // std::cout << _path.substr(0, _path.find(folders[j])) + folders[j] << std::endl; //solo leer y luego esribir
-                int p = touch(_path.substr(0, _path.find(folders[j])) + folders[j], "", std::to_string(_size), _cont, _stdin ? "t" : "");
-                if (!p)
+                int r = touch(_path.substr(0, _path.find(folders[j])) + folders[j], "", std::to_string(_size), _cont, _stdin ? "t" : "");
+                if (!r)
                     return coutError("Ha ocurrido un error", NULL);
             }
-            // std::cout << _path + "/" + _name + "\n";
             return touch(_path + "/" + _name, "", std::to_string(_size), _cont, _stdin ? "t" : "");
         }
     }
-    // exist = getFather(fr, _name, file, super_bloque.s_inode_start, super_bloque.s_block_start);
-    // if (exist.inode != -1)
-    //     return coutError("Error: La carpeta ya existe.", file);
 
     /* Lectura del inodo de carpeta padre */
     InodosTable inode_father;
@@ -117,6 +113,18 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     fread(&inode_father, sizeof(InodosTable), 1, file);
     if (!HasPermission(_user_logged, inode_father, 2))
         return coutError("El usuario no posee los permisos de escritura sobre la carpeta padre.", NULL);
+    if (fileExists(inode_father, _name, file, super_bloque.s_block_start))
+    {
+        char ans;
+        std::cout << "¿Desea sobreescribir el archivo ubicado en: '" + _path + "/" + _name + "?' [Y/n]" << std::endl;
+        std::cin >> ans;
+        if (ans == 'N' || ans == 'n')
+        {
+            fclose(file);
+            file = NULL;
+            return 1;
+        }
+    }
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock folder_father;
     bool cupo = false;
@@ -182,7 +190,6 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
                 break;
             }
         }
-        // std::cout << "no cupo\n";
     }
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);

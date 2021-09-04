@@ -59,13 +59,13 @@ int CrearCarpeta(string _path, string _name, bool _p)
     new_inode.i_atime = new_inode.i_ctime;
 
     /* Lectura de la última carpeta padre */
-    FolderReference fr, exist;
+    FolderReference fr;
     std::vector<string> folders = SplitPath(_path);
     for (int i = 0; i < folders.size(); i++)
     {
         // std::cout << folders[i] << std::endl;
         string tmp = _path.substr(0, _path.find(folders[i]));
-        fr = getFather(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
+        fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {
             std::cout << "Not found: " + folders[i] + "\n";
@@ -84,9 +84,6 @@ int CrearCarpeta(string _path, string _name, bool _p)
             return mkdir(_path + "/" + _name, "");
         }
     }
-    // exist = getFather(fr, _name, file, super_bloque.s_inode_start, super_bloque.s_block_start);
-    // if (exist.inode != -1)
-    //     return coutError("Error: La carpeta ya existe.", file);
 
     /* Lectura del inodo de carpeta padre */
     InodosTable inode_father;
@@ -94,7 +91,9 @@ int CrearCarpeta(string _path, string _name, bool _p)
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode_father, sizeof(InodosTable), 1, file);
     if (!HasPermission(_user_logged, inode_father, 2))
-        return coutError("El usuario no posee los permisos de escritura sobre la carpeta padre.", NULL);
+        return coutError("El usuario no posee los permisos de escritura sobre la carpeta padre.", file);
+    if (fileExists(inode_father, _name, file, super_bloque.s_block_start))
+        return coutError("La carpeta '/" + _name + "' ya existe en la ruta: '" + _path + "'.", file);
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock folder_father;
     bool cupo = false;
