@@ -62,9 +62,8 @@ int CrearCarpeta(string _path, string _name, bool _p)
     std::vector<string> folders = SplitPath(_path);
     for (int i = 0; i < folders.size(); i++)
     {
-        // std::cout << folders[i] << std::endl;
-        string tmp = _path.substr(0, _path.find(folders[i]));
         fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
+        /* Alguna carpeta padre no existe */
         if (fr.inode == -1)
         {
             std::cout << "Not found: " + folders[i] + "\n";
@@ -93,6 +92,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
         return coutError("El usuario no posee los permisos de escritura sobre la carpeta padre.", file);
     if (fileExists(inode_father, _name, file, super_bloque.s_block_start))
         return coutError("La carpeta '/" + _name + "' ya existe en la ruta: '" + _path + "'.", file);
+
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock folder_father;
     bool cupo = false;
@@ -125,6 +125,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
                 fread(&tmp_block, 64, 1, file);
                 for (int j = 0; j < 4; j++)
                 {
+                    // std::cout << tmp_block.b_content[j].b_name << std::endl;
                     if (tmp_block.b_content[j].b_inodo == -1)
                     {
                         tmp_block.b_content[j].b_inodo = free_inode;
@@ -158,14 +159,13 @@ int CrearCarpeta(string _path, string _name, bool _p)
                 break;
             }
         }
-        // std::cout << "no cupo\n";
     }
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fwrite(&inode_father, sizeof(InodosTable), 1, file);
 
     if (!cupo)
-        std::cout << "\033[1;31mNo se encontró espacio para crear la carpeta.\033[0m\n";
+        coutError("No se encontró espacio para crear la carpeta.", NULL);
 
     /* Llenar con la información de la carpeta */
     folder_content.b_inodo = free_inode;
@@ -176,7 +176,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
     strcpy(folder_content.b_name, "..");
     folder_to_create.b_content[1] = folder_content;
 
-    bm_inodes[free_inode] = '1'; //
+    bm_inodes[free_inode] = '1';
     bm_blocks[free_block] = '1';
 
     super_bloque.s_first_ino = searchFreeIndex(bm_inodes, super_bloque.s_inodes_count);
@@ -204,7 +204,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
 
     fclose(file);
     file = NULL;
-    std::cout << "se creó: " + _path + "/" + _name + "\n";
+    // std::cout << "Se creó: " + _path + "/" + _name + "\n";
     return 1;
 }
 

@@ -75,6 +75,8 @@ int mkgrp(string _name)
         }
     }
     string tmp = std::to_string(gid) + ",G," + group_to_create.nombre + "\n"; //content_file +
+    users_inode.i_size = string(users_file.b_content).length() + tmp.length();
+    users_inode.i_mtime = getCurrentTime();
     string extra = "-";
     if (string(users_file.b_content).length() + tmp.length() > 64)
     {
@@ -88,7 +90,6 @@ int mkgrp(string _name)
         tmp = string(users_file.b_content) + tmp;
     }
     strcpy(users_file.b_content, tmp.c_str());
-    users_inode.i_size = sizeof(tmp.c_str());
 
     /* ESCRITURA */
     fseek(file, super_bloque.s_inode_start, SEEK_SET);

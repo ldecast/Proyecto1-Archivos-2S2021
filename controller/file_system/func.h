@@ -78,34 +78,49 @@ FolderReference getFather(FolderReference _fr, string _folder, FILE *_file, int 
 
 FolderReference getFatherReference(FolderReference _fr, string _folder, FILE *_file, int _start_inodes, int _start_blocks)
 {
-    // _fr = getFather(_fr, _folder, _file, _start_inodes, _start_blocks); // En caso de que esté en los primeros b_content de la raíz
-    // if (_fr.inode != -1)
-    //     return _fr;
-    FolderReference fr;
     InodosTable inode;
     fseek(_file, _start_inodes, SEEK_SET);
     fseek(_file, _fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode, sizeof(InodosTable), 1, _file);
     CarpetasBlock folder_block;
-    fseek(_file, _start_blocks, SEEK_SET);
-    fseek(_file, _fr.block * 64, SEEK_CUR);
-    fread(&folder_block, 64, 1, _file);
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 12; i++) // falta indirectos
     {
         if (inode.i_block[i] != -1)
         {
             fseek(_file, _start_blocks, SEEK_SET);
             fseek(_file, inode.i_block[i] * 64, SEEK_CUR);
             fread(&folder_block, 64, 1, _file);
-            _fr.block = inode.i_block[i];
-            fr = getFather(_fr, _folder, _file, _start_inodes, _start_blocks);
-            if (fr.inode != -1)
-                return fr;
-            // _fr.inode = folder_block.b_content[0].b_inodo;
+            for (int j = 0; j < 4; j++)
+            { // std::cout << folder_block.b_content[k].b_name << std::endl; revisar?
+                if (string(folder_block.b_content[j].b_name) == _folder)
+                {
+                    _fr.inode = folder_block.b_content[j].b_inodo;
+                    fseek(_file, _start_inodes, SEEK_SET);
+                    fseek(_file, folder_block.b_content[j].b_inodo * sizeof(InodosTable), SEEK_CUR);
+                    fread(&inode, sizeof(InodosTable), 1, _file);
+                    for (int k = 0; k < 12; k++)
+                    {
+                        if (inode.i_block[k] != -1)
+                        {
+                            fseek(_file, _start_blocks, SEEK_SET);
+                            fseek(_file, inode.i_block[k] * 64, SEEK_CUR);
+                            fread(&folder_block, 64, 1, _file);
+                            for (int l = 0; l < 4; l++)
+                            {
+                                if (folder_block.b_content[l].b_inodo == _fr.inode)
+                                {
+                                    _fr.block = inode.i_block[k];
+                                    return _fr;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-    fr.inode = -1;
-    return fr;
+    _fr.inode = -1;
+    return _fr;
 }
 
 int writeBlock(int _type, string _content, int _block_reference)
@@ -122,17 +137,17 @@ int writeBlock(int _type, string _content, int _block_reference)
     fread(&bm_block, sizeof(3 * super_bloque.s_inodes_count), 1, file);
     /* Posicionarse en el espacio del bloque disponible */
     int block_free = super_bloque.s_first_blo;
-    int seek_free = super_bloque.s_block_start + (block_free * 64);
-    fseek(file, seek_free, SEEK_SET);
+    // int seek_free = super_bloque.s_block_start + (block_free * 64);
+    fseek(file, super_bloque.s_block_start, SEEK_SET);
+    fseek(file, block_free * 64, SEEK_CUR);
     ArchivosBlock archivo;
     ApuntadoresBlock apuntadores;
-    // const char *tmp = _content.c_str();
-    char tmp[64];
+    // char tmp[64];
     switch (_type)
     {
     case 0: //_inode = UpdateInode(super_bloque, _inode, block_free);
-        strcpy(tmp, _content.c_str());
-        fwrite(&tmp, 64, 1, file);
+        strcpy(archivo.b_content, _content.c_str());
+        fwrite(&archivo, 64, 1, file);
         // std::cout << "\033[1;33m¿" + string(tmp) + "?\033[0m\n" << seek_free << std::endl;
         break;
     case 1:
@@ -172,7 +187,7 @@ void UpdateInode(InodosTable _inode, int _inode_index, int _block_written)
     bool updated = false;
     int free_pointer = -1;
 
-    for (int i = 0; i < 12; i++)
+    for (int i = 0; i < 12; i++) // falta indirectos
     {
         if (_inode.i_block[i] == -1)
         {
@@ -211,10 +226,9 @@ void UpdateInode(InodosTable _inode, int _inode_index, int _block_written)
         }
     }
     if (!updated)
-        coutError("Error: no se encontró ningún inodo libre para guardar el contenido", NULL);
-
-    _inode.i_mtime = getCurrentTime();
+        coutError("Error: no se encontró ningún bloque de inodo libre para guardar el contenido.", NULL);
     // std::cout << "\033[1;31m" + string(ctime(&_inode.i_mtime)) + "\033[0m\n";
+    _inode.i_mtime = getCurrentTime();
     /* Sobreescribir el inodo */
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, _inode_index * sizeof(InodosTable), SEEK_CUR);

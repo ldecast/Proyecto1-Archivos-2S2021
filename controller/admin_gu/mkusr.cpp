@@ -100,6 +100,8 @@ int mkusr(string _usr, string _pwd, string _grp)
         return coutError("Error: No existe ningún grupo activo con el nombre: '" + user_to_create.grupo + "'.", file);
 
     string tmp = std::to_string(uid) + ",U," + user_to_create.grupo + "," + user_to_create.nombre + "," + user_to_create.contrasena + "\n";
+    users_inode.i_size = string(users_file.b_content).length() + tmp.length();
+    users_inode.i_mtime = getCurrentTime();
     string extra = "-";
     if (string(users_file.b_content).length() + tmp.length() > 64)
     {
@@ -112,7 +114,6 @@ int mkusr(string _usr, string _pwd, string _grp)
         tmp = string(users_file.b_content) + tmp;
     }
     strcpy(users_file.b_content, tmp.c_str());
-    users_inode.i_size = sizeof(tmp.c_str());
 
     /* ESCRITURA */
     fseek(file, super_bloque.s_inode_start, SEEK_SET);

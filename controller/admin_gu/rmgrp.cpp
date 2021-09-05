@@ -77,6 +77,7 @@ int rmgrp(string _name)
 
     content_file.replace(content_file.find(tmp), tmp.find_first_of(','), "0");
 
+    users_inode.i_size = content_file.length();
     /* REESCRITURA */
     for (int i = 0; i < 12 && content_file.length() > 0; i++) //falta agregar indirectos
     {
@@ -98,6 +99,10 @@ int rmgrp(string _name)
             fwrite(&fblock, 64, 1, file);
         }
     }
+    users_inode.i_mtime = getCurrentTime();
+    fseek(file, super_bloque.s_inode_start, SEEK_SET);
+    fseek(file, sizeof(InodosTable), SEEK_CUR);
+    fwrite(&users_inode, sizeof(InodosTable), 1, file);
 
     fclose(file);
     file = NULL;
