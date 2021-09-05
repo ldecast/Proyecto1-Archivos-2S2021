@@ -7,7 +7,7 @@
 
 using std::string;
 int UpdatePerm(FolderReference _fr, int _ugo, FILE *_file, int _start_inodes, int _start_blocks, bool _r, int _aux);
-int oo(FolderReference _fr, FILE *_file, int _ugo, int _start_inodes, int _aux);
+int RewriteInode(FolderReference _fr, FILE *_file, int _ugo, int _start_inodes, int _aux);
 
 int CambiarPermisos(string _path, string _name, int _ugo, bool _r)
 {
@@ -29,7 +29,7 @@ int CambiarPermisos(string _path, string _name, int _ugo, bool _r)
         if (fr.inode == -1)
         {
             std::cout << "Not found: " + folders[i] + "\n";
-            return coutError("Error: la ruta no existe y no se ha indicado el comando -p.", file);
+            return coutError("Error: la ruta del archivo o carpeta no existe.", file);
         }
     }
     /* Lectura del inodo de carpeta padre */
@@ -37,8 +37,6 @@ int CambiarPermisos(string _path, string _name, int _ugo, bool _r)
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode_father, sizeof(InodosTable), 1, file);
-    if (!fileExists(inode_father, _name, file, super_bloque.s_block_start))
-        return coutError((_name.find('.') != std::string::npos) ? ("El archivo '") : ("La carpeta '") + _name + "' no se encuentra en la ruta: '" + _path + "'.", file);
     CarpetasBlock file_block;
     bool x = false;
     for (int i = 0; i < 12 && !x; i++) // Obtener el inodo asociado directo
@@ -60,25 +58,7 @@ int CambiarPermisos(string _path, string _name, int _ugo, bool _r)
         }
     }
     if (!x)
-        return coutError("No se pudo hallar el inodo.", file);
-    // InodosTable inode_current;
-    // fseek(file, super_bloque.s_inode_start, SEEK_SET);
-    // fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
-    // fread(&inode_current, sizeof(InodosTable), 1, file);
-    // for (int i = 0; i < 12; i++)
-    // {
-    //     if (inode_father.i_block[i] != -1)
-    //     {
-    //         fseek(file, super_bloque.s_block_start, SEEK_SET);
-    //         fseek(file, inode_father.i_block[i] * 64, SEEK_CUR);
-    //         fread(&file_block, 64, 1, file);
-    //         for (int j = 0; j < 4; j++)
-    //         {
-    //             if (string(file_block.b_content[j].b_name) == _name)
-    //                 fr.inode = file_block.b_content[j].b_inodo;
-    //         }
-    //     }
-    // }
+        return coutError((_name.find('.') != std::string::npos) ? ("El archivo '") : ("La carpeta '") + _name + "' no se encuentra en la ruta: '/" + _path + "'.", file);
 
     int err = UpdatePerm(fr, _ugo, file, super_bloque.s_inode_start, super_bloque.s_block_start, _r, 0);
     fclose(file);
@@ -88,13 +68,16 @@ int CambiarPermisos(string _path, string _name, int _ugo, bool _r)
         std::cout << "\033[1;31mNo se pudieron actualizar los permisos de " + std::to_string(err) + " carpetas o archivos.\033[0m\n";
         return 0;
     }
-    return 1;
+    else if (err == -1)
+        return 0;
+    else
+        return 1;
 }
 
 int UpdatePerm(FolderReference _fr, int _ugo, FILE *_file, int _start_inodes, int _start_blocks, bool _r, int _aux)
 {
-    if (!oo(_fr, _file, _ugo, _start_inodes, _aux))
-        return 0;
+    if (RewriteInode(_fr, _file, _ugo, _start_inodes, _aux) > 0)
+        return -1;
     // Actualizar lo que está dentro de la carpeta
     InodosTable inode_current;
     fseek(_file, _start_inodes, SEEK_SET);
@@ -102,7 +85,6 @@ int UpdatePerm(FolderReference _fr, int _ugo, FILE *_file, int _start_inodes, in
     fread(&inode_current, sizeof(InodosTable), 1, _file);
     if (_r && inode_current.i_type == '0')
     {
-        std::cout << "oo\n";
         CarpetasBlock file_block;
         for (int i = 0; i < 12; i++) // falta indirectos
         {
@@ -116,8 +98,7 @@ int UpdatePerm(FolderReference _fr, int _ugo, FILE *_file, int _start_inodes, in
                     if (file_block.b_content[j].b_inodo != -1 && file_block.b_content[j].b_inodo != _fr.inode)
                     {
                         _fr.inode = file_block.b_content[j].b_inodo;
-                        _aux = oo(_fr, _file, _ugo, _start_inodes, _aux);
-                        // UpdatePerm(_fr, _ugo, _file, _start_inodes, _start_blocks, _r, _aux);
+                        _aux = RewriteInode(_fr, _file, _ugo, _start_inodes, _aux);
                     }
                 }
             }
@@ -126,7 +107,7 @@ int UpdatePerm(FolderReference _fr, int _ugo, FILE *_file, int _start_inodes, in
     return _aux;
 }
 
-int oo(FolderReference _fr, FILE *_file, int _ugo, int _start_inodes, int _aux)
+int RewriteInode(FolderReference _fr, FILE *_file, int _ugo, int _start_inodes, int _aux)
 {
     /* Lectura del inodo de carpeta padre */
     InodosTable inode_current;
@@ -137,7 +118,10 @@ int oo(FolderReference _fr, FILE *_file, int _ugo, int _start_inodes, int _aux)
     {
         inode_current.i_atime = getCurrentTime();
         if (_aux == 0)
-            return coutError("El usuario no es propietario del archivo o carpeta.", _file);
+        {
+            std::cout << "\033[1;31mEl usuario no es propietario del archivo o carpeta.\033[0m\n";
+            return 1;
+        }
         _aux++;
     }
     else

@@ -114,6 +114,9 @@ bool HasPermission(Users _user, InodosTable _inode, int _req)
 {
     char u;
     // std::cout << ctime(&_inode.i_ctime) << std::endl;
+    /* Usuario root */
+    if (_user.nombre == "root")
+        return true;
     /* Propietario */
     if (_user.UID == _inode.i_uid)
         u = std::to_string(_inode.i_perm)[0];

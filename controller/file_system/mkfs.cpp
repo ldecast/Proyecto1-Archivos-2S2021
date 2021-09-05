@@ -117,7 +117,7 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     inode_folder.i_type = '0';
     inode_folder.i_gid = 1;
     inode_folder.i_uid = 1;
-    inode_folder.i_perm = 664;
+    inode_folder.i_perm = 777;
     inode_folder.i_ctime = getCurrentTime();
     inode_folder.i_mtime = inode_folder.i_ctime;
     inode_folder.i_atime = inode_folder.i_ctime;
@@ -132,7 +132,7 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     users_inode.i_gid = 1;
     users_inode.i_size = sizeof(txt.c_str()); // + sizeof(CarpetasBlock);
     users_inode.i_type = '1';
-    users_inode.i_perm = 664;
+    users_inode.i_perm = 777;
     users_inode.i_block[0] = 1;
     users_inode.i_ctime = getCurrentTime();
     users_inode.i_mtime = users_inode.i_ctime;
