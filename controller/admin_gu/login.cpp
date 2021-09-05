@@ -50,6 +50,7 @@ int login(string _user, string _pwd, string _id)
     file = fopen((mounted.path).c_str(), "rb");
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
+    // std::cout << content_file << std::endl;
     std::istringstream f(content_file);
     string line;
     while (getline(f, line))

@@ -34,8 +34,7 @@ struct command x;
 }
 %define api.token.prefix {TOK_}
 
-//Listadode Terminales
-// %token <std::string> HYPHEN "tk_HYPHEN"
+//Listado de Terminales
 %token <std::string> EQUAL "tk_EQUAL"
 %token <std::string> FIT "pr_FIT"
 %token <std::string> UNIT "pr_UNIT"
@@ -61,8 +60,10 @@ struct command x;
 
 %token <std::string> TOUCH "pr_TOUCH"
 %token <std::string> CHMOD "pr_CHMOD"
+%token <std::string> CAT "pr_CAT"
 %token <std::string> MKDIR "pr_MKDIR"
 %token <std::string> R "pr_R"
+%token <std::string> FILEN "pr_FILEN"
 %token <std::string> P "pr_P"
 %token <std::string> CONT "pr_CONT"
 %token <std::string> UGO "pr_UGO"
@@ -85,7 +86,6 @@ struct command x;
 %token <std::string> RUN_EXEC "pr_exec"
 %token <std::string> RUN_REPORT "pr_rep"
 %token <std::string> IDENTIFICADOR "tk_identifier"
-// %token <std::string> SPACE "tk_space"
 %token <std::string> NUMERO "tk_number"
 %token FIN 0 "eof"
 
@@ -102,7 +102,6 @@ struct command x;
 %type <std::string> STRING
 %type <std::string> DATA
 
-//%printer { yyoutput << $$; } <*>;
 %%
 
 %start INICIO;
@@ -149,6 +148,7 @@ ADMIN_USERS_GROUPS: "pr_login" PARAMS {x = newCommand("__LOGIN",parametros);}
 
 FILESYSTEM: "pr_CHMOD" PARAMS {x = newCommand("__CHMOD",parametros);}
             | "pr_TOUCH" PARAMS {x = newCommand("__TOUCH",parametros);}
+            | "pr_CAT" PARAMS {x = newCommand("__CAT",parametros);}
             | "pr_MKDIR" PARAMS {x = newCommand("__MKDIR",parametros);}
 ;
 
@@ -178,6 +178,7 @@ PARAM: "pr_SIZE" {$$ = "__SIZE";}
       | "pr_GRP" {$$ = "__GRP";}
       | "pr_UGO" {$$ = "__UGO";}
       | "pr_CONT" {$$ = "__CONT";}
+      | "pr_FILEN" {$$ = "__FILEN";}
 ;
 
 BOOLEAN_PARAM: "pr_R" {$$ = "__R";}

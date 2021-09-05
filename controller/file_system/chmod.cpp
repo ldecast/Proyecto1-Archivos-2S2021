@@ -24,7 +24,6 @@ int CambiarPermisos(string _path, string _name, int _ugo, bool _r)
     std::vector<string> folders = SplitPath(_path);
     for (int i = 0; i < folders.size(); i++)
     {
-        string tmp = _path.substr(0, _path.find(folders[i]));
         fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {

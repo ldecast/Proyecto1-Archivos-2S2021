@@ -64,14 +64,16 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 
 "chmod"           {return yy::class_parser::make_CHMOD(yytext, loc);}
 "touch"           {return yy::class_parser::make_TOUCH(yytext, loc);}
+"cat"             {return yy::class_parser::make_CAT(yytext, loc);}
 "mkdir"           {return yy::class_parser::make_MKDIR(yytext, loc);}
 {HYPHEN}"ugo"     {return yy::class_parser::make_UGO(yytext, loc);}
 {HYPHEN}"cont"    {return yy::class_parser::make_CONT(yytext, loc);}
 {HYPHEN}"stdin"   {return yy::class_parser::make_STDIN(yytext, loc);}
 {HYPHEN}"r"       {return yy::class_parser::make_R(yytext, loc);}
+{HYPHEN}"file"{NUMERO}  {return yy::class_parser::make_FILEN(yytext, loc);}
 {HYPHEN}"p"       {return yy::class_parser::make_P(yytext, loc);}
 
-"__quit__"      {exit(1);}
+"__quit__"        {exit(1);}
 
 {STRING_DOUBLE} {return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}
 {STRING_SINGLE} {return yy::class_parser::make_STRING_SINGLE(yytext, loc);}

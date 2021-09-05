@@ -29,6 +29,7 @@ struct command
     string r;
     string cont;
     string _stdin;
+    std::vector<string> filen;
 
     string ruta;
     string root;
@@ -102,6 +103,9 @@ struct command newCommand(string _type, std::vector<parametro> _params)
 
         else if (_params[i].tipo == "__STDIN")
             x._stdin = _params[i].valor;
+
+        else if (_params[i].tipo == "__FILEN")
+            x.filen.push_back(_params[i].valor);
 
         else
             std::cout << "Parámetro no válido: " + _params[i].valor << std::endl;

@@ -15,6 +15,7 @@
 #include "./admin_gu/rmusr.cpp"
 #include "./file_system/chmod.cpp"
 #include "./file_system/touch.cpp"
+#include "./file_system/cat.cpp"
 #include "./file_system/mkdir.cpp"
 #include "./reports/classifier.cpp"
 
@@ -64,6 +65,9 @@ int bloque(struct command x)
 
     if (x.keyword == "__TOUCH")
         return touch(x.path, x.r, x.size, x.cont, x._stdin);
+
+    if (x.keyword == "__CAT")
+        return cat(x.filen);
 
     if (x.keyword == "__MKDIR")
         return mkdir(x.path, x.r);
