@@ -11,10 +11,7 @@ int touch(string _path, string _r, string _size, string _cont, string _stdin);
 
 int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, bool _stdin)
 {
-    // std::cout << _path << _name << std::endl;
     /* CREACIÓN DE UN ARCHIVO */
-    // CarpetasBlock folder_to_alocate; // Bloque carpeta donde se alojará el archivo
-    // Content file_content;            // Nuevo bloque de archivo
     InodosTable new_inode;        // Nuevo inodo
     ArchivosBlock file_to_create; // Nuevo bloque de contenido
 

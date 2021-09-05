@@ -12,7 +12,6 @@ int mkdir(string _path, string _p);
 
 int CrearCarpeta(string _path, string _name, bool _p)
 {
-    // std::cout << _path << _name << std::endl;
     /* CREACIÓN DE CARPETA */
     CarpetasBlock folder_to_create; // Nuevo bloque carpeta
     Content folder_content;         // Nuevo bloque contenido
