@@ -73,20 +73,12 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
         fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {
-            std::cout << "Not found: " + folders[i] + "\n";
-            if (!_r)
-                return coutError("Error: la ruta no existe y no se ha indicado el comando -r.", file);
+            // std::cout << "Not found: " + folders[i] + "\n";
             fclose(file);
             file = NULL;
-            for (int j = i; j < folders.size(); j++)
-            {
-                // std::cout << _path.substr(0, _path.find(folders[j])) + folders[j] << std::endl; //solo leer y luego esribir
-                // MKDIR!
-                // int r = touch(_path.substr(0, _path.find(folders[j])) + folders[j], "", std::to_string(_size), _cont, _stdin ? "t" : "");
-                // if (!r)
-                return coutError("Ha ocurrido un error", NULL);
-            }
-            return CrearArchivo(_path, _name, false, _size, _cont, _stdin);
+            if (!_r)
+                return coutError("Error: la ruta no existe y no se ha indicado el comando -r.", NULL);
+            return 777;
         }
     }
 

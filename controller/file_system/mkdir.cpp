@@ -66,7 +66,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
         /* Alguna carpeta padre no existe */
         if (fr.inode == -1)
         {
-            std::cout << "Not found: " + folders[i] + "\n";
+            // std::cout << "Not found: " + folders[i] + "\n";
             if (!_p)
                 return coutError("Error: la ruta no existe y no se ha indicado el comando -p.", file);
             fclose(file);
@@ -78,7 +78,6 @@ int CrearCarpeta(string _path, string _name, bool _p)
                 if (!p)
                     return coutError("Ha ocurrido un error", NULL);
             }
-            // std::cout << _path + "/" + _name + "\n";
             return mkdir(_path + "/" + _name, "");
         }
     }
@@ -215,7 +214,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
 
     fclose(file);
     file = NULL;
-    // std::cout << "Se creó la carpeta: " + _path + "/" + _name + "\n";
+    std::cout << "Se creó la carpeta: " + _path + "/" + _name + "\n";
     return 1;
 }
 

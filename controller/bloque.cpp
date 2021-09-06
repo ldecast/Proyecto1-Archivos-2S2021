@@ -64,7 +64,16 @@ int bloque(struct command x)
         return chmod(x.path, x.ugo, x.r);
 
     if (x.keyword == "__TOUCH")
-        return touch(x.path, x.r, x.size, x.cont, x._stdin, false);
+    {
+        int pre_t = touch(x.path, x.r, x.size, x.cont, x._stdin, false);
+        if (pre_t == 777)
+        {
+            // std::cout << (x.path).substr(0, x.path.find_last_of('/')) << std::endl;
+            mkdir((x.path).substr(0, x.path.find_last_of('/')), "true");
+            return touch(x.path, x.r, x.size, x.cont, x._stdin, false);
+        }
+        return pre_t;
+    }
 
     if (x.keyword == "__CAT")
         return cat(x.filen);
