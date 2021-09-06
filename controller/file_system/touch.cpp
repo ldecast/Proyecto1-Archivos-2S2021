@@ -5,6 +5,7 @@
 #include "../admin_gu/func.h"
 #include "../handler.h"
 #include "func.h"
+#include "./edit.cpp"
 
 using std::string;
 int touch(string _path, string _r, string _size, string _cont, string _stdin);
@@ -39,17 +40,14 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     InodosTable root_inode;
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fread(&root_inode, sizeof(InodosTable), 1, file);
-    CarpetasBlock root_folder;
-    fseek(file, super_bloque.s_block_start, SEEK_SET);
-    fread(&root_folder, 64, 1, file);
 
     /* Lectura del archivo _cont si existe */
     string content = "";
     if (_cont != "")
     {
-        std::ifstream file(_cont);
+        std::ifstream f(_cont);
         string line;
-        while (std::getline(file, line))
+        while (std::getline(f, line))
         {
             content += (line + "\n");
         }
@@ -73,7 +71,6 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     std::vector<string> folders = SplitPath(_path);
     for (int i = 0; i < folders.size(); i++)
     {
-        string tmp = _path.substr(0, _path.find(folders[i]));
         fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {
@@ -105,11 +102,11 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
         char ans;
         std::cout << "¿Desea sobreescribir el archivo ubicado en: '" + _path + "/" + _name + "?' [Y/n]" << std::endl;
         std::cin >> ans;
-        if (ans == 'N' || ans == 'n')
-        {
+        if (ans == 'Y' || ans == 'y')
+        { /* Corresponde pasar a editar el archivo */
             fclose(file);
             file = NULL;
-            return 1;
+            return EditarArchivo(_path, _name, content, _stdin);
         }
     }
     /* Lectura del bloque de carpeta padre */
