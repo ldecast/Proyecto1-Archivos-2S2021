@@ -61,6 +61,7 @@ struct command x;
 %token <std::string> TOUCH "pr_TOUCH"
 %token <std::string> CHMOD "pr_CHMOD"
 %token <std::string> CAT "pr_CAT"
+%token <std::string> RM "pr_RM"
 %token <std::string> EDIT "pr_EDIT"
 %token <std::string> MKDIR "pr_MKDIR"
 %token <std::string> R "pr_R"
@@ -150,6 +151,7 @@ ADMIN_USERS_GROUPS: "pr_login" PARAMS {x = newCommand("__LOGIN",parametros);}
 FILESYSTEM: "pr_CHMOD" PARAMS {x = newCommand("__CHMOD",parametros);}
             | "pr_TOUCH" PARAMS {x = newCommand("__TOUCH",parametros);}
             | "pr_CAT" PARAMS {x = newCommand("__CAT",parametros);}
+            | "pr_RM" PARAMS {x = newCommand("__RM",parametros);}
             | "pr_EDIT" PARAMS {x = newCommand("__EDIT",parametros);}
             | "pr_MKDIR" PARAMS {x = newCommand("__MKDIR",parametros);}
 ;

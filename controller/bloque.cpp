@@ -16,6 +16,7 @@
 #include "./file_system/chmod.cpp"
 #include "./file_system/touch.cpp"
 #include "./file_system/cat.cpp"
+#include "./file_system/rm.cpp"
 #include "./file_system/mkdir.cpp"
 #include "./reports/classifier.cpp"
 
@@ -68,7 +69,6 @@ int bloque(struct command x)
         int pre_t = touch(x.path, x.r, x.size, x.cont, x._stdin, false);
         if (pre_t == 777)
         {
-            // std::cout << (x.path).substr(0, x.path.find_last_of('/')) << std::endl;
             mkdir((x.path).substr(0, x.path.find_last_of('/')), "true");
             return touch(x.path, x.r, x.size, x.cont, x._stdin, false);
         }
@@ -77,6 +77,9 @@ int bloque(struct command x)
 
     if (x.keyword == "__CAT")
         return cat(x.filen);
+
+    if (x.keyword == "__RM")
+        return rm(x.path);
 
     if (x.keyword == "__EDIT")
         return touch(x.path, x.r, x.size, x.cont, x._stdin, true);

@@ -57,7 +57,7 @@ int CambiarPermisos(string _path, string _name, int _ugo, bool _r)
         }
     }
     if (!x)
-        return coutError((_name.find('.') != std::string::npos) ? ("El archivo '") : ("La carpeta '") + _name + "' no se encuentra en la ruta: '/" + _path + "'.", file);
+        return coutError(((_name.find('.') != std::string::npos) ? ("El archivo '") : ("La carpeta '")) + _name + "' no se encuentra en la ruta: '/" + _path + "'.", file);
 
     int err = UpdatePerm(fr, _ugo, file, super_bloque.s_inode_start, super_bloque.s_block_start, _r);
     fclose(file);
@@ -92,7 +92,7 @@ int UpdatePerm(FolderReference _fr, int _ugo, FILE *_file, int _start_inodes, in
                 fread(&file_block, 64, 1, _file);
                 for (int j = 0; j < 4; j++)
                 {
-                    if (file_block.b_content[j].b_inodo != -1 && file_block.b_content[j].b_inodo != _fr.inode)
+                    if (file_block.b_content[j].b_inodo != -1 && file_block.b_content[j].b_inodo != _fr.inode && string(file_block.b_content[j].b_name) != "..")
                     {
                         _fr.inode = file_block.b_content[j].b_inodo;
                         ret = RewriteInode(_fr, _file, _ugo, _start_inodes, ret);

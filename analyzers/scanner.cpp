@@ -434,8 +434,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 /* %% [3.0] code to copy yytext_ptr to yytext[] goes here, if %array \ */\
 	(yy_c_buf_p) = yy_cp;
 /* %% [4.0] data tables for the DFA and the user's section 1 definitions go here */
-#define YY_NUM_RULES 53
-#define YY_END_OF_BUFFER 54
+#define YY_NUM_RULES 54
+#define YY_END_OF_BUFFER 55
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -445,26 +445,26 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[186] =
     {   0,
-        0,    0,   54,   52,   50,   50,   49,   52,   51,   52,
-       52,   52,   47,    1,   48,   48,   48,   48,   48,   48,
-       48,   48,   48,   48,   48,   52,   49,    0,   44,    0,
-       51,    0,   45,    0,   47,    0,    0,    0,    2,    0,
-        0,    0,   41,   39,    0,    0,    3,    0,    0,   47,
-       48,    0,   48,   48,   48,   48,   48,   48,   48,   48,
-       48,   48,   48,   48,   48,   48,    0,    0,    0,    0,
+        0,    0,   55,   53,   51,   51,   50,   53,   52,   53,
+       53,   53,   48,    1,   49,   49,   49,   49,   49,   49,
+       49,   49,   49,   49,   49,   53,   50,    0,   45,    0,
+       52,    0,   46,    0,   48,    0,    0,    0,    2,    0,
+        0,    0,   42,   40,    0,    0,    3,    0,    0,   48,
+       49,    0,   49,   49,   49,   49,   49,   49,   49,   49,
+       49,   49,   34,   49,   49,   49,    0,    0,    0,    0,
         0,    0,   11,    0,   10,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,   46,   46,   46,   33,   48,
-       48,   48,   48,   48,   48,   48,   48,   48,   48,   48,
+        0,    0,    0,    0,    0,   47,   47,   47,   33,   49,
+       49,   49,   49,   49,   49,   49,   49,   49,   49,   49,
 
-       21,   48,   48,   48,   48,   48,   48,    0,   47,    9,
+       21,   49,   49,   49,   49,   49,   49,    0,   48,    9,
         0,    0,    0,   30,    0,    0,   29,    0,    0,    0,
-        0,    0,   36,    0,   28,   48,   34,   20,   48,   48,
-       48,   48,   19,   48,   48,   48,   48,   48,   48,   48,
-       48,   48,   48,   37,    0,    0,    8,    4,   13,   12,
-        5,    0,    6,   28,   31,   16,   22,   48,   35,   48,
-       24,   26,   17,   42,   48,   25,   27,   32,   48,   48,
-        0,    0,   40,   38,   23,   14,   15,   18,   48,    7,
-        0,   48,   40,   43,    0
+        0,    0,   37,    0,   28,   49,   35,   20,   49,   49,
+       49,   49,   19,   49,   49,   49,   49,   49,   49,   49,
+       49,   49,   49,   38,    0,    0,    8,    4,   13,   12,
+        5,    0,    6,   28,   31,   16,   22,   49,   36,   49,
+       24,   26,   17,   43,   49,   25,   27,   32,   49,   49,
+        0,    0,   41,   39,   23,   14,   15,   18,   49,    7,
+        0,   49,   41,   44,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -696,14 +696,14 @@ static char *yy_last_accepting_cpos;
 extern int yy_flex_debug;
 int yy_flex_debug = 1;
 
-static const flex_int16_t yy_rule_linenum[53] =
+static const flex_int16_t yy_rule_linenum[54] =
     {   0,
        30,   31,   32,   33,   34,   35,   36,   37,   38,   39,
        40,   42,   43,   46,   47,   48,   49,   50,   51,   52,
        53,   55,   56,   57,   58,   59,   60,   61,   62,   63,
        65,   66,   67,   68,   69,   70,   71,   72,   73,   74,
-       75,   77,   81,   83,   84,   85,   86,   87,   88,   89,
-       90,   92
+       75,   76,   78,   82,   84,   85,   86,   87,   88,   89,
+       90,   91,   93
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -1061,13 +1061,13 @@ do_action:	/* This label is used only to access EOF actions. */
 			{
 			if ( yy_act == 0 )
 				fprintf( stderr, "--scanner backing up\n" );
-			else if ( yy_act < 53 )
+			else if ( yy_act < 54 )
 				fprintf( stderr, "--accepting rule at line %ld (\"%s\")\n",
 				         (long)yy_rule_linenum[yy_act], yytext );
-			else if ( yy_act == 53 )
+			else if ( yy_act == 54 )
 				fprintf( stderr, "--accepting default rule (\"%s\")\n",
 				         yytext );
-			else if ( yy_act == 54 )
+			else if ( yy_act == 55 )
 				fprintf( stderr, "--(end of buffer or a NUL)\n" );
 			else
 				fprintf( stderr, "--EOF (start condition %d)\n", YY_START );
@@ -1251,115 +1251,120 @@ YY_RULE_SETUP
 case 34:
 YY_RULE_SETUP
 #line 68 "lexico.l"
-{return yy::class_parser::make_EDIT(yytext, loc);}
+{return yy::class_parser::make_RM(yytext, loc);}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
 #line 69 "lexico.l"
-{return yy::class_parser::make_MKDIR(yytext, loc);}
+{return yy::class_parser::make_EDIT(yytext, loc);}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 70 "lexico.l"
-{return yy::class_parser::make_UGO(yytext, loc);}
+{return yy::class_parser::make_MKDIR(yytext, loc);}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 71 "lexico.l"
-{return yy::class_parser::make_CONT(yytext, loc);}
+{return yy::class_parser::make_UGO(yytext, loc);}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 72 "lexico.l"
-{return yy::class_parser::make_STDIN(yytext, loc);}
+{return yy::class_parser::make_CONT(yytext, loc);}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
 #line 73 "lexico.l"
-{return yy::class_parser::make_R(yytext, loc);}
+{return yy::class_parser::make_STDIN(yytext, loc);}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
 #line 74 "lexico.l"
-{return yy::class_parser::make_FILEN(yytext, loc);}
+{return yy::class_parser::make_R(yytext, loc);}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 75 "lexico.l"
-{return yy::class_parser::make_P(yytext, loc);}
+{return yy::class_parser::make_FILEN(yytext, loc);}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 77 "lexico.l"
+#line 76 "lexico.l"
+{return yy::class_parser::make_P(yytext, loc);}
+	YY_BREAK
+case 43:
+YY_RULE_SETUP
+#line 78 "lexico.l"
 {
                     std::cout << "Ingrese cualquier tecla para continuar: ";
                     std::cin.ignore();
                   }
 	YY_BREAK
-case 43:
-YY_RULE_SETUP
-#line 81 "lexico.l"
-{exit(1);}
-	YY_BREAK
 case 44:
-/* rule 44 can match eol */
 YY_RULE_SETUP
-#line 83 "lexico.l"
-{return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}
+#line 82 "lexico.l"
+{exit(1);}
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
 #line 84 "lexico.l"
-{return yy::class_parser::make_STRING_SINGLE(yytext, loc);}
+{return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}
 	YY_BREAK
 case 46:
 /* rule 46 can match eol */
 YY_RULE_SETUP
 #line 85 "lexico.l"
-{return yy::class_parser::make_PATH_DIR(yytext, loc);}
+{return yy::class_parser::make_STRING_SINGLE(yytext, loc);}
 	YY_BREAK
 case 47:
+/* rule 47 can match eol */
 YY_RULE_SETUP
 #line 86 "lexico.l"
-{return yy::class_parser::make_NUMERO(yytext ,loc);}
+{return yy::class_parser::make_PATH_DIR(yytext, loc);}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 87 "lexico.l"
-{return yy::class_parser::make_IDENTIFICADOR(yytext, loc);}
+{return yy::class_parser::make_NUMERO(yytext ,loc);}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
 #line 88 "lexico.l"
-{}
+{return yy::class_parser::make_IDENTIFICADOR(yytext, loc);}
 	YY_BREAK
 case 50:
-/* rule 50 can match eol */
 YY_RULE_SETUP
 #line 89 "lexico.l"
 {}
 	YY_BREAK
 case 51:
+/* rule 51 can match eol */
 YY_RULE_SETUP
 #line 90 "lexico.l"
 {}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 92 "lexico.l"
-{printf("ERROR LEXICO %s\n",yytext);}
-	YY_BREAK
-case YY_STATE_EOF(INITIAL):
-#line 93 "lexico.l"
-{return yy::class_parser::make_FIN(loc);}
+#line 91 "lexico.l"
+{}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 96 "lexico.l"
+#line 93 "lexico.l"
+{printf("ERROR LEXICO %s\n",yytext);}
+	YY_BREAK
+case YY_STATE_EOF(INITIAL):
+#line 94 "lexico.l"
+{return yy::class_parser::make_FIN(loc);}
+	YY_BREAK
+case 54:
+YY_RULE_SETUP
+#line 97 "lexico.l"
 ECHO;
 	YY_BREAK
-#line 1363 "scanner.cpp"
+#line 1368 "scanner.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2464,7 +2469,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 96 "lexico.l"
+#line 97 "lexico.l"
 
 
 void parser_driver::iniciarScanner()

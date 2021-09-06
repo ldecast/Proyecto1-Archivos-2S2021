@@ -80,7 +80,7 @@ int cat(std::vector<string> _filen)
             }
         }
         if (!x)
-            return coutError("El archivo '" + name + "' no se encuentra en la ruta: '" + npath + "'.", file);
+            return coutError("El archivo '" + name + "' no se encuentra en la ruta: '/" + npath + "'.", file);
         if (!HasPermission(_user_logged, inode_current, 4))
             return coutError("El usuario '" + _user_logged.nombre + "' no posee los permisos de lectura del archivo: '" + name + "'.", file);
         fclose(file);
