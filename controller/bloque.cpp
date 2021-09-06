@@ -64,10 +64,13 @@ int bloque(struct command x)
         return chmod(x.path, x.ugo, x.r);
 
     if (x.keyword == "__TOUCH")
-        return touch(x.path, x.r, x.size, x.cont, x._stdin);
+        return touch(x.path, x.r, x.size, x.cont, x._stdin, false);
 
     if (x.keyword == "__CAT")
         return cat(x.filen);
+
+    if (x.keyword == "__EDIT")
+        return touch(x.path, x.r, x.size, x.cont, x._stdin, true);
 
     if (x.keyword == "__MKDIR")
         return mkdir(x.path, x.r);

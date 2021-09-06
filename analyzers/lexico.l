@@ -65,6 +65,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "chmod"           {return yy::class_parser::make_CHMOD(yytext, loc);}
 "touch"           {return yy::class_parser::make_TOUCH(yytext, loc);}
 "cat"             {return yy::class_parser::make_CAT(yytext, loc);}
+"edit"            {return yy::class_parser::make_EDIT(yytext, loc);}
 "mkdir"           {return yy::class_parser::make_MKDIR(yytext, loc);}
 {HYPHEN}"ugo"     {return yy::class_parser::make_UGO(yytext, loc);}
 {HYPHEN}"cont"    {return yy::class_parser::make_CONT(yytext, loc);}
@@ -73,6 +74,10 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 {HYPHEN}"file"{NUMERO}  {return yy::class_parser::make_FILEN(yytext, loc);}
 {HYPHEN}"p"       {return yy::class_parser::make_P(yytext, loc);}
 
+"pause"           {
+                    std::cout << "Ingrese cualquier tecla para continuar: ";
+                    std::cin.ignore();
+                  }
 "__quit__"        {exit(1);}
 
 {STRING_DOUBLE} {return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}

@@ -8,7 +8,6 @@
 #include "./edit.cpp"
 
 using std::string;
-int touch(string _path, string _r, string _size, string _cont, string _stdin);
 
 int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, bool _stdin)
 {
@@ -82,11 +81,12 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
             for (int j = i; j < folders.size(); j++)
             {
                 // std::cout << _path.substr(0, _path.find(folders[j])) + folders[j] << std::endl; //solo leer y luego esribir
-                int r = touch(_path.substr(0, _path.find(folders[j])) + folders[j], "", std::to_string(_size), _cont, _stdin ? "t" : "");
-                if (!r)
-                    return coutError("Ha ocurrido un error", NULL);
+                // MKDIR!
+                // int r = touch(_path.substr(0, _path.find(folders[j])) + folders[j], "", std::to_string(_size), _cont, _stdin ? "t" : "");
+                // if (!r)
+                return coutError("Ha ocurrido un error", NULL);
             }
-            return touch(_path + "/" + _name, "", std::to_string(_size), _cont, _stdin ? "t" : "");
+            return CrearArchivo(_path, _name, false, _size, _cont, _stdin);
         }
     }
 
@@ -99,15 +99,15 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
         return coutError("El usuario no posee los permisos de escritura sobre la carpeta padre.", NULL);
     if (fileExists(inode_father, _name, file, super_bloque.s_block_start))
     {
+        fclose(file);
+        file = NULL;
         char ans;
         std::cout << "¿Desea sobreescribir el archivo ubicado en: '" + _path + "/" + _name + "?' [Y/n]" << std::endl;
         std::cin >> ans;
-        if (ans == 'Y' || ans == 'y')
-        { /* Corresponde pasar a editar el archivo */
-            fclose(file);
-            file = NULL;
+        if (ans == 'Y' || ans == 'y') /* Corresponde pasar a editar el archivo */
             return EditarArchivo(_path, _name, content, _stdin);
-        }
+        else
+            return 1;
     }
     /* Lectura del bloque de carpeta padre */
     bool cupo = false;
@@ -217,8 +217,10 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     return 1;
 }
 
-int touch(string _path, string _r, string _size, string _cont, string _stdin)
+int touch(string _path, string _r, string _size, string _cont, string _stdin, bool _EditFile)
 {
+    if (_EditFile)
+        return edit(_path, _cont, _stdin);
     if (_path == "")
         return coutError("Error: faltan parámetros obligatorios.", NULL);
     if (!_user_logged.logged_in)

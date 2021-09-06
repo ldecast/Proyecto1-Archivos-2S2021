@@ -106,17 +106,14 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
             tmp = _content;
             _content = "";
         }
-        if (inode_current.i_block[i] != -1 && tmp.length() > 0)
+        if (inode_current.i_block[i] != -1 && tmp.length() > 0) /* Reutiliza el mismo bloque */
         {
-            fseek(file, super_bloque.s_block_start, SEEK_SET);
-            fseek(file, inode_current.i_block[i] * 64, SEEK_CUR);
-            fread(&tmp_content_block, 64, 1, file);
             strcpy(tmp_content_block.b_content, tmp.c_str());
             fseek(file, super_bloque.s_block_start, SEEK_SET);
             fseek(file, inode_current.i_block[i] * 64, SEEK_CUR);
             fwrite(&tmp_content_block, 64, 1, file);
         }
-        else if (inode_current.i_block[i] == -1 && tmp.length() > 0)
+        else if (inode_current.i_block[i] == -1 && tmp.length() > 0) /* Crea otro bloque en caso exceda el tamaño anterior */
         {
             strcpy(tmp_content_block.b_content, tmp.c_str());
             fseek(file, super_bloque.s_block_start, SEEK_SET);
@@ -128,11 +125,8 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
             super_bloque.s_first_blo = free_block;
             super_bloque.s_free_blocks_count--;
         }
-        else if (inode_current.i_block[i] != -1 && tmp.length() == 0)
+        else if (inode_current.i_block[i] != -1 && tmp.length() == 0) /* El archivo era más grande y se liberan los bloques */
         {
-            fseek(file, super_bloque.s_block_start, SEEK_SET);
-            fseek(file, inode_current.i_block[i] * 64, SEEK_CUR);
-            fread(&tmp_content_block, 64, 1, file);
             strcpy(tmp_content_block.b_content, "");
             fseek(file, super_bloque.s_block_start, SEEK_SET);
             fseek(file, inode_current.i_block[i] * 64, SEEK_CUR);
