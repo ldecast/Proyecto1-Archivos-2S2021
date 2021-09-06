@@ -17,6 +17,29 @@ int _number_inodos(int _part_size) // falta ext3
     return (int)floor((_part_size - sizeof(Superbloque) / (1 + 3 + sizeof(InodosTable) + 3 * 64)));
 }
 
+std::string ReadFile(int _index_inode, int _s_inode_start, int _s_block_start, string _path)
+{
+    FILE *file = fopen(_path.c_str(), "rb");
+    std::string content = "";
+    InodosTable inode_current;
+    fseek(file, _s_inode_start, SEEK_SET);
+    fseek(file, _index_inode * sizeof(InodosTable), SEEK_CUR);
+    fread(&inode_current, sizeof(InodosTable), 1, file);
+    for (int i = 0; i < 12; i++) //agregar indirectos
+    {
+        if (inode_current.i_block[i] != -1)
+        {
+            ArchivosBlock src;
+            fseek(file, _s_block_start + inode_current.i_block[i] * 64, SEEK_SET);
+            fread(&src, 64, 1, file);
+            content += std::string(src.b_content);
+        }
+    }
+    fclose(file);
+    file = NULL;
+    return content;
+}
+
 bool fileExists(InodosTable _inode, string _filename, FILE *_file, int _start_blocks)
 {
     CarpetasBlock file_block;
@@ -137,7 +160,6 @@ int writeBlock(int _type, string _content, int _block_reference)
     fread(&bm_block, sizeof(3 * super_bloque.s_inodes_count), 1, file);
     /* Posicionarse en el espacio del bloque disponible */
     int block_free = super_bloque.s_first_blo;
-    // int seek_free = super_bloque.s_block_start + (block_free * 64);
     fseek(file, super_bloque.s_block_start, SEEK_SET);
     fseek(file, block_free * 64, SEEK_CUR);
     ArchivosBlock archivo;
@@ -148,7 +170,7 @@ int writeBlock(int _type, string _content, int _block_reference)
     case 0: //_inode = UpdateInode(super_bloque, _inode, block_free);
         strcpy(archivo.b_content, _content.c_str());
         fwrite(&archivo, 64, 1, file);
-        // std::cout << "\033[1;33m¿" + string(tmp) + "?\033[0m\n" << seek_free << std::endl;
+        // std::cout << "\033[1;33m" + string(archivo.b_content) + "\033[0m\n" << std::endl;
         break;
     case 1:
         apuntadores.b_pointers[0] = _block_reference; // Apunta a bloque de archivo o carpeta
@@ -161,9 +183,8 @@ int writeBlock(int _type, string _content, int _block_reference)
         break;
     }
     bm_block[block_free] = '1';
-    super_bloque.s_first_blo = searchFreeIndex(bm_block, 3 * super_bloque.s_inodes_count);
+    super_bloque.s_first_blo = block_free + 1;
     super_bloque.s_free_blocks_count--;
-    // std::cout << "!" << super_bloque.s_first_blo << "!" << block_free << std::endl;
     fseek(file, start_byte_sb, SEEK_SET);
     fwrite(&super_bloque, sizeof(Superbloque), 1, file);
 
@@ -176,24 +197,34 @@ int writeBlock(int _type, string _content, int _block_reference)
     return block_free; // Retornamos el número de bloque creado
 }
 
-void UpdateInode(InodosTable _inode, int _inode_index, int _block_written)
+void UpdateInode(int _inode_index, int _block_written)
 {
     FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
+    InodosTable _inode;
     /* Lectura del superbloque */
     Superbloque super_bloque;
     fseek(file, startByteSuperBloque(_user_logged.mounted), SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
+    /* Lectura del inodo */
+    fseek(file, super_bloque.s_inode_start, SEEK_SET);
+    fseek(file, _inode_index * sizeof(InodosTable), SEEK_CUR);
+    fread(&_inode, sizeof(InodosTable), 1, file);
 
     bool updated = false;
     int free_pointer = -1;
 
-    for (int i = 0; i < 12; i++) // falta indirectos
+    for (int i = 0; i < 12 && !updated; i++) // falta indirectos
     {
         if (_inode.i_block[i] == -1)
         {
+            /* ArchivosBlock tmp;
+            fseek(file, super_bloque.s_block_start, SEEK_SET);
+            fseek(file, _block_written * 64, SEEK_CUR);
+            fread(&tmp, 64, 1, file);
+            std::cout << "pre-content: " << tmp.b_content << std::endl; */
             _inode.i_block[i] = _block_written;
             updated = true;
-            // std::cout << "i:" << i << "block:" << _block_written << std::endl;
+            // std::cout << "inode_index: " << _inode_index << " i:" << i << " block: " << _block_written << std::endl;
             break;
         }
     }

@@ -179,7 +179,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
     bm_inodes[free_inode] = '1';
     bm_blocks[free_block] = '1';
 
-    super_bloque.s_first_ino = searchFreeIndex(bm_inodes, super_bloque.s_inodes_count);
+    super_bloque.s_first_ino = searchFreeIndex(bm_inodes, super_bloque.s_inodes_count); //pending
     super_bloque.s_first_blo = searchFreeIndex(bm_blocks, 3 * super_bloque.s_inodes_count);
     super_bloque.s_free_inodes_count--;
     super_bloque.s_free_blocks_count--;
@@ -204,7 +204,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
 
     fclose(file);
     file = NULL;
-    // std::cout << "Se creó: " + _path + "/" + _name + "\n";
+    // std::cout << "Se creó la carpeta: " + _path + "/" + _name + "\n";
     return 1;
 }
 

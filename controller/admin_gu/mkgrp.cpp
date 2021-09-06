@@ -104,7 +104,7 @@ int mkgrp(string _name)
 
     if (extra != "-") // Si excede los 64 char, crear más bloques de contenido y asignarlo al inodo
     {
-        writeBlocks(users_inode, extra, 1);
+        writeBlocks(extra, 1);
     }
 
     return 1;

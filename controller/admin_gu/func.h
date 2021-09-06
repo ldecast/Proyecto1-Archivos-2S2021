@@ -16,10 +16,11 @@ std::string GetAllFile(InodosTable _inode, int _s_block_start, string _path)
     {
         if (_inode.i_block[i] != -1)
         {
-            char src[64];
+            ArchivosBlock src;
             fseek(_file, _s_block_start + _inode.i_block[i] * 64, SEEK_SET);
             fread(&src, 64, 1, _file);
-            content += std::string(src);
+            content += std::string(src.b_content);
+            // std::cout << _inode.i_block[i] << std::endl;
         }
     }
     fclose(_file);
@@ -29,7 +30,7 @@ std::string GetAllFile(InodosTable _inode, int _s_block_start, string _path)
 
 int ByteLastFileBlock(InodosTable _inode)
 {
-    for (int i = 0; i < 15; i++)
+    for (int i = 0; i < 15; i++) //falta indirecto
     {
         // std::cout << "\033[1;32m" + std::to_string(_inode.i_block[i]) + "\033[0m\n";
         if (_inode.i_block[i] == -1)
@@ -58,14 +59,13 @@ std::vector<std::string> Separate64Chars(std::string _content)
     return vector_s;
 }
 
-void writeBlocks(InodosTable _inode, std::string _content, int _number_inode)
+void writeBlocks(std::string _content, int _number_inode)
 {
     std::vector<std::string> chars = Separate64Chars(_content);
-    _inode.i_size = sizeof(_content.c_str());
     for (int i = 0; i < chars.size(); i++) // Por cada iteración crear un bloque de contenido
     {
         int block_written = writeBlock(0, chars[i], -1);
-        UpdateInode(_inode, _number_inode, block_written);
+        UpdateInode(_number_inode, block_written);
     }
 }
 

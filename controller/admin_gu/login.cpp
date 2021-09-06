@@ -42,15 +42,27 @@ int login(string _user, string _pwd, string _id)
     fseek(file, super_bloque.s_block_start, SEEK_SET);  // Mover el puntero al inicio de la tabla de bloques
     fseek(file, 64, SEEK_CUR);                          // Mover el puntero al segundo bloque que corresponde al archivo de users.txt
     fread(&users_file, sizeof(ArchivosBlock), 1, file); // Leer el bloque
-    fclose(file);
-    file = NULL;
+    // fclose(file);
+    // file = NULL;
 
     /* Obtener todo el archivo concatenado */
-    string content_file = GetAllFile(users_inode, super_bloque.s_block_start, mounted.path);
-    file = fopen((mounted.path).c_str(), "rb");
+    string content_file = "";    // = GetAllFile(users_inode, super_bloque.s_block_start, mounted.path);
+    for (int i = 0; i < 12; i++) //agregar indirectos
+    {
+        if (users_inode.i_block[i] != -1)
+        {
+            // std::cout << users_inode.i_block[i] << std::endl;
+            ArchivosBlock tmp;
+            fseek(file, super_bloque.s_block_start, SEEK_SET);
+            fseek(file, users_inode.i_block[i] * 64, SEEK_CUR);
+            fread(&tmp, 64, 1, file);
+            content_file += std::string(tmp.b_content);
+        }
+    }
+    // file = fopen((mounted.path).c_str(), "rb");
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    // std::cout << content_file << std::endl;
+    std::cout << content_file << std::endl;
     std::istringstream f(content_file);
     string line;
     while (getline(f, line))

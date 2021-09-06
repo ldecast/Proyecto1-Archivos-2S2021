@@ -51,7 +51,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
         string line;
         while (std::getline(file, line))
         {
-            content += line;
+            content += (line + "\n");
         }
     }
     /* Llenado del contenido con dígitos 0-9 */
@@ -66,6 +66,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
             j++;
         }
     }
+    std::cout << content << std::endl;
 
     /* Llenar el nuevo inodo de archivo */
     new_inode.i_block[0] = free_block;
@@ -123,69 +124,48 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
         }
     }
     /* Lectura del bloque de carpeta padre */
-    CarpetasBlock folder_father;
     bool cupo = false;
-    fseek(file, super_bloque.s_block_start, SEEK_SET);
-    fseek(file, fr.block * 64, SEEK_CUR);
-    fread(&folder_father, 64, 1, file);
-    /* Escritura del nuevo bloque archivo que hace referencia al inodo carpeta */
-    for (int i = 0; i < 4; i++)
-    { // std::cout << folder_father.b_content[i].b_name << std::endl;
-        if (folder_father.b_content[i].b_inodo == -1)
-        {
-            folder_father.b_content[i].b_inodo = free_inode;
-            strcpy(folder_father.b_content[i].b_name, _name.c_str());
-            fseek(file, super_bloque.s_block_start, SEEK_SET);
-            fseek(file, fr.block * 64, SEEK_CUR);
-            fwrite(&folder_father, 64, 1, file);
-            cupo = true;
-            break;
-        }
-    }
-    if (!cupo) // usar el siguiente i_block disponible del inodo_father
+    for (int i = 0; i < 12; i++) //agregar indirectos
     {
-        for (int i = 0; i < 12; i++) //agregar indirectos
+        if (inode_father.i_block[i] != -1 && !cupo) // revisar si existe espacio disponible en un bloque carpeta
         {
-            if (inode_father.i_block[i] != -1 && !cupo) // revisar si existe espacio disponible en un bloque carpeta
+            CarpetasBlock tmp_block;
+            fseek(file, super_bloque.s_block_start, SEEK_SET);
+            fseek(file, inode_father.i_block[i] * 64, SEEK_CUR);
+            fread(&tmp_block, 64, 1, file);
+            for (int j = 0; j < 4; j++)
             {
-                CarpetasBlock tmp_block;
-                fseek(file, super_bloque.s_block_start, SEEK_SET);
-                fseek(file, inode_father.i_block[i] * 64, SEEK_CUR);
-                fread(&tmp_block, 64, 1, file);
-                for (int j = 0; j < 4; j++)
+                if (tmp_block.b_content[j].b_inodo == -1)
                 {
-                    if (tmp_block.b_content[j].b_inodo == -1)
-                    {
-                        tmp_block.b_content[j].b_inodo = free_inode;
-                        strcpy(tmp_block.b_content[j].b_name, _name.c_str());
-                        fseek(file, super_bloque.s_block_start, SEEK_SET);
-                        fseek(file, inode_father.i_block[i] * 64, SEEK_CUR);
-                        fwrite(&tmp_block, 64, 1, file);
-                        cupo = true;
-                        inode_father.i_atime = getCurrentTime();
-                        break;
-                    }
+                    tmp_block.b_content[j].b_inodo = free_inode;
+                    strcpy(tmp_block.b_content[j].b_name, _name.c_str());
+                    fseek(file, super_bloque.s_block_start, SEEK_SET);
+                    fseek(file, inode_father.i_block[i] * 64, SEEK_CUR);
+                    fwrite(&tmp_block, 64, 1, file);
+                    inode_father.i_atime = getCurrentTime();
+                    cupo = true;
+                    break;
                 }
             }
-            else if (inode_father.i_block[i] == -1 && !cupo) // crear un nuevo bloque carpeta
-            {
-                CarpetasBlock new_block;
-                new_block.b_content[0].b_inodo = free_inode;
-                strcpy(new_block.b_content[0].b_name, _name.c_str());
-                fseek(file, super_bloque.s_block_start, SEEK_SET);
-                fseek(file, free_block * 64, SEEK_CUR);
-                fwrite(&new_block, 64, 1, file);
+        }
+        else if (inode_father.i_block[i] == -1 && !cupo) // crear un nuevo bloque carpeta
+        {
+            CarpetasBlock new_block;
+            new_block.b_content[0].b_inodo = free_inode;
+            strcpy(new_block.b_content[0].b_name, _name.c_str());
+            fseek(file, super_bloque.s_block_start, SEEK_SET);
+            fseek(file, free_block * 64, SEEK_CUR);
+            fwrite(&new_block, 64, 1, file);
 
-                inode_father.i_block[i] = free_block;
-                inode_father.i_mtime = getCurrentTime();
+            inode_father.i_block[i] = free_block;
+            inode_father.i_mtime = getCurrentTime();
 
-                bm_blocks[free_block] = '1';
-                super_bloque.s_first_blo = searchFreeIndex(bm_blocks, 3 * super_bloque.s_inodes_count);
-                super_bloque.s_free_blocks_count--;
-                free_block = super_bloque.s_first_blo;
-                cupo = true;
-                break;
-            }
+            bm_blocks[free_block] = '1';
+            free_block++;
+            super_bloque.s_first_blo = free_block;
+            super_bloque.s_free_blocks_count--;
+            cupo = true;
+            break;
         }
     }
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
@@ -206,8 +186,8 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     bm_inodes[free_inode] = '1';
     bm_blocks[free_block] = '1';
 
-    super_bloque.s_first_ino = searchFreeIndex(bm_inodes, super_bloque.s_inodes_count);
-    super_bloque.s_first_blo = searchFreeIndex(bm_blocks, 3 * super_bloque.s_inodes_count);
+    super_bloque.s_first_ino = free_inode + 1;
+    super_bloque.s_first_blo = free_block + 1;
     super_bloque.s_free_inodes_count--;
     super_bloque.s_free_blocks_count--;
 
@@ -233,9 +213,9 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     file = NULL;
     if (extra != "-") // Si excede los 64 char, crear más bloques de contenido y asignarlo al inodo
     {
-        writeBlocks(new_inode, extra, free_inode);
+        writeBlocks(extra, free_inode);
     }
-    std::cout << "se creó: " + _path + "/" + _name + "\n";
+    std::cout << "Se creó el archivo: " + _path + "/" + _name + "\n";
     return 1;
 }
 

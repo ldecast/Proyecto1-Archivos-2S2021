@@ -146,11 +146,11 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     /* ESCRITURA */
     fseek(_file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
     fwrite(&inode_folder, sizeof(InodosTable), 1, _file);
-    fwrite(&users_inode, sizeof(InodosTable), 1, _file);
+    fwrite(&users_inode, 64, 1, _file);
 
     fseek(_file, super_bloque.s_block_start, SEEK_SET); // Mover el puntero al inicio de la tabla de bloques
     fwrite(&root_folder, sizeof(CarpetasBlock), 1, _file);
-    fwrite(&users_file, sizeof(ArchivosBlock), 1, _file);
+    fwrite(&users_file, 64, 1, _file);
 
     fclose(_file);
     _file = NULL;

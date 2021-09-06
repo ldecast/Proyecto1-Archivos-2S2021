@@ -54,7 +54,7 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
         ebr_inicial.part_status = '1';
         fseek(_file, extendida.part_start, SEEK_SET);
         fwrite(&ebr_inicial, sizeof(EBR), 1, _file);
-        fwrite("\0", _size, 1, _file);
+        // fwrite("\0", _size, 1, _file);
     }
     else
     {
