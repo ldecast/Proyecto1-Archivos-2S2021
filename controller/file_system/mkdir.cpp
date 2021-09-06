@@ -47,15 +47,15 @@ int CrearCarpeta(string _path, string _name, bool _p)
     fread(&root_folder, 64, 1, file);
 
     /* Llenar el nuevo inodo carpeta */
-    new_inode.i_block[0] = free_block;
-    new_inode.i_size = 0;
-    new_inode.i_type = '0';
-    new_inode.i_gid = _user_logged.GID;
-    new_inode.i_uid = _user_logged.UID;
-    new_inode.i_perm = 664;
-    new_inode.i_ctime = getCurrentTime();
-    new_inode.i_mtime = new_inode.i_ctime;
-    new_inode.i_atime = new_inode.i_ctime;
+    // new_inode.i_block[0] = free_block;
+    // new_inode.i_size = 0;
+    // new_inode.i_type = '0';
+    // new_inode.i_gid = _user_logged.GID;
+    // new_inode.i_uid = _user_logged.UID;
+    // new_inode.i_perm = 664;
+    // new_inode.i_ctime = getCurrentTime();
+    // new_inode.i_mtime = new_inode.i_ctime;
+    // new_inode.i_atime = new_inode.i_ctime;
 
     /* Lectura de la última carpeta padre */
     FolderReference fr;
@@ -152,9 +152,9 @@ int CrearCarpeta(string _path, string _name, bool _p)
                 inode_father.i_mtime = getCurrentTime();
 
                 bm_blocks[free_block] = '1';
-                super_bloque.s_first_blo = searchFreeIndex(bm_blocks, 3 * super_bloque.s_inodes_count);
+                free_block++;
+                super_bloque.s_first_blo = free_block;
                 super_bloque.s_free_blocks_count--;
-                free_block = super_bloque.s_first_blo;
                 cupo = true;
                 break;
             }
@@ -165,7 +165,18 @@ int CrearCarpeta(string _path, string _name, bool _p)
     fwrite(&inode_father, sizeof(InodosTable), 1, file);
 
     if (!cupo)
-        coutError("No se encontró espacio para crear la carpeta.", NULL);
+        coutError("No se encontró espacio para crear la carpeta.", file);
+
+    /* Llenar el nuevo inodo carpeta */
+    new_inode.i_block[0] = free_block;
+    new_inode.i_size = 0;
+    new_inode.i_type = '0';
+    new_inode.i_gid = _user_logged.GID;
+    new_inode.i_uid = _user_logged.UID;
+    new_inode.i_perm = 664;
+    new_inode.i_ctime = getCurrentTime();
+    new_inode.i_mtime = new_inode.i_ctime;
+    new_inode.i_atime = new_inode.i_ctime;
 
     /* Llenar con la información de la carpeta */
     folder_content.b_inodo = free_inode;
@@ -179,8 +190,8 @@ int CrearCarpeta(string _path, string _name, bool _p)
     bm_inodes[free_inode] = '1';
     bm_blocks[free_block] = '1';
 
-    super_bloque.s_first_ino = searchFreeIndex(bm_inodes, super_bloque.s_inodes_count); //pending
-    super_bloque.s_first_blo = searchFreeIndex(bm_blocks, 3 * super_bloque.s_inodes_count);
+    super_bloque.s_first_ino = free_inode + 1;
+    super_bloque.s_first_blo = free_block + 1;
     super_bloque.s_free_inodes_count--;
     super_bloque.s_free_blocks_count--;
 

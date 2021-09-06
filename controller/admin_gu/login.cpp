@@ -42,24 +42,11 @@ int login(string _user, string _pwd, string _id)
     fseek(file, super_bloque.s_block_start, SEEK_SET);  // Mover el puntero al inicio de la tabla de bloques
     fseek(file, 64, SEEK_CUR);                          // Mover el puntero al segundo bloque que corresponde al archivo de users.txt
     fread(&users_file, sizeof(ArchivosBlock), 1, file); // Leer el bloque
-    // fclose(file);
-    // file = NULL;
+    fclose(file);
+    file = NULL;
 
     /* Obtener todo el archivo concatenado */
-    string content_file = "";    // = GetAllFile(users_inode, super_bloque.s_block_start, mounted.path);
-    for (int i = 0; i < 12; i++) //agregar indirectos
-    {
-        if (users_inode.i_block[i] != -1)
-        {
-            // std::cout << users_inode.i_block[i] << std::endl;
-            ArchivosBlock tmp;
-            fseek(file, super_bloque.s_block_start, SEEK_SET);
-            fseek(file, users_inode.i_block[i] * 64, SEEK_CUR);
-            fread(&tmp, 64, 1, file);
-            content_file += std::string(tmp.b_content);
-        }
-    }
-    // file = fopen((mounted.path).c_str(), "rb");
+    string content_file = ReadFile(1, super_bloque.s_inode_start, super_bloque.s_block_start, mounted.path);
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
     std::cout << content_file << std::endl;
@@ -67,7 +54,6 @@ int login(string _user, string _pwd, string _id)
     string line;
     while (getline(f, line))
     {
-        // std::cout << line << std::endl;
         int count = 0;
         for (int i = 0; (i = line.find(',', i)) != std::string::npos; i++)
             count++;
@@ -93,8 +79,6 @@ int login(string _user, string _pwd, string _id)
                 user_tmp.logged_in = true;
                 user_tmp.mounted = mounted;
                 _user_logged = user_tmp;
-                fclose(file);
-                file = NULL;
                 _user_logged.GID = getGroupByName(user_tmp.grupo, users_inode, super_bloque.s_block_start, mounted.path).GID;
                 /* std::cout << _user_logged.UID << std::endl;
                 std::cout << _user_logged.tipo << std::endl;
@@ -109,7 +93,5 @@ int login(string _user, string _pwd, string _id)
             break;
         }
     }
-    fclose(file);
-    file = NULL;
     return coutError("No se encuentra ningún usuario con la contraseña brindada. Intente de nuevo.", NULL);
 }

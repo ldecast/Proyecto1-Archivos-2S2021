@@ -66,18 +66,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
             j++;
         }
     }
-    std::cout << content << std::endl;
-
-    /* Llenar el nuevo inodo de archivo */
-    new_inode.i_block[0] = free_block;
-    new_inode.i_size = content.length();
-    new_inode.i_type = '1';
-    new_inode.i_gid = _user_logged.GID;
-    new_inode.i_uid = _user_logged.UID;
-    new_inode.i_perm = 664;
-    new_inode.i_ctime = getCurrentTime();
-    new_inode.i_mtime = new_inode.i_ctime;
-    new_inode.i_atime = new_inode.i_ctime;
+    // std::cout << content << std::endl;
 
     /* Lectura de la última carpeta padre */
     FolderReference fr;
@@ -175,6 +164,17 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     if (!cupo)
         std::cout << "\033[1;31mNo se encontró espacio para crear el archivo.\033[0m\n";
 
+    /* Llenar el nuevo inodo de archivo */
+    new_inode.i_block[0] = free_block;
+    new_inode.i_size = content.length();
+    new_inode.i_type = '1';
+    new_inode.i_gid = _user_logged.GID;
+    new_inode.i_uid = _user_logged.UID;
+    new_inode.i_perm = 664;
+    new_inode.i_ctime = getCurrentTime();
+    new_inode.i_mtime = new_inode.i_ctime;
+    new_inode.i_atime = new_inode.i_ctime;
+
     /* Llenar con la información del archivo */
     string extra = "-";
     if (content.length() > 64)
@@ -208,6 +208,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     fseek(file, super_bloque.s_block_start, SEEK_SET); // Mover el puntero al inicio de la tabla de bloques
     fseek(file, free_block * 64, SEEK_CUR);
     fwrite(&file_to_create, 64, 1, file);
+    // coutError("Se creó el archivo en el bloque: " + std::to_string(free_block) + " En el inodo: " + std::to_string(free_inode), NULL);
 
     fclose(file);
     file = NULL;
@@ -215,7 +216,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     {
         writeBlocks(extra, free_inode);
     }
-    std::cout << "Se creó el archivo: " + _path + "/" + _name + "\n";
+    // std::cout << "Se creó el archivo: " + _path + "/" + _name + "\n";
     return 1;
 }
 
