@@ -227,6 +227,5 @@ int mkdir(string _path, string _p)
 
     string npath = _path.substr(0, _path.find_last_of('/'));
     string name_folder = _path.substr(_path.find_last_of('/') + 1);
-
     return CrearCarpeta(npath, name_folder, _p != "");
 }

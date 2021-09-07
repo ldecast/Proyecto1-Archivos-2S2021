@@ -41,7 +41,7 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     /* CREACIÓN DEL SUPERBLOQUE */
     Superbloque super_bloque;
     InodosTable inodo;
-    int n = _number_inodos(part_size);
+    int n = _number_inodos(part_size, _fs);
     super_bloque.s_filesystem_type = _fs;
     super_bloque.s_inodes_count = n;
     super_bloque.s_blocks_count = 3 * n;

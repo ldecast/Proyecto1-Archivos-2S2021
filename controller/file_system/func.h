@@ -12,9 +12,17 @@ int searchFreeIndex(char bitmap[], int n);
 int startByteSuperBloque(MOUNTED _mounted);
 int GetFreePointer(int b_pointers[]);
 
-int _number_inodos(int _part_size) // falta ext3
+int _number_inodos(int _part_size, char _ext)
 {
-    return (int)floor((_part_size - sizeof(Superbloque) / (1 + 3 + sizeof(InodosTable) + 3 * 64)));
+    switch (_ext)
+    {
+    case 2:
+        return (int)floor(((_part_size - sizeof(Superbloque)) / (1 + 3 + sizeof(InodosTable) + 3 * 64)));
+    case 3:
+        return (int)floor(((_part_size - sizeof(Superbloque) - 6400) / (1 + 3 + sizeof(InodosTable) + 3 * 64)));
+    default:
+        return 0;
+    }
 }
 
 std::string ReadFile(int _index_inode, int _s_inode_start, int _s_block_start, string _path)

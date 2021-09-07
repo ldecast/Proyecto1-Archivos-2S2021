@@ -69,7 +69,8 @@ int bloque(struct command x)
         int pre_t = touch(x.path, x.r, x.size, x.cont, x._stdin, false);
         if (pre_t == 777)
         {
-            mkdir((x.path).substr(0, x.path.find_last_of('/')), "true");
+            if (!mkdir((x.path).substr(0, x.path.find_last_of('/')), "true"))
+                return 0;
             return touch(x.path, x.r, x.size, x.cont, x._stdin, false);
         }
         return pre_t;
