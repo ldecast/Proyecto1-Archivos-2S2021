@@ -90,7 +90,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
     if (!HasPermission(_user_logged, inode_father, 2))
         return coutError("El usuario no posee los permisos de escritura sobre la carpeta padre.", file);
     if (fileExists(inode_father, _name, file, super_bloque.s_block_start))
-        return coutError("La carpeta '/" + _name + "' ya existe en la ruta: '" + _path + "'.", file);
+        return coutError("La carpeta '" + _name + "' ya existe en la ruta: '/" + _path + "'.", file);
 
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock folder_father;

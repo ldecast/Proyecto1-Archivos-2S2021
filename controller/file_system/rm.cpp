@@ -13,7 +13,6 @@ int RewriteInode(int _index_inode, int _seek_superbloque);
 int EliminarA_C(string _path, string _name)
 {
     FILE *file = fopen((_user_logged.mounted.path).c_str(), "rb+");
-
     /* Lectura del superbloque */
     Superbloque super_bloque;
     int start_byte_sb = startByteSuperBloque(_user_logged.mounted);
@@ -39,7 +38,7 @@ int EliminarA_C(string _path, string _name)
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode_father, sizeof(InodosTable), 1, file);
     CarpetasBlock file_block;
-    InodosTable inode_current;
+    InodosTable inode_current_tmp;
     bool x = false;
     for (int i = 0; i < 12 && !x; i++) // Obtener el inodo asociado directo
     {
@@ -57,7 +56,10 @@ int EliminarA_C(string _path, string _name)
                     _index_inode = file_block.b_content[k].b_inodo;
                     fseek(file, super_bloque.s_inode_start, SEEK_SET);
                     fseek(file, file_block.b_content[k].b_inodo * sizeof(InodosTable), SEEK_CUR);
-                    fread(&inode_current, sizeof(InodosTable), 1, file);
+                    fread(&inode_current_tmp, sizeof(InodosTable), 1, file);
+
+                    if (!HasPermission(_user_logged, inode_current_tmp, 2))
+                        return coutError("El usuario no posee el permiso de escritura del archivo o carpeta.", file);
                     x = true;
 
                     file_block.b_content[k].b_inodo = -1;
@@ -72,8 +74,6 @@ int EliminarA_C(string _path, string _name)
     }
     if (!x)
         return coutError(((_name.find('.') != std::string::npos) ? ("El archivo '") : ("La carpeta '")) + _name + "' no se encuentra en la ruta: '/" + _path + "'.", file);
-    if (!HasPermission(_user_logged, inode_current, 2))
-        return coutError("El usuario '" + _user_logged.nombre + "' no posee los permisos de lectura del archivo: '" + _name + "'.", file);
 
     fclose(file);
     file = NULL;
@@ -106,26 +106,21 @@ int toRemove(int _index_inode, int _seek_superbloque)
                 fread(&file_block, 64, 1, _file);
                 for (int j = 0; j < 4; j++)
                 {
-                    if (file_block.b_content[j].b_inodo != -1 && file_block.b_content[j].b_inodo != _index_inode && string(file_block.b_content[j].b_name) != "..")
+                    if (file_block.b_content[j].b_inodo != -1 && file_block.b_content[j].b_inodo != _index_inode && string(file_block.b_content[j].b_name) != ".." && string(file_block.b_content[j].b_name) != ".")
                     {
-                        std::cout << file_block.b_content[j].b_name << std::endl;
+                        // std::cout << file_block.b_content[j].b_name << std::endl;
                         _index_inode = file_block.b_content[j].b_inodo;
                         fclose(_file);
-                        _file = NULL;
-                        tmp = true;
-                        toRemove(_index_inode, _seek_superbloque);
-                        // break;
+                        if (!toRemove(_index_inode, _seek_superbloque))
+                            return 0;
                     }
                 }
             }
         }
-        // RewriteInode(_fr, _seek_superbloque);
     }
-    if (inode_current.i_type == '1' || !tmp)
+    else if (inode_current.i_type == '1')
     {
         fclose(_file);
-        _file = NULL;
-        // return RewriteInode(_fr, _seek_superbloque);
     }
     return RewriteInode(_index_inode, _seek_superbloque);
 }
@@ -162,7 +157,7 @@ int RewriteInode(int _index_inode, int _seek_superbloque)
         fseek(_file, super_bloque.s_inode_start, SEEK_SET);
         fseek(_file, _index_inode * sizeof(InodosTable), SEEK_CUR);
         fwrite(&inode_current, sizeof(InodosTable), 1, _file);
-        return coutError("El usuario no es propietario de todos los archivos, carpetas o subcarpetas.", _file);
+        return coutError("El usuario no posee el permiso de escritura de todos los archivos o subcarpetas.", _file);
     }
     else
     {

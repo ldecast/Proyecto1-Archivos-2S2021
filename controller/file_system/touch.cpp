@@ -205,7 +205,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     {
         writeBlocks(extra, free_inode);
     }
-    // std::cout << "Se creó el archivo: " + _path + "/" + _name + "\n";
+    std::cout << "Se creó el archivo: " + _path + "/" + _name + "\n";
     return 1;
 }
 
