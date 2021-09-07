@@ -4,6 +4,7 @@
 #include "../partitions/func.h"
 #include "mbr.cpp"
 #include "disk.cpp"
+#include "inode.cpp"
 
 int classifier(std::string _name, std::string _path, std::string _id, std::string _ruta, std::string _root)
 {
@@ -20,12 +21,21 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
         return coutError("No se encuentra ninguna partición montada con el id '" + _id + "'.", NULL);
 
     MOUNTED mounted = _particiones_montadas[index];
+    std::string grafo;
 
     if (_name == "mbr")
-        return ReportMBR(mounted, dir_output);
+        grafo = ReportMBR(mounted);
 
-    if (_name == "disk")
-        return ReportDisk(mounted, dir_output);
+    else if (_name == "disk")
+        grafo = ReportDisk(mounted);
 
-    return coutError("El nombre del reporte a generar no es válido: " + _name, NULL);
+    else if (_name == "inode")
+        grafo = ReportInodes(mounted);
+
+    else
+        return coutError("El nombre del reporte a generar no es válido: " + _name, NULL);
+
+    writeDot(grafo);
+    generateReport(dir_output);
+    return 1;
 }

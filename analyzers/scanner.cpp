@@ -1297,9 +1297,9 @@ case 43:
 YY_RULE_SETUP
 #line 78 "lexico.l"
 {
-                    std::cout << "Ingrese cualquier tecla para continuar: ";
-                    std::cin.ignore();
-                  }
+                          std::cout << "Ingrese cualquier tecla para continuar: ";
+                          std::cin.ignore();
+                        }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP

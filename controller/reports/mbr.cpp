@@ -11,9 +11,9 @@ using std::string;
 string getDotMBR(MBR _mbr, string _path);
 string getDotEBR(EBR _ebr, int _index, string _node, string _dot, FILE *_file);
 
-int ReportMBR(MOUNTED _mounted, string _dirOutput)
+string ReportMBR(MOUNTED _mounted)
 {
-    string grafo = getHeaderMBR();
+    string grafo = getHeader_1();
     FILE *_file = fopen(_mounted.path.c_str(), "rb");
 
     MBR mbr;
@@ -31,16 +31,11 @@ int ReportMBR(MOUNTED _mounted, string _dirOutput)
         if (ebr.part_size != 0)
             grafo += getDotEBR(ebr, 0, "\"MBR Report\"", "", _file);
     }
-
     grafo += "}";
-
-    // std::cout << grafo << std::endl;
-    writeDot(grafo);
-    generateReport(_dirOutput);
 
     fclose(_file);
     _file = NULL;
-    return 1;
+    return grafo;
 }
 
 string getDotMBR(MBR _mbr, string _path)

@@ -88,5 +88,8 @@ int bloque(struct command x)
     if (x.keyword == "__MKDIR")
         return mkdir(x.path, x.r);
 
+    if (x.keyword == "__REP")
+        return classifier(x.name, x.path, x.id, x.ruta, x.root);
+
     return 0;
 }

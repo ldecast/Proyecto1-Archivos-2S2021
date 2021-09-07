@@ -12,24 +12,20 @@ using std::string;
 string getDotPartitions(MBR _mbr, string _path, FILE *_file);
 string getDotLogics(EBR _ebr, int _mbr_tamano, FILE *_file, string _color, string _dot, int _free);
 
-int ReportDisk(MOUNTED _mounted, string _dirOutput)
+string ReportDisk(MOUNTED _mounted)
 {
-    string grafo = getHeaderMBR();
+    string grafo = getHeader_1();
     FILE *_file = fopen(_mounted.path.c_str(), "rb");
 
     MBR mbr;
     fseek(_file, 0, SEEK_SET);
     fread(&mbr, sizeof(MBR), 1, _file);
     grafo += getDotPartitions(mbr, _mounted.path, _file);
-
     grafo += "}";
-
-    writeDot(grafo);
-    generateReport(_dirOutput);
 
     fclose(_file);
     _file = NULL;
-    return 1;
+    return grafo;
 }
 
 string getPorcentaje(int _free, int _mbr_tamano)

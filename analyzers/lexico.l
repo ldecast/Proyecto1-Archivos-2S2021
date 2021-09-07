@@ -27,7 +27,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 
 %%
 
-"="		          {return yy::class_parser::make_EQUAL(yytext, loc);}
+"="		                  {return yy::class_parser::make_EQUAL(yytext, loc);}
 {HYPHEN}"f"		          {return yy::class_parser::make_FIT(yytext, loc);}
 {HYPHEN}"u"		          {return yy::class_parser::make_UNIT(yytext, loc);}
 {HYPHEN}"path"          {return yy::class_parser::make_PATH(yytext, loc);}
@@ -43,55 +43,55 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 {HYPHEN}"root"          {return yy::class_parser::make_ROOT(yytext, loc);}
 
 
-"mkdisk"		    {return yy::class_parser::make_MKDISK(yytext, loc);}
-"rmdisk"		    {return yy::class_parser::make_RMDISK(yytext, loc);}
-"fdisk"		      {return yy::class_parser::make_FDISK(yytext, loc);}
-"mount"		      {return yy::class_parser::make_MOUNT(yytext, loc);}
-"umount"		    {return yy::class_parser::make_UMOUNT(yytext, loc);}
-"mkfs"		      {return yy::class_parser::make_MKFS(yytext, loc);}
-"exec"		      {return yy::class_parser::make_RUN_EXEC(yytext, loc);}
-"rep"           {return yy::class_parser::make_RUN_REPORT(yytext, loc);}
+"mkdisk"		            {return yy::class_parser::make_MKDISK(yytext, loc);}
+"rmdisk"		            {return yy::class_parser::make_RMDISK(yytext, loc);}
+"fdisk"		              {return yy::class_parser::make_FDISK(yytext, loc);}
+"mount"		              {return yy::class_parser::make_MOUNT(yytext, loc);}
+"umount"		            {return yy::class_parser::make_UMOUNT(yytext, loc);}
+"mkfs"		              {return yy::class_parser::make_MKFS(yytext, loc);}
+"exec"		              {return yy::class_parser::make_RUN_EXEC(yytext, loc);}
+"rep"                   {return yy::class_parser::make_RUN_REPORT(yytext, loc);}
 
-"login"         {return yy::class_parser::make_LOGIN(yytext, loc);}
-"logout"        {return yy::class_parser::make_LOGOUT(yytext, loc);}
-"mkgrp"         {return yy::class_parser::make_MKGRP(yytext, loc);}
-"rmgrp"         {return yy::class_parser::make_RMGRP(yytext, loc);}
-"mkusr"         {return yy::class_parser::make_MKUSR(yytext, loc);}
-"rmusr"         {return yy::class_parser::make_RMUSR(yytext, loc);}
+"login"                 {return yy::class_parser::make_LOGIN(yytext, loc);}
+"logout"                {return yy::class_parser::make_LOGOUT(yytext, loc);}
+"mkgrp"                 {return yy::class_parser::make_MKGRP(yytext, loc);}
+"rmgrp"                 {return yy::class_parser::make_RMGRP(yytext, loc);}
+"mkusr"                 {return yy::class_parser::make_MKUSR(yytext, loc);}
+"rmusr"                 {return yy::class_parser::make_RMUSR(yytext, loc);}
 {HYPHEN}("user"|"usr")  {return yy::class_parser::make_USER(yytext, loc);}
 {HYPHEN}"pwd"           {return yy::class_parser::make_PWD(yytext, loc);}
 {HYPHEN}"grp"           {return yy::class_parser::make_GRP(yytext, loc);}
 
-"chmod"           {return yy::class_parser::make_CHMOD(yytext, loc);}
-"touch"           {return yy::class_parser::make_TOUCH(yytext, loc);}
-"cat"             {return yy::class_parser::make_CAT(yytext, loc);}
-"rm"              {return yy::class_parser::make_RM(yytext, loc);}
-"edit"            {return yy::class_parser::make_EDIT(yytext, loc);}
-"mkdir"           {return yy::class_parser::make_MKDIR(yytext, loc);}
-{HYPHEN}"ugo"     {return yy::class_parser::make_UGO(yytext, loc);}
-{HYPHEN}"cont"    {return yy::class_parser::make_CONT(yytext, loc);}
-{HYPHEN}"stdin"   {return yy::class_parser::make_STDIN(yytext, loc);}
-{HYPHEN}"r"       {return yy::class_parser::make_R(yytext, loc);}
+"chmod"                 {return yy::class_parser::make_CHMOD(yytext, loc);}
+"touch"                 {return yy::class_parser::make_TOUCH(yytext, loc);}
+"cat"                   {return yy::class_parser::make_CAT(yytext, loc);}
+"rm"                    {return yy::class_parser::make_RM(yytext, loc);}
+"edit"                  {return yy::class_parser::make_EDIT(yytext, loc);}
+"mkdir"                 {return yy::class_parser::make_MKDIR(yytext, loc);}
+{HYPHEN}"ugo"           {return yy::class_parser::make_UGO(yytext, loc);}
+{HYPHEN}"cont"          {return yy::class_parser::make_CONT(yytext, loc);}
+{HYPHEN}"stdin"         {return yy::class_parser::make_STDIN(yytext, loc);}
+{HYPHEN}"r"             {return yy::class_parser::make_R(yytext, loc);}
 {HYPHEN}"file"{NUMERO}  {return yy::class_parser::make_FILEN(yytext, loc);}
-{HYPHEN}"p"       {return yy::class_parser::make_P(yytext, loc);}
+{HYPHEN}"p"             {return yy::class_parser::make_P(yytext, loc);}
 
-"pause"           {
-                    std::cout << "Ingrese cualquier tecla para continuar: ";
-                    std::cin.ignore();
-                  }
-"__quit__"        {exit(1);}
+"pause"                 {
+                          std::cout << "Ingrese cualquier tecla para continuar: ";
+                          std::cin.ignore();
+                        }
+"__quit__"              {exit(1);}
 
-{STRING_DOUBLE} {return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}
-{STRING_SINGLE} {return yy::class_parser::make_STRING_SINGLE(yytext, loc);}
-{PATH_DIR}      {return yy::class_parser::make_PATH_DIR(yytext, loc);}
-{NUMERO}        {return yy::class_parser::make_NUMERO(yytext ,loc);}
-{IDENTIFICADOR}	{return yy::class_parser::make_IDENTIFICADOR(yytext, loc);}
-{SPACE}         {}
-{DELIMITADOR}   {}
-{COMENTARIOS}   {}
+{STRING_DOUBLE}         {return yy::class_parser::make_STRING_DOUBLE(yytext, loc);}
+{STRING_SINGLE}         {return yy::class_parser::make_STRING_SINGLE(yytext, loc);}
+{PATH_DIR}              {return yy::class_parser::make_PATH_DIR(yytext, loc);}
+{NUMERO}                {return yy::class_parser::make_NUMERO(yytext ,loc);}
+{IDENTIFICADOR}	        {return yy::class_parser::make_IDENTIFICADOR(yytext, loc);}
+{SPACE}                 {}
+{DELIMITADOR}           {}
+{COMENTARIOS}           {}
 
-.               {printf("ERROR LEXICO %s\n",yytext);}
-<<EOF>>		      {return yy::class_parser::make_FIN(loc);}
+.                       {printf("ERROR LEXICO %s\n",yytext);}
+<<EOF>>		              {return yy::class_parser::make_FIN(loc);}
 
 
 %%

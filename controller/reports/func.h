@@ -5,7 +5,7 @@
 #include <string.h>
 #include <fstream>
 
-std::string getHeaderMBR()
+std::string getHeader_1()
 {
     std::string graph =
         std::string("digraph G {\n") +
