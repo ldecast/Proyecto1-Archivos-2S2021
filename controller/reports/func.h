@@ -11,7 +11,7 @@ std::string getHeader_1()
         std::string("digraph G {\n") +
         +"graph[bgcolor=\"#141D26\"]\n" +
         +"rankdir=\"TB\";\n" +
-        +"node [shape=plaintext margin=\"0\" fontname= \"Ubuntu\" fontsize=\"14\"];\n" +
+        +"node [shape=plaintext fontname= \"Ubuntu\" fontsize=\"14\"];\n" +
         +"edge [style=\"invis\"];\n\n";
     return graph;
 }

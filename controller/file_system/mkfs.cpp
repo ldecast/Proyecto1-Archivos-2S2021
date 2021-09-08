@@ -76,7 +76,7 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     /* CREACIÓN DE JOURNALING */
     Journaling journaling;
 
-    /* ESCRITURA DEL SISTEMA EXT2 */
+    /* ESCRITURA DEL SISTEMA DE ARCHIVOS */
     FILE *_file = fopen(_mounted.path.c_str(), "rb+");
     fseek(_file, part_start, SEEK_SET); // Mover el puntero al inicio de la partición (primaria o lógica)
 

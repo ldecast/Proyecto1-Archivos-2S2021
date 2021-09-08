@@ -1,15 +1,13 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
-#include "../../model/structures.h"
 #include "../../model/filesystem.h"
-#include "../handler.h"
 #include "../file_system/func.h"
 #include "func.h"
 
 using std::string;
 
-string getDotInode(FILE *_file, int _index_inode, int _start_inodes, int _star_blocks, string _dot, string _name);
+string getDotInode(FILE *_file, int _index_inode, int _start_inodes, int _start_blocks, string _dot, string _name);
 
 string ReportInodes(MOUNTED _mounted)
 {
@@ -22,7 +20,7 @@ string ReportInodes(MOUNTED _mounted)
     fseek(file, start_byte_sb, SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
 
-    grafo += string("\"Inodes Report\" [ label = <\n") +
+    grafo += string("\"Inodes Report\" [margin=\"0.5\" label = <\n") +
              "<TABLE BGCOLOR=\"#009999\" BORDER=\"2\" COLOR=\"BLACK\" CELLBORDER=\"1\" CELLSPACING=\"0\">\n" +
              "<TR>\n" +
              "<TD HEIGHT=\"25\" BGCOLOR=\"#B8860B\" COLSPAN=\"3\">INODES REPORT</TD>\n" +
@@ -42,7 +40,7 @@ string ReportInodes(MOUNTED _mounted)
     return grafo;
 }
 
-string getDotInode(FILE *_file, int _index_inode, int _start_inodes, int _star_blocks, string _dot, string _name)
+string getDotInode(FILE *_file, int _index_inode, int _start_inodes, int _start_blocks, string _dot, string _name)
 {
     /* Leer lo que está dentro de la carpeta */
     InodosTable inode_current;
@@ -62,7 +60,7 @@ string getDotInode(FILE *_file, int _index_inode, int _start_inodes, int _star_b
         {
             if (inode_current.i_block[i] != -1)
             { /* Leer el bloque y redireccionar al inodo y ver si de nuevo es otra carpeta */
-                fseek(_file, _star_blocks, SEEK_SET);
+                fseek(_file, _start_blocks, SEEK_SET);
                 fseek(_file, inode_current.i_block[i] * 64, SEEK_CUR);
                 fread(&file_block, 64, 1, _file);
                 for (int j = 0; j < 4; j++)
@@ -72,7 +70,7 @@ string getDotInode(FILE *_file, int _index_inode, int _start_inodes, int _star_b
                     {
                         // std::cout << _name << std::endl;
                         _index_inode = file_block.b_content[j].b_inodo;
-                        _dot = getDotInode(_file, _index_inode, _start_inodes, _star_blocks, _dot, _name);
+                        _dot = getDotInode(_file, _index_inode, _start_inodes, _start_blocks, _dot, _name);
                     }
                 }
             }

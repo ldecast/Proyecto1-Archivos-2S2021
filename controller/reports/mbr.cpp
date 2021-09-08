@@ -41,7 +41,7 @@ string ReportMBR(MOUNTED _mounted)
 string getDotMBR(MBR _mbr, string _path)
 {
     string dot =
-        string("\"MBR Report\" [ label = <\n") +
+        string("\"MBR Report\" [ margin=\"0.5\" label = <\n") +
         "<TABLE BGCOLOR=\"#48D1CC\" BORDER=\"2\" COLOR=\"BLACK\" CELLBORDER=\"1\" CELLSPACING=\"0\">\n" +
         "<TR>\n" +
         "<TD BGCOLOR=\"#d23939\" COLSPAN=\"2\">MBR REPORT</TD>\n" +
