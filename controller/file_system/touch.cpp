@@ -146,6 +146,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
             break;
         }
     }
+    inode_father.i_size += content.length();
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fwrite(&inode_father, sizeof(InodosTable), 1, file);
@@ -180,6 +181,8 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     super_bloque.s_free_inodes_count--;
     super_bloque.s_free_blocks_count--;
 
+    root_inode.i_size += content.length();
+
     /* ESCRITURA */
     fseek(file, start_byte_sb, SEEK_SET);
     fwrite(&super_bloque, sizeof(Superbloque), 1, file);
@@ -189,6 +192,9 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
 
     fseek(file, super_bloque.s_bm_block_start, SEEK_SET);
     fwrite(&bm_blocks, 3 * super_bloque.s_inodes_count, 1, file);
+
+    fseek(file, super_bloque.s_inode_start, SEEK_SET);
+    fwrite(&root_inode, sizeof(InodosTable), 1, file);
 
     fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
     fseek(file, free_inode * sizeof(InodosTable), SEEK_CUR);

@@ -168,7 +168,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
 
     /* Llenar el nuevo inodo carpeta */
     new_inode.i_block[0] = free_block;
-    new_inode.i_size = 0;
+    new_inode.i_size = 64;
     new_inode.i_type = '0';
     new_inode.i_gid = _user_logged.GID;
     new_inode.i_uid = _user_logged.UID;
