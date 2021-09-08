@@ -27,7 +27,7 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
         return coutError("No se encuentra ninguna partición montada con el id '" + _id + "'.", NULL);
 
     MOUNTED mounted = _particiones_montadas[index];
-    std::string grafo;
+    std::string grafo = "-";
 
     if (_name == "mbr")
         grafo = ReportMBR(mounted);

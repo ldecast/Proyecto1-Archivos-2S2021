@@ -40,9 +40,31 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fread(&root_inode, sizeof(InodosTable), 1, file);
 
-    /* Lectura del archivo _cont si existe */
+    /* Lectura de la última carpeta padre */
+    FolderReference fr;
+    std::vector<string> folders = SplitPath(_path);
+    for (int i = 0; i < folders.size(); i++)
+    {
+        fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
+        if (fr.inode == -1)
+        {
+            // std::cout << "Not found: " + folders[i] + "\n";
+            fclose(file);
+            file = NULL;
+            if (!_r)
+                return coutError("Error: la ruta no existe y no se ha indicado el comando -r.", NULL);
+            return 777;
+        }
+    }
+
+    /* Creación del contenido del archivo */
     string content = "";
-    if (_cont != "")
+    if (_stdin)
+    {
+        std::cout << "Ingrese el contenido del archivo:" << std::endl;
+        std::getline(std::cin, content);
+    }
+    else if (_cont != "")
     {
         std::ifstream f(_cont);
         string line;
@@ -64,23 +86,6 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
         }
     }
     // std::cout << content << std::endl;
-
-    /* Lectura de la última carpeta padre */
-    FolderReference fr;
-    std::vector<string> folders = SplitPath(_path);
-    for (int i = 0; i < folders.size(); i++)
-    {
-        fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
-        if (fr.inode == -1)
-        {
-            // std::cout << "Not found: " + folders[i] + "\n";
-            fclose(file);
-            file = NULL;
-            if (!_r)
-                return coutError("Error: la ruta no existe y no se ha indicado el comando -r.", NULL);
-            return 777;
-        }
-    }
 
     /* Lectura del inodo de carpeta padre */
     InodosTable inode_father;
