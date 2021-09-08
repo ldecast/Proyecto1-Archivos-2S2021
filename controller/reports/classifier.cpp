@@ -9,6 +9,7 @@
 #include "bm_inode.cpp"
 #include "bm_block.cpp"
 #include "sb.cpp"
+#include "file.cpp"
 
 int classifier(std::string _name, std::string _path, std::string _id, std::string _ruta, std::string _root)
 {
@@ -48,8 +49,14 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
     else if (_name == "sb")
         grafo = ReportSuperBloque(mounted);
 
+    else if (_name == "file")
+        grafo = ReportFile(mounted, _ruta);
+
     else
         return coutError("El nombre del reporte a generar no es válido: " + _name, NULL);
+
+    if (grafo == "-")
+        return 0;
 
     writeDot(grafo);
     generateReport(dir_output);
