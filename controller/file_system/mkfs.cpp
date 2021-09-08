@@ -42,6 +42,8 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     Superbloque super_bloque;
     InodosTable inodo;
     int n = _number_inodos(part_size, _fs);
+    string bm_content;
+
     super_bloque.s_filesystem_type = _fs;
     super_bloque.s_inodes_count = n;
     super_bloque.s_blocks_count = 3 * n;
@@ -61,17 +63,21 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
 
     /* CREACIÓN DEL BITMAP DE INODOS */
     char bitmap_inodes[n];
+    bm_content = "11";
     for (int i = 2; i < n; i++)
-        bitmap_inodes[i] = '0';
-    bitmap_inodes[0] = '1';
-    bitmap_inodes[1] = '1';
+        bm_content += "0";
+    strcpy(bitmap_inodes, bm_content.c_str());
+    // std::cout << bitmap_inodes << std::endl;
+    // std::cout << bm_content.length() << std::endl;
 
     /* CREACIÓN DEL BITMAP DE BLOQUES */
     char bitmap_blocks[3 * n];
+    bm_content = "11";
     for (int i = 2; i < 3 * n; i++)
-        bitmap_blocks[i] = '0';
-    bitmap_blocks[0] = '1';
-    bitmap_blocks[1] = '1';
+        bm_content += "0";
+    strcpy(bitmap_blocks, bm_content.c_str());
+    // std::cout << bitmap_blocks << std::endl;
+    // std::cout << bm_content.length() << std::endl;
 
     /* CREACIÓN DE JOURNALING */
     Journaling journaling;
