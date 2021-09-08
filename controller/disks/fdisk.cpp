@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include "../../model/structures.h"
+#include "../../model/filesystem.h"
 #include "../handler.h"
 #include "func.h"
 #include "../partitions/fit.cpp"
@@ -9,8 +10,10 @@
 
 void CrearPrimaria(int _size, int _nstart, FILE *_file)
 {
+    Superbloque sb;
     fseek(_file, _nstart, SEEK_SET);
-    fwrite("\0", _size, 1, _file);
+    fwrite(&sb, sizeof(Superbloque), 1, _file);
+    // fwrite("\0", _size, 1, _file);
 }
 
 void CrearExtendida(int _size, int _nstart, char _fit, FILE *_file)
@@ -22,8 +25,10 @@ void CrearExtendida(int _size, int _nstart, char _fit, FILE *_file)
     ebr.part_size = 0;
     ebr.part_start = _nstart;
     ebr.part_status = '0';
+    Superbloque sb;
     fseek(_file, _nstart, SEEK_SET);
     fwrite(&ebr, sizeof(EBR), 1, _file);
+    fwrite(&sb, sizeof(Superbloque), 1, _file);
     // fwrite("\0", _size, 1, _file);
 }
 
@@ -72,11 +77,15 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
 
         ebr_to_update.part_next = ebr_new.part_start; // +1?
         // std::cout << "ebr_new.part_name: " + std::string(ebr_new.part_name) + " ebr_new.part_start: " + std::to_string(ebr_new.part_start) << std::endl;
+        Superbloque sb;
+
         fseek(_file, ebr_to_update.part_start, SEEK_SET);
         fwrite(&ebr_to_update, sizeof(EBR), 1, _file);
 
         fseek(_file, ebr_new.part_start, SEEK_SET);
         fwrite(&ebr_new, sizeof(EBR), 1, _file);
+
+        fwrite(&sb, sizeof(Superbloque), 1, _file);
         // fwrite("\0", _size, 1, _file);
     }
     fclose(_file);

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include "../../model/structures.h"
+#include "../../model/filesystem.h"
 #include "../handler.h"
 #include "../partitions/func.h"
 #include "func.h"
@@ -26,6 +27,26 @@ int DesmontarParticion(Disk_id _disk_id)
         if (mounted.id._carnet == _disk_id._carnet && mounted.id._number_id == _disk_id._number_id && mounted.id._letter_id == _disk_id._letter_id)
         {
             _particiones_montadas.erase(_particiones_montadas.begin() + i);
+
+            if (mounted.type != 'E')
+            {
+                int _part_start = (mounted.type == 'L') ? (mounted.logica.part_start) : (mounted.particion.part_start);
+                FILE *file = fopen(mounted.path.c_str(), "rb+");
+                Superbloque sb;
+                fseek(file, _part_start, SEEK_SET);
+                fread(&sb, sizeof(Superbloque), 1, file);
+                if (sb.s_mnt_count > 0 && mounted.type != 'E')
+                {
+                    sb.s_umtime = getCurrentTime();
+                    fseek(file, _part_start, SEEK_SET);
+                    fwrite(&sb, sizeof(Superbloque), 1, file);
+                    // std::cout << ctime(&sb.s_umtime) << std::endl;
+                    // std::cout << ctime(&sb.s_mtime) << std::endl;
+                }
+                fclose(file);
+                file = NULL;
+            }
+
             // Imprimir montadas
             /* for (int j = 0; j < _particiones_montadas.size(); j++)
             {

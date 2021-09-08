@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include "../../model/structures.h"
+#include "../../model/filesystem.h"
 #include "../handler.h"
 #include "func.h"
 
@@ -37,10 +38,12 @@ int MontarParticion(string _path, string _name)
     _mounted.type = tipo;
     _mounted.path = _path;
 
+    int _part_start;
+
     if (tipo == 'P' || tipo == 'E')
     {
         partition _particion = getPartition(mbr, _name, _file);
-
+        _part_start = _particion.part_start;
         // print("_particion.part_name: " + string(_particion.part_name));
         // print("_particion.part_size: " + std::to_string(_particion.part_size));
 
@@ -53,7 +56,7 @@ int MontarParticion(string _path, string _name)
         fseek(_file, _extendida.part_start, SEEK_SET);
         fread(&_ebr_initial, sizeof(EBR), 1, _file);
         _ebr_to_mount = getLogicPartition(_ebr_initial, _name, _file);
-
+        _part_start = _ebr_to_mount.part_start + sizeof(EBR);
         // print("_ebr_to_mount.part_name: " + string(_ebr_to_mount.part_name));
         // print("_ebr_to_mount.part_size: " + std::to_string(_ebr_to_mount.part_size));
 
@@ -63,6 +66,21 @@ int MontarParticion(string _path, string _name)
         return coutError("No se encuentra ninguna partición con ese nombre asignado.", _file);
 
     _particiones_montadas.push_back(_mounted);
+
+    if (tipo != 'E')
+    {
+        Superbloque sb;
+        fseek(_file, _part_start, SEEK_SET);
+        fread(&sb, sizeof(Superbloque), 1, _file);
+        if (sb.s_mnt_count > 0)
+        {
+            sb.s_mtime = getCurrentTime();
+            sb.s_mnt_count++;
+            fseek(_file, _part_start, SEEK_SET);
+            fwrite(&sb, sizeof(Superbloque), 1, _file);
+        }
+    }
+
     fclose(_file);
     _file = NULL;
     return printMOUNTED();

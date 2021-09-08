@@ -40,6 +40,7 @@ string ReportMBR(MOUNTED _mounted)
 
 string getDotMBR(MBR _mbr, string _path)
 {
+    string mbr_fecha_creacion = ctime(&_mbr.mbr_fecha_creacion);
     string dot =
         string("\"MBR Report\" [ margin=\"0.5\" label = <\n") +
         "<TABLE BGCOLOR=\"#48D1CC\" BORDER=\"2\" COLOR=\"BLACK\" CELLBORDER=\"1\" CELLSPACING=\"0\">\n" +
@@ -59,7 +60,7 @@ string getDotMBR(MBR _mbr, string _path)
 
         "<TR>\n" +
         "<TD ALIGN=\"left\">mbr_fecha_creacion</TD>\n" +
-        "<TD>" + ctime(&_mbr.mbr_fecha_creacion) + "</TD>\n" +
+        "<TD>" + mbr_fecha_creacion + "</TD>\n" +
         "</TR>\n\n" +
 
         "<TR>\n" +

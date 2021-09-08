@@ -19,7 +19,7 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
         break;
     case 'L':
         part_size = _mounted.logica.part_size;
-        part_start = _mounted.logica.part_start;
+        part_start = _mounted.logica.part_start + sizeof(EBR);
         break;
     default:
         return coutError("Solamente se puede montar un sistema de archivos en una partición primaria o lógica.", NULL);

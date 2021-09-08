@@ -23,7 +23,7 @@ struct Superbloque
     int s_free_inodes_count; // Contiene el número de inodos libres
     time_t s_mtime;          // Última fecha en el que el sistema fue montado
     time_t s_umtime;         // Última fecha en que el sistema fue desmontado
-    int s_mnt_count;         // Indica cuantas veces se ha montado el sistema
+    int s_mnt_count = 0;     // Indica cuantas veces se ha montado el sistema
     int s_magic;             // Valor que identifica al sistema de archivos, tendrá el valor 0xEF53
     int s_inode_size;        // Tamaño del inodo
     int s_block_size;        // Tamaño del bloque
