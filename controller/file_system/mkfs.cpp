@@ -43,6 +43,7 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     InodosTable inodo;
     int n = _number_inodos(part_size, _fs);
     string bm_content;
+    // std::cout << n << " " << _fs << std::endl;
 
     super_bloque.s_filesystem_type = _fs;
     super_bloque.s_inodes_count = n;

@@ -12,7 +12,7 @@ int searchFreeIndex(char bitmap[], int n);
 int startByteSuperBloque(MOUNTED _mounted);
 int GetFreePointer(int b_pointers[]);
 
-int _number_inodos(int _part_size, char _ext)
+int _number_inodos(int _part_size, int _ext)
 {
     switch (_ext)
     {

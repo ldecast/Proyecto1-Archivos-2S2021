@@ -7,7 +7,7 @@
 
 using std::string;
 
-string ReportBitMapInodes(MOUNTED _mounted)
+string ReportBitMapBlocks(MOUNTED _mounted)
 {
     string grafo = getHeader_1();
     FILE *file = fopen(_mounted.path.c_str(), "rb");
@@ -17,20 +17,22 @@ string ReportBitMapInodes(MOUNTED _mounted)
     Superbloque super_bloque;
     fseek(file, start_byte_sb, SEEK_SET);
     fread(&super_bloque, sizeof(Superbloque), 1, file);
+    fclose(file);
+    file = NULL;
 
-    grafo += string("\"Inode BitMap Report\" [margin=\"1\" fontsize=\"18\" label = <\n") +
+    grafo += string("\"Block BitMap Report\" [margin=\"1\" fontsize=\"18\" label = <\n") +
              "<TABLE BORDER=\"5\" COLOR=\"BLACK\" CELLBORDER=\"1\" CELLSPACING=\"0\">\n" +
              "<TR>\n" +
-             "<TD BORDER=\"0\" HEIGHT=\"35\" BGCOLOR=\"#B8860B\">BITMAP DE INODOS</TD>\n" +
+             "<TD BORDER=\"0\" HEIGHT=\"35\" BGCOLOR=\"#B8860B\">BITMAP DE BLOQUES</TD>\n" +
              "</TR>\n\n" +
              "<TR>\n" +
              "<TD BORDER=\"0\" WIDTH=\"490\" BGCOLOR=\"#708090\"><B>\n<br/>\n    ";
 
-    int n = super_bloque.s_inodes_count;
-    int used = n - super_bloque.s_free_inodes_count;
+    int total_blocks = 3 * super_bloque.s_inodes_count;
+    int used = total_blocks - super_bloque.s_free_blocks_count;
 
     /* Agregar al dot */
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < total_blocks; i++)
     {
         if (i < used)
             grafo += "1    ";
@@ -39,10 +41,10 @@ string ReportBitMapInodes(MOUNTED _mounted)
         if ((i + 1) % 16 == 0)
             grafo += "<br/><br/>\n    ";
     }
-    if (n % 16 != 0)
+    if (total_blocks % 16 != 0)
         grafo += "<br/>      ";
     grafo.erase(grafo.length() - 5);
-    grafo += "</B></TD>\n</TR>\n\n</TABLE>>];\n\n}";
+    grafo += "<br/></B></TD>\n</TR>\n\n</TABLE>>];\n\n}";
 
     return grafo;
 }
