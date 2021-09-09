@@ -22,6 +22,7 @@
 #include "./file_system/cp.cpp"
 #include "./file_system/mkdir.cpp"
 #include "./file_system/loss.cpp"
+#include "./file_system/find.cpp"
 #include "./file_system/recovery.cpp"
 #include "./reports/classifier.cpp"
 
@@ -117,6 +118,9 @@ int bloque(struct command x)
 
     if (x.keyword == "__CP")
         return cp(x.path, x.dest);
+
+    if (x.keyword == "__FIND")
+        return find(x.path, x.name);
 
     if (x.keyword == "__LOSS")
         return loss(x.id);

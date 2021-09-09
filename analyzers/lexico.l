@@ -20,6 +20,7 @@ STRING_SINGLE \'(\\.|[^"\\])*\'
 SPACE " "+
 DIGITO [0-9]
 LETRA [a-zA-ZñÑ]
+PATTERN [*?]"."{LETRA}+
 NUMERO "-"?{DIGITO}+("."{DIGITO}+)?
 IDENTIFICADOR ({LETRA}|{DIGITO}|"_")+
 DELIMITADOR [\t\r\n\f]
@@ -70,6 +71,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "ren"                   {return yy::class_parser::make_REN(yytext, loc);}
 "mv"                    {return yy::class_parser::make_MV(yytext, loc);}
 "cp"                    {return yy::class_parser::make_CP(yytext, loc);}
+"find"                  {return yy::class_parser::make_FIND(yytext, loc);}
 "mkdir"                 {return yy::class_parser::make_MKDIR(yytext, loc);}
 "loss"                  {return yy::class_parser::make_LOSS(yytext, loc);}
 "recovery"              {return yy::class_parser::make_RECOVERY(yytext, loc);}
@@ -92,6 +94,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 {PATH_DIR}              {return yy::class_parser::make_PATH_DIR(yytext, loc);}
 {NUMERO}                {return yy::class_parser::make_NUMERO(yytext ,loc);}
 {IDENTIFICADOR}	        {return yy::class_parser::make_IDENTIFICADOR(yytext, loc);}
+{PATTERN}	              {return yy::class_parser::make_PATTERN(yytext, loc);}
 {SPACE}                 {}
 {DELIMITADOR}           {}
 {COMENTARIOS}           {}

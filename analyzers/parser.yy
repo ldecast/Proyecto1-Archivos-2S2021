@@ -67,6 +67,7 @@ struct command x;
 %token <std::string> MV "pr_MV"
 %token <std::string> CP "pr_CP"
 %token <std::string> MKDIR "pr_MKDIR"
+%token <std::string> FIND "pr_FIND"
 %token <std::string> LOSS "pr_LOSS"
 %token <std::string> RECOVERY "pr_RECOVERY"
 
@@ -128,7 +129,7 @@ DATA: STRING {$$=$1;}
     | "tk_number" {$$=$1;}
     | "tk_path" {$$=$1;}
     | "tk_identifier" {$$=$1;}
-    | "tk_pattern" { $$=$1;}
+    | "tk_pattern" {$$=$1;}
 ;
 
 E: EXEC
@@ -166,6 +167,7 @@ FILESYSTEM: "pr_CHMOD" PARAMS {x = newCommand("__CHMOD",parametros);}
             | "pr_REN" PARAMS {x = newCommand("__REN",parametros);}
             | "pr_CP" PARAMS {x = newCommand("__CP",parametros);}
             | "pr_MV" PARAMS {x = newCommand("__MV",parametros);}
+            | "pr_FIND" PARAMS {x = newCommand("__FIND",parametros);}
             | "pr_LOSS" PARAMS {x = newCommand("__LOSS",parametros);}
             | "pr_RECOVERY" PARAMS {x = newCommand("__RECOVERY",parametros);}
 ;

@@ -24,7 +24,7 @@ int exec(std::string _path)
     {
       std::cout << std::endl;
       std::cout << ">> " + line << std::endl;
-      // std::this_thread::sleep_for(std::chrono::milliseconds(350));
+      std::this_thread::sleep_for(std::chrono::milliseconds(350));
       std::ofstream MyFile(filename);
       MyFile << line;
       MyFile.close();
@@ -36,7 +36,7 @@ int exec(std::string _path)
 
 int main()
 {
-  exec("/home/ldecast/Escritorio/run.sh");
+  // exec("/home/ldecast/Escritorio/run.sh");
   std::string input, output;
   std::string filename = "command.txt";
   while (true)

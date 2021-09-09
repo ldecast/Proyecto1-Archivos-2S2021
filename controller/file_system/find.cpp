@@ -44,6 +44,8 @@ int Encontrar(string _path, string _foldername, string _filename, char _pattern)
     CarpetasBlock file_block_tmp;
     bool x = false;
     FolderReference aux;
+    if (_foldername == "")
+        x = true;
     for (int i = 0; i < 15 && !x; i++) // falta indirectos
     {
         if (inode_father.i_block[i] != -1)
@@ -84,22 +86,29 @@ int Encontrar(string _path, string _foldername, string _filename, char _pattern)
             fread(&file_block_tmp, 64, 1, file);
             for (int j = 0; j < 4; j++)
             {
-                string tmp = string(file_block_tmp.b_content[j].b_name);
-                string tipo;
-                if (tmp.find('.') != std::string::npos)
-                    tipo = "Archivo";
-                else
-                    tipo = "Folder";
-                if (tmp == _filename)
+                if (file_block_tmp.b_content[j].b_inodo != -1 && string(file_block_tmp.b_content[j].b_name) != "." && string(file_block_tmp.b_content[j].b_name) != "..")
                 {
-                    std::cout << (tmp + "|" + std::to_string(aux.inode) + "|" + tipo) << std::endl;
-                }
-                else if (tmp.substr(tmp.find_last_of('.')) == _filename.substr(_filename.find_last_of('.')))
-                {
-                    if (_pattern == '*')
+                    string tmp = string(file_block_tmp.b_content[j].b_name);
+                    string tipo;
+                    if (tmp.find('.') != std::string::npos)
+                    {
+                        tipo = "Archivo";
+                        if (tmp.substr(tmp.find_last_of('.')) == _filename.substr(_filename.find_last_of('.')))
+                        {
+                            if (_pattern == '*')
+                                std::cout << (tmp + "|" + std::to_string(aux.inode) + "|" + tipo) << std::endl;
+                            else if (tmp.find_last_of('.') == 1)
+                                std::cout << (tmp + "|" + std::to_string(aux.inode) + "|" + tipo) << std::endl;
+                        }
+                    }
+                    else
+                    {
+                        tipo = "Folder";
+                    }
+                    if (tmp == _filename)
+                    {
                         std::cout << (tmp + "|" + std::to_string(aux.inode) + "|" + tipo) << std::endl;
-                    else if (tmp.find_last_of('.') == 1)
-                        std::cout << (tmp + "|" + std::to_string(aux.inode) + "|" + tipo) << std::endl;
+                    }
                 }
             }
         }
