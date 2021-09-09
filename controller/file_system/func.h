@@ -8,9 +8,7 @@
 #include "../partitions/func.h"
 #include "../handler.h"
 
-int searchFreeIndex(char bitmap[], int n);
 int startByteSuperBloque(MOUNTED _mounted);
-int GetFreePointer(int b_pointers[]);
 
 int _number_inodos(int _part_size, int _ext)
 {
@@ -33,7 +31,7 @@ std::string ReadFile(int _index_inode, int _s_inode_start, int _s_block_start, s
     fseek(file, _s_inode_start, SEEK_SET);
     fseek(file, _index_inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode_current, sizeof(InodosTable), 1, file);
-    for (int i = 0; i < 12; i++) //agregar indirectos
+    for (int i = 0; i < 15; i++) //agregar indirectos
     {
         if (inode_current.i_block[i] != -1)
         {
@@ -51,7 +49,7 @@ std::string ReadFile(int _index_inode, int _s_inode_start, int _s_block_start, s
 bool fileExists(InodosTable _inode, string _filename, FILE *_file, int _start_blocks)
 {
     CarpetasBlock file_block;
-    for (int i = 0; i < 12; i++) // falta indirectos
+    for (int i = 0; i < 15; i++) // falta indirectos
     {
         if (_inode.i_block[i] != -1)
         {
@@ -75,7 +73,7 @@ FolderReference getFatherReference(FolderReference _fr, string _folder, FILE *_f
     fseek(_file, _fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode, sizeof(InodosTable), 1, _file);
     CarpetasBlock folder_block;
-    for (int i = 0; i < 12; i++) // falta indirectos
+    for (int i = 0; i < 15; i++) // falta indirectos
     {
         if (inode.i_block[i] != -1)
         {
@@ -90,7 +88,7 @@ FolderReference getFatherReference(FolderReference _fr, string _folder, FILE *_f
                     fseek(_file, _start_inodes, SEEK_SET);
                     fseek(_file, folder_block.b_content[j].b_inodo * sizeof(InodosTable), SEEK_CUR);
                     fread(&inode, sizeof(InodosTable), 1, _file);
-                    for (int k = 0; k < 12; k++) // Se podría evitar este paso
+                    for (int k = 0; k < 15; k++) // Se podría evitar este paso
                     {
                         if (inode.i_block[k] != -1)
                         {
@@ -126,29 +124,18 @@ int writeBlock(int _type, string _content, int _block_reference)
     /* Lectura del bitmap de bloques */
     char bm_block[3 * super_bloque.s_inodes_count];
     fseek(file, super_bloque.s_bm_block_start, SEEK_SET);
-    fread(&bm_block, sizeof(3 * super_bloque.s_inodes_count), 1, file);
+    fread(&bm_block, 3 * super_bloque.s_inodes_count, 1, file);
     /* Posicionarse en el espacio del bloque disponible */
     int block_free = super_bloque.s_first_blo;
     fseek(file, super_bloque.s_block_start, SEEK_SET);
     fseek(file, block_free * 64, SEEK_CUR);
     ArchivosBlock archivo;
     ApuntadoresBlock apuntadores;
-    // char tmp[64];
     switch (_type)
     {
-    case 0: //_inode = UpdateInode(super_bloque, _inode, block_free);
+    case 0:
         strcpy(archivo.b_content, _content.c_str());
         fwrite(&archivo, 64, 1, file);
-        // std::cout << "\033[1;33m" + string(archivo.b_content) + "\033[0m\n" << std::endl;
-        break;
-    case 1:
-        apuntadores.b_pointers[0] = _block_reference; // Apunta a bloque de archivo o carpeta
-        fwrite(&apuntadores, 64, 1, file);
-        // _inode.i_block[12] = block_free;
-        break;
-    case 2:
-        break;
-    case 3:
         break;
     }
     bm_block[block_free] = '1';
@@ -162,7 +149,6 @@ int writeBlock(int _type, string _content, int _block_reference)
 
     fclose(file);
     file = NULL;
-
     return block_free; // Retornamos el número de bloque creado
 }
 
@@ -180,60 +166,22 @@ void UpdateInode(int _inode_index, int _block_written)
     fread(&_inode, sizeof(InodosTable), 1, file);
 
     bool updated = false;
-    int free_pointer = -1;
-
-    for (int i = 0; i < 12 && !updated; i++) // falta indirectos
+    for (int i = 0; i < 15 && !updated; i++) // falta indirectos
     {
         if (_inode.i_block[i] == -1)
         {
-            /* ArchivosBlock tmp;
-            fseek(file, super_bloque.s_block_start, SEEK_SET);
-            fseek(file, _block_written * 64, SEEK_CUR);
-            fread(&tmp, 64, 1, file);
-            std::cout << "pre-content: " << tmp.b_content << std::endl; */
             _inode.i_block[i] = _block_written;
+            _inode.i_mtime = getCurrentTime();
             updated = true;
-            // std::cout << "inode_index: " << _inode_index << " i:" << i << " block: " << _block_written << std::endl;
             break;
         }
     }
     if (!updated)
-    {
-        int type = 1;
-        for (int i = 12; i < 15; i++)
-        {
-            if (_inode.i_block[i] == -1)
-            {
-                _inode.i_block[i] = writeBlock(type, "", _block_written);
-                updated = true;
-                break;
-            }
-            else
-            { // Falta validar el tipo de apuntador
-                ApuntadoresBlock apuntadores;
-                fseek(file, super_bloque.s_block_start, SEEK_SET);
-                fseek(file, _inode.i_block[i] * 64, SEEK_CUR);
-                fread(&apuntadores, sizeof(ApuntadoresBlock), 1, file);
-                free_pointer = GetFreePointer(apuntadores.b_pointers);
-                if (free_pointer > -1)
-                {
-                    _inode.i_block[i] = free_pointer;
-                    updated = true;
-                    break;
-                }
-            }
-            type++;
-        }
-    }
-    if (!updated)
         coutError("Error: no se encontró ningún bloque de inodo libre para guardar el contenido.", NULL);
-    // std::cout << "\033[1;31m" + string(ctime(&_inode.i_mtime)) + "\033[0m\n";
-    _inode.i_mtime = getCurrentTime();
     /* Sobreescribir el inodo */
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, _inode_index * sizeof(InodosTable), SEEK_CUR);
     fwrite(&_inode, sizeof(InodosTable), 1, file);
-
     fclose(file);
     file = NULL;
 }
@@ -253,26 +201,6 @@ int startByteSuperBloque(MOUNTED _mounted)
         break;
     }
     return sb_start;
-}
-
-int GetFreePointer(int b_pointers[]) // Agregar si es un bloque de apuntadores de tipo 1,2,3
-{
-    for (int i = 0; i < 16; i++)
-    {
-        if (b_pointers[i] == -1)
-            return i;
-    }
-    return -1;
-}
-
-int searchFreeIndex(char bitmap[], int n)
-{
-    for (int i = 0; i < n; i++)
-    {
-        if (bitmap[i] == '0')
-            return i;
-    }
-    return -1;
 }
 
 char charFormat(std::string _format)

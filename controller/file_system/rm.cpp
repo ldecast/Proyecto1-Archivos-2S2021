@@ -40,7 +40,7 @@ int EliminarA_C(string _path, string _name)
     CarpetasBlock file_block;
     InodosTable inode_current_tmp;
     bool x = false;
-    for (int i = 0; i < 12 && !x; i++) // Obtener el inodo asociado directo
+    for (int i = 0; i < 15 && !x; i++) // Obtener el inodo asociado directo
     {
         if (inode_father.i_block[i] != -1)
         {
@@ -97,7 +97,7 @@ int toRemove(int _index_inode, int _seek_superbloque)
     if (inode_current.i_type == '0')
     {
         CarpetasBlock file_block;
-        for (int i = 0; i < 12; i++) // falta indirectos
+        for (int i = 0; i < 15; i++) // falta indirectos
         {
             if (inode_current.i_block[i] != -1)
             { /* Leer el bloque y redireccionar al inodo y ver si de nuevo es otra carpeta */
@@ -139,12 +139,12 @@ int RewriteInode(int _index_inode, int _seek_superbloque)
     /* Lectura del bitmap de inodos */
     char bm_inodes[super_bloque.s_inodes_count];
     fseek(_file, super_bloque.s_bm_inode_start, SEEK_SET);
-    fread(&bm_inodes, sizeof(super_bloque.s_inodes_count), 1, _file);
+    fread(&bm_inodes, super_bloque.s_inodes_count, 1, _file);
 
     /* Lectura del bitmap de bloques */
     char bm_blocks[3 * super_bloque.s_inodes_count];
     fseek(_file, super_bloque.s_bm_block_start, SEEK_SET);
-    fread(&bm_blocks, sizeof(3 * super_bloque.s_inodes_count), 1, _file);
+    fread(&bm_blocks, 3 * super_bloque.s_inodes_count, 1, _file);
 
     /* Lectura del inodo de carpeta padre */
     InodosTable inode_current;
@@ -163,7 +163,7 @@ int RewriteInode(int _index_inode, int _seek_superbloque)
     {
         inode_current.i_size = 0;
         inode_current.i_mtime = getCurrentTime();
-        for (int i = 11; i >= 0; i--) // falta indirectos
+        for (int i = 0; i < 15; i++) // falta indirectos
         {
             if (inode_current.i_block[i] != -1)
             {

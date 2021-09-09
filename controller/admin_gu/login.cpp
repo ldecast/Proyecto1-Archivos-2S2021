@@ -49,7 +49,7 @@ int login(string _user, string _pwd, string _id)
     string content_file = ReadFile(1, super_bloque.s_inode_start, super_bloque.s_block_start, mounted.path);
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    std::cout << content_file << std::endl;
+    // std::cout << content_file << std::endl;
     std::istringstream f(content_file);
     string line;
     while (getline(f, line))

@@ -87,8 +87,8 @@ string getDotPartitions(MBR _mbr, string _path, FILE *_file)
             // free = _mbr.mbr_tamano - _particion.part_start - _particion.part_size;
             // free = _mbr.mbr_tamano - free;
             // free = getSizeBeforeFree(_mbr, i);
-            std::cout << "free after Found libre: " + std::to_string(free) << std::endl;
-            std::cout << "free after Found libre: " + std::to_string(_particion.part_size) << std::endl;
+            // std::cout << "free after Found libre: " + std::to_string(free) << std::endl;
+            // std::cout << "free after Found libre: " + std::to_string(_particion.part_size) << std::endl;
         }
 
         dot += string("<TD HEIGHT=\"160\" WIDTH=\"150\" BGCOLOR=\"" + colors[i] + "\">") +

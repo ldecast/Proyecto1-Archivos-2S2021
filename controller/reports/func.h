@@ -9,7 +9,7 @@ std::string getHeader_1()
 {
     std::string graph =
         std::string("digraph G {\n") +
-        +"graph[bgcolor=\"#141D26\"]\n" +
+        +"graph[bgcolor=\"#141D26\" margin=0]\n" +
         +"rankdir=\"TB\";\n" +
         +"node [shape=plaintext fontname= \"Ubuntu\" fontsize=\"14\"];\n" +
         +"edge [style=\"invis\"];\n\n";

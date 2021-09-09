@@ -44,7 +44,7 @@ string getDotBlock(int _index_inode, int _start_inodes, int _start_blocks, strin
     if (inode_current.i_type == '0')
     {
         CarpetasBlock folder_block;
-        for (int i = 0; i < 12; i++) // falta indirectos
+        for (int i = 0; i < 15; i++) // falta indirectos
         {
             if (inode_current.i_block[i] != -1)
             { /* Leer el bloque y redireccionar al inodo y ver si de nuevo es otra carpeta */
@@ -56,7 +56,7 @@ string getDotBlock(int _index_inode, int _start_inodes, int _start_blocks, strin
                 fclose(_file);
                 for (int j = 0; j < 4; j++)
                 {
-                    if (folder_block.b_content[j].b_inodo != -1 && folder_block.b_content[j].b_inodo != _index_inode && string(folder_block.b_content[j].b_name) != ".." && string(folder_block.b_content[j].b_name) != ".")
+                    if (folder_block.b_content[j].b_inodo > 0 && folder_block.b_content[j].b_inodo != _index_inode && string(folder_block.b_content[j].b_name) != ".." && string(folder_block.b_content[j].b_name) != ".")
                     {
                         // std::cout << folder_block.b_content[j].b_name << std::endl;
                         _index_inode = folder_block.b_content[j].b_inodo;
@@ -65,37 +65,16 @@ string getDotBlock(int _index_inode, int _start_inodes, int _start_blocks, strin
                 }
             }
         }
-        char type = 1;
-        ApuntadoresBlock pointers_block;
-        for (int i = 12; i < 15; i++)
-        {
-            if (inode_current.i_block[i] != -1)
-            {
-            }
-        }
     }
     else // Es inodo de archivo
     {
-        for (int i = 0; i < 12; i++)
+        for (int i = 0; i < 15; i++)
         {
             if (inode_current.i_block[i] != -1)
                 _dot += getDot_file_block(_start_blocks, inode_current.i_block[i], _path);
         }
     }
     _file = NULL;
-    return _dot;
-}
-
-string toRunPointerBlock(int _start_blocks, int _index_block, int _type, string _path)
-{
-    string _dot = "";
-    if (_type > 1)
-    {
-        _dot += toRunPointerBlock(_start_blocks, _index_block, _type, _path);
-    }
-
-    _dot += getDot_pointer_block(_start_blocks, _index_block, _path);
-
     return _dot;
 }
 
@@ -127,6 +106,8 @@ string getDot_folder_block(int _start_blocks, int _index_block, string _path)
             "\n";
     }
     dot += "</TABLE>>];\n\n";
+    fclose(_file);
+    _file = NULL;
     return dot;
 }
 
@@ -152,6 +133,8 @@ string getDot_file_block(int _start_blocks, int _index_block, string _path)
         "<TD>\n";
     dot += (content + "\n");
     dot += string("</TD>\n</TR>\n\n</TABLE>>];\n\n");
+    fclose(_file);
+    _file = NULL;
     return dot;
 }
 
@@ -181,5 +164,7 @@ string getDot_pointer_block(int _start_blocks, int _index_block, string _path)
     content.erase(content.length() - 1);
     dot += (content + "\n");
     dot += string("</TD>\n</TR>\n\n</TABLE>>];\n\n");
+    fclose(_file);
+    _file = NULL;
     return dot;
 }

@@ -31,7 +31,7 @@ int CambiarPropietario(string _path, string _name, string _username, bool _r)
         fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {
-            std::cout << "Not found: " + folders[i] + "\n";
+            // std::cout << "Not found: " + folders[i] + "\n";
             return coutError("Error: la ruta del archivo o carpeta no existe.", file);
         }
     }
@@ -43,7 +43,7 @@ int CambiarPropietario(string _path, string _name, string _username, bool _r)
     CarpetasBlock file_block;
     InodosTable inode_current_tmp;
     bool x = false;
-    for (int i = 0; i < 12 && !x; i++) // Obtener el inodo asociado directo
+    for (int i = 0; i < 15 && !x; i++) // Obtener el inodo asociado directo
     {
         if (inode_father.i_block[i] != -1)
         {
@@ -93,7 +93,7 @@ int UpdateUID(int _index_inode, int _start_inodes, int _start_blocks, int _uid, 
     if (inode_current.i_type == '0')
     { // Actualizar lo que está dentro de la carpeta
         CarpetasBlock file_block;
-        for (int i = 0; i < 12; i++) // falta indirectos
+        for (int i = 0; i < 15; i++) // falta indirectos
         {
             if (inode_current.i_block[i] != -1)
             { /* Leer el bloque y redireccionar al inodo y ver si de nuevo es otra carpeta */

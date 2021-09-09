@@ -407,10 +407,12 @@ namespace yy {
       // "pr_RMGRP"
       // "pr_MKUSR"
       // "pr_RMUSR"
+      // "pr_CHGRP"
       // "pr_USER"
       // "pr_PWD"
       // "pr_GRP"
       // "pr_TOUCH"
+      // "pr_CHOWN"
       // "pr_CHMOD"
       // "pr_CAT"
       // "pr_RM"
@@ -515,44 +517,46 @@ namespace yy {
         TOK_RMGRP = 272,
         TOK_MKUSR = 273,
         TOK_RMUSR = 274,
-        TOK_USER = 275,
-        TOK_PWD = 276,
-        TOK_GRP = 277,
-        TOK_TOUCH = 278,
-        TOK_CHMOD = 279,
-        TOK_CAT = 280,
-        TOK_RM = 281,
-        TOK_EDIT = 282,
-        TOK_REN = 283,
-        TOK_MV = 284,
-        TOK_CP = 285,
-        TOK_MKDIR = 286,
-        TOK_FIND = 287,
-        TOK_LOSS = 288,
-        TOK_RECOVERY = 289,
-        TOK_R = 290,
-        TOK_FILEN = 291,
-        TOK_DEST = 292,
-        TOK_P = 293,
-        TOK_CONT = 294,
-        TOK_UGO = 295,
-        TOK_STDIN = 296,
-        TOK_RUTA = 297,
-        TOK_ROOT = 298,
-        TOK_MKDISK = 299,
-        TOK_RMDISK = 300,
-        TOK_FDISK = 301,
-        TOK_MOUNT = 302,
-        TOK_UMOUNT = 303,
-        TOK_MKFS = 304,
-        TOK_STRING_DOUBLE = 305,
-        TOK_STRING_SINGLE = 306,
-        TOK_PATH_DIR = 307,
-        TOK_RUN_EXEC = 308,
-        TOK_RUN_REPORT = 309,
-        TOK_IDENTIFICADOR = 310,
-        TOK_PATTERN = 311,
-        TOK_NUMERO = 312
+        TOK_CHGRP = 275,
+        TOK_USER = 276,
+        TOK_PWD = 277,
+        TOK_GRP = 278,
+        TOK_TOUCH = 279,
+        TOK_CHOWN = 280,
+        TOK_CHMOD = 281,
+        TOK_CAT = 282,
+        TOK_RM = 283,
+        TOK_EDIT = 284,
+        TOK_REN = 285,
+        TOK_MV = 286,
+        TOK_CP = 287,
+        TOK_MKDIR = 288,
+        TOK_FIND = 289,
+        TOK_LOSS = 290,
+        TOK_RECOVERY = 291,
+        TOK_R = 292,
+        TOK_FILEN = 293,
+        TOK_DEST = 294,
+        TOK_P = 295,
+        TOK_CONT = 296,
+        TOK_UGO = 297,
+        TOK_STDIN = 298,
+        TOK_RUTA = 299,
+        TOK_ROOT = 300,
+        TOK_MKDISK = 301,
+        TOK_RMDISK = 302,
+        TOK_FDISK = 303,
+        TOK_MOUNT = 304,
+        TOK_UMOUNT = 305,
+        TOK_MKFS = 306,
+        TOK_STRING_DOUBLE = 307,
+        TOK_STRING_SINGLE = 308,
+        TOK_PATH_DIR = 309,
+        TOK_RUN_EXEC = 310,
+        TOK_RUN_REPORT = 311,
+        TOK_IDENTIFICADOR = 312,
+        TOK_PATTERN = 313,
+        TOK_NUMERO = 314
       };
     };
 
@@ -659,48 +663,50 @@ switch (yytype)
       case 17: // "pr_RMGRP"
       case 18: // "pr_MKUSR"
       case 19: // "pr_RMUSR"
-      case 20: // "pr_USER"
-      case 21: // "pr_PWD"
-      case 22: // "pr_GRP"
-      case 23: // "pr_TOUCH"
-      case 24: // "pr_CHMOD"
-      case 25: // "pr_CAT"
-      case 26: // "pr_RM"
-      case 27: // "pr_EDIT"
-      case 28: // "pr_REN"
-      case 29: // "pr_MV"
-      case 30: // "pr_CP"
-      case 31: // "pr_MKDIR"
-      case 32: // "pr_FIND"
-      case 33: // "pr_LOSS"
-      case 34: // "pr_RECOVERY"
-      case 35: // "pr_R"
-      case 36: // "pr_FILEN"
-      case 37: // "pr_DEST"
-      case 38: // "pr_P"
-      case 39: // "pr_CONT"
-      case 40: // "pr_UGO"
-      case 41: // "pr_STDIN"
-      case 42: // "pr_RUTA"
-      case 43: // "pr_ROOT"
-      case 44: // "pr_MKDISK"
-      case 45: // "pr_RMDISK"
-      case 46: // "pr_FDISK"
-      case 47: // "pr_MOUNT"
-      case 48: // "pr_UMOUNT"
-      case 49: // "pr_MKFS"
-      case 50: // "tk_string_d"
-      case 51: // "tk_string_s"
-      case 52: // "tk_path"
-      case 53: // "pr_exec"
-      case 54: // "pr_rep"
-      case 55: // "tk_identifier"
-      case 56: // "tk_pattern"
-      case 57: // "tk_number"
-      case 60: // STRING
-      case 61: // DATA
-      case 69: // PARAM
-      case 70: // BOOLEAN_PARAM
+      case 20: // "pr_CHGRP"
+      case 21: // "pr_USER"
+      case 22: // "pr_PWD"
+      case 23: // "pr_GRP"
+      case 24: // "pr_TOUCH"
+      case 25: // "pr_CHOWN"
+      case 26: // "pr_CHMOD"
+      case 27: // "pr_CAT"
+      case 28: // "pr_RM"
+      case 29: // "pr_EDIT"
+      case 30: // "pr_REN"
+      case 31: // "pr_MV"
+      case 32: // "pr_CP"
+      case 33: // "pr_MKDIR"
+      case 34: // "pr_FIND"
+      case 35: // "pr_LOSS"
+      case 36: // "pr_RECOVERY"
+      case 37: // "pr_R"
+      case 38: // "pr_FILEN"
+      case 39: // "pr_DEST"
+      case 40: // "pr_P"
+      case 41: // "pr_CONT"
+      case 42: // "pr_UGO"
+      case 43: // "pr_STDIN"
+      case 44: // "pr_RUTA"
+      case 45: // "pr_ROOT"
+      case 46: // "pr_MKDISK"
+      case 47: // "pr_RMDISK"
+      case 48: // "pr_FDISK"
+      case 49: // "pr_MOUNT"
+      case 50: // "pr_UMOUNT"
+      case 51: // "pr_MKFS"
+      case 52: // "tk_string_d"
+      case 53: // "tk_string_s"
+      case 54: // "tk_path"
+      case 55: // "pr_exec"
+      case 56: // "pr_rep"
+      case 57: // "tk_identifier"
+      case 58: // "tk_pattern"
+      case 59: // "tk_number"
+      case 62: // STRING
+      case 63: // DATA
+      case 71: // PARAM
+      case 72: // BOOLEAN_PARAM
         value.template destroy< std::string > ();
         break;
 
@@ -793,13 +799,13 @@ switch (yytype)
       symbol_type (int tok, std::string v, location_type l)
         : super_type(token_type (tok), std::move (v), std::move (l))
       {
-        YY_ASSERT (tok == token::TOK_EQUAL || tok == token::TOK_FIT || tok == token::TOK_UNIT || tok == token::TOK_PATH || tok == token::TOK_SIZE || tok == token::TOK_TYPE || tok == token::TOK_DELETE || tok == token::TOK_NAME || tok == token::TOK_ADD || tok == token::TOK_ID || tok == token::TOK_FS || tok == token::TOK_LOGIN || tok == token::TOK_LOGOUT || tok == token::TOK_MKGRP || tok == token::TOK_RMGRP || tok == token::TOK_MKUSR || tok == token::TOK_RMUSR || tok == token::TOK_USER || tok == token::TOK_PWD || tok == token::TOK_GRP || tok == token::TOK_TOUCH || tok == token::TOK_CHMOD || tok == token::TOK_CAT || tok == token::TOK_RM || tok == token::TOK_EDIT || tok == token::TOK_REN || tok == token::TOK_MV || tok == token::TOK_CP || tok == token::TOK_MKDIR || tok == token::TOK_FIND || tok == token::TOK_LOSS || tok == token::TOK_RECOVERY || tok == token::TOK_R || tok == token::TOK_FILEN || tok == token::TOK_DEST || tok == token::TOK_P || tok == token::TOK_CONT || tok == token::TOK_UGO || tok == token::TOK_STDIN || tok == token::TOK_RUTA || tok == token::TOK_ROOT || tok == token::TOK_MKDISK || tok == token::TOK_RMDISK || tok == token::TOK_FDISK || tok == token::TOK_MOUNT || tok == token::TOK_UMOUNT || tok == token::TOK_MKFS || tok == token::TOK_STRING_DOUBLE || tok == token::TOK_STRING_SINGLE || tok == token::TOK_PATH_DIR || tok == token::TOK_RUN_EXEC || tok == token::TOK_RUN_REPORT || tok == token::TOK_IDENTIFICADOR || tok == token::TOK_PATTERN || tok == token::TOK_NUMERO);
+        YY_ASSERT (tok == token::TOK_EQUAL || tok == token::TOK_FIT || tok == token::TOK_UNIT || tok == token::TOK_PATH || tok == token::TOK_SIZE || tok == token::TOK_TYPE || tok == token::TOK_DELETE || tok == token::TOK_NAME || tok == token::TOK_ADD || tok == token::TOK_ID || tok == token::TOK_FS || tok == token::TOK_LOGIN || tok == token::TOK_LOGOUT || tok == token::TOK_MKGRP || tok == token::TOK_RMGRP || tok == token::TOK_MKUSR || tok == token::TOK_RMUSR || tok == token::TOK_CHGRP || tok == token::TOK_USER || tok == token::TOK_PWD || tok == token::TOK_GRP || tok == token::TOK_TOUCH || tok == token::TOK_CHOWN || tok == token::TOK_CHMOD || tok == token::TOK_CAT || tok == token::TOK_RM || tok == token::TOK_EDIT || tok == token::TOK_REN || tok == token::TOK_MV || tok == token::TOK_CP || tok == token::TOK_MKDIR || tok == token::TOK_FIND || tok == token::TOK_LOSS || tok == token::TOK_RECOVERY || tok == token::TOK_R || tok == token::TOK_FILEN || tok == token::TOK_DEST || tok == token::TOK_P || tok == token::TOK_CONT || tok == token::TOK_UGO || tok == token::TOK_STDIN || tok == token::TOK_RUTA || tok == token::TOK_ROOT || tok == token::TOK_MKDISK || tok == token::TOK_RMDISK || tok == token::TOK_FDISK || tok == token::TOK_MOUNT || tok == token::TOK_UMOUNT || tok == token::TOK_MKFS || tok == token::TOK_STRING_DOUBLE || tok == token::TOK_STRING_SINGLE || tok == token::TOK_PATH_DIR || tok == token::TOK_RUN_EXEC || tok == token::TOK_RUN_REPORT || tok == token::TOK_IDENTIFICADOR || tok == token::TOK_PATTERN || tok == token::TOK_NUMERO);
       }
 #else
       symbol_type (int tok, const std::string& v, const location_type& l)
         : super_type(token_type (tok), v, l)
       {
-        YY_ASSERT (tok == token::TOK_EQUAL || tok == token::TOK_FIT || tok == token::TOK_UNIT || tok == token::TOK_PATH || tok == token::TOK_SIZE || tok == token::TOK_TYPE || tok == token::TOK_DELETE || tok == token::TOK_NAME || tok == token::TOK_ADD || tok == token::TOK_ID || tok == token::TOK_FS || tok == token::TOK_LOGIN || tok == token::TOK_LOGOUT || tok == token::TOK_MKGRP || tok == token::TOK_RMGRP || tok == token::TOK_MKUSR || tok == token::TOK_RMUSR || tok == token::TOK_USER || tok == token::TOK_PWD || tok == token::TOK_GRP || tok == token::TOK_TOUCH || tok == token::TOK_CHMOD || tok == token::TOK_CAT || tok == token::TOK_RM || tok == token::TOK_EDIT || tok == token::TOK_REN || tok == token::TOK_MV || tok == token::TOK_CP || tok == token::TOK_MKDIR || tok == token::TOK_FIND || tok == token::TOK_LOSS || tok == token::TOK_RECOVERY || tok == token::TOK_R || tok == token::TOK_FILEN || tok == token::TOK_DEST || tok == token::TOK_P || tok == token::TOK_CONT || tok == token::TOK_UGO || tok == token::TOK_STDIN || tok == token::TOK_RUTA || tok == token::TOK_ROOT || tok == token::TOK_MKDISK || tok == token::TOK_RMDISK || tok == token::TOK_FDISK || tok == token::TOK_MOUNT || tok == token::TOK_UMOUNT || tok == token::TOK_MKFS || tok == token::TOK_STRING_DOUBLE || tok == token::TOK_STRING_SINGLE || tok == token::TOK_PATH_DIR || tok == token::TOK_RUN_EXEC || tok == token::TOK_RUN_REPORT || tok == token::TOK_IDENTIFICADOR || tok == token::TOK_PATTERN || tok == token::TOK_NUMERO);
+        YY_ASSERT (tok == token::TOK_EQUAL || tok == token::TOK_FIT || tok == token::TOK_UNIT || tok == token::TOK_PATH || tok == token::TOK_SIZE || tok == token::TOK_TYPE || tok == token::TOK_DELETE || tok == token::TOK_NAME || tok == token::TOK_ADD || tok == token::TOK_ID || tok == token::TOK_FS || tok == token::TOK_LOGIN || tok == token::TOK_LOGOUT || tok == token::TOK_MKGRP || tok == token::TOK_RMGRP || tok == token::TOK_MKUSR || tok == token::TOK_RMUSR || tok == token::TOK_CHGRP || tok == token::TOK_USER || tok == token::TOK_PWD || tok == token::TOK_GRP || tok == token::TOK_TOUCH || tok == token::TOK_CHOWN || tok == token::TOK_CHMOD || tok == token::TOK_CAT || tok == token::TOK_RM || tok == token::TOK_EDIT || tok == token::TOK_REN || tok == token::TOK_MV || tok == token::TOK_CP || tok == token::TOK_MKDIR || tok == token::TOK_FIND || tok == token::TOK_LOSS || tok == token::TOK_RECOVERY || tok == token::TOK_R || tok == token::TOK_FILEN || tok == token::TOK_DEST || tok == token::TOK_P || tok == token::TOK_CONT || tok == token::TOK_UGO || tok == token::TOK_STDIN || tok == token::TOK_RUTA || tok == token::TOK_ROOT || tok == token::TOK_MKDISK || tok == token::TOK_RMDISK || tok == token::TOK_FDISK || tok == token::TOK_MOUNT || tok == token::TOK_UMOUNT || tok == token::TOK_MKFS || tok == token::TOK_STRING_DOUBLE || tok == token::TOK_STRING_SINGLE || tok == token::TOK_PATH_DIR || tok == token::TOK_RUN_EXEC || tok == token::TOK_RUN_REPORT || tok == token::TOK_IDENTIFICADOR || tok == token::TOK_PATTERN || tok == token::TOK_NUMERO);
       }
 #endif
     };
@@ -1112,6 +1118,21 @@ switch (yytype)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
+      make_CHGRP (std::string v, location_type l)
+      {
+        return symbol_type (token::TOK_CHGRP, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_CHGRP (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::TOK_CHGRP, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
       make_USER (std::string v, location_type l)
       {
         return symbol_type (token::TOK_USER, std::move (v), std::move (l));
@@ -1167,6 +1188,21 @@ switch (yytype)
       make_TOUCH (const std::string& v, const location_type& l)
       {
         return symbol_type (token::TOK_TOUCH, v, l);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      static
+      symbol_type
+      make_CHOWN (std::string v, location_type l)
+      {
+        return symbol_type (token::TOK_CHOWN, std::move (v), std::move (l));
+      }
+#else
+      static
+      symbol_type
+      make_CHOWN (const std::string& v, const location_type& l)
+      {
+        return symbol_type (token::TOK_CHOWN, v, l);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1985,10 +2021,10 @@ switch (yytype)
     enum
     {
       yyeof_ = 0,
-      yylast_ = 172,     ///< Last index in yytable_.
+      yylast_ = 182,     ///< Last index in yytable_.
       yynnts_ = 13,  ///< Number of nonterminal symbols.
-      yyfinal_ = 84, ///< Termination state number.
-      yyntokens_ = 58  ///< Number of tokens.
+      yyfinal_ = 88, ///< Termination state number.
+      yyntokens_ = 60  ///< Number of tokens.
     };
 
 
@@ -2037,9 +2073,9 @@ switch (yytype)
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
       35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
       45,    46,    47,    48,    49,    50,    51,    52,    53,    54,
-      55,    56,    57
+      55,    56,    57,    58,    59
     };
-    const int user_token_number_max_ = 312;
+    const int user_token_number_max_ = 314;
 
     if (t <= 0)
       return yyeof_;
@@ -2076,48 +2112,50 @@ switch (yytype)
       case 17: // "pr_RMGRP"
       case 18: // "pr_MKUSR"
       case 19: // "pr_RMUSR"
-      case 20: // "pr_USER"
-      case 21: // "pr_PWD"
-      case 22: // "pr_GRP"
-      case 23: // "pr_TOUCH"
-      case 24: // "pr_CHMOD"
-      case 25: // "pr_CAT"
-      case 26: // "pr_RM"
-      case 27: // "pr_EDIT"
-      case 28: // "pr_REN"
-      case 29: // "pr_MV"
-      case 30: // "pr_CP"
-      case 31: // "pr_MKDIR"
-      case 32: // "pr_FIND"
-      case 33: // "pr_LOSS"
-      case 34: // "pr_RECOVERY"
-      case 35: // "pr_R"
-      case 36: // "pr_FILEN"
-      case 37: // "pr_DEST"
-      case 38: // "pr_P"
-      case 39: // "pr_CONT"
-      case 40: // "pr_UGO"
-      case 41: // "pr_STDIN"
-      case 42: // "pr_RUTA"
-      case 43: // "pr_ROOT"
-      case 44: // "pr_MKDISK"
-      case 45: // "pr_RMDISK"
-      case 46: // "pr_FDISK"
-      case 47: // "pr_MOUNT"
-      case 48: // "pr_UMOUNT"
-      case 49: // "pr_MKFS"
-      case 50: // "tk_string_d"
-      case 51: // "tk_string_s"
-      case 52: // "tk_path"
-      case 53: // "pr_exec"
-      case 54: // "pr_rep"
-      case 55: // "tk_identifier"
-      case 56: // "tk_pattern"
-      case 57: // "tk_number"
-      case 60: // STRING
-      case 61: // DATA
-      case 69: // PARAM
-      case 70: // BOOLEAN_PARAM
+      case 20: // "pr_CHGRP"
+      case 21: // "pr_USER"
+      case 22: // "pr_PWD"
+      case 23: // "pr_GRP"
+      case 24: // "pr_TOUCH"
+      case 25: // "pr_CHOWN"
+      case 26: // "pr_CHMOD"
+      case 27: // "pr_CAT"
+      case 28: // "pr_RM"
+      case 29: // "pr_EDIT"
+      case 30: // "pr_REN"
+      case 31: // "pr_MV"
+      case 32: // "pr_CP"
+      case 33: // "pr_MKDIR"
+      case 34: // "pr_FIND"
+      case 35: // "pr_LOSS"
+      case 36: // "pr_RECOVERY"
+      case 37: // "pr_R"
+      case 38: // "pr_FILEN"
+      case 39: // "pr_DEST"
+      case 40: // "pr_P"
+      case 41: // "pr_CONT"
+      case 42: // "pr_UGO"
+      case 43: // "pr_STDIN"
+      case 44: // "pr_RUTA"
+      case 45: // "pr_ROOT"
+      case 46: // "pr_MKDISK"
+      case 47: // "pr_RMDISK"
+      case 48: // "pr_FDISK"
+      case 49: // "pr_MOUNT"
+      case 50: // "pr_UMOUNT"
+      case 51: // "pr_MKFS"
+      case 52: // "tk_string_d"
+      case 53: // "tk_string_s"
+      case 54: // "tk_path"
+      case 55: // "pr_exec"
+      case 56: // "pr_rep"
+      case 57: // "tk_identifier"
+      case 58: // "tk_pattern"
+      case 59: // "tk_number"
+      case 62: // STRING
+      case 63: // DATA
+      case 71: // PARAM
+      case 72: // BOOLEAN_PARAM
         value.move< std::string > (std::move (that.value));
         break;
 
@@ -2153,48 +2191,50 @@ switch (yytype)
       case 17: // "pr_RMGRP"
       case 18: // "pr_MKUSR"
       case 19: // "pr_RMUSR"
-      case 20: // "pr_USER"
-      case 21: // "pr_PWD"
-      case 22: // "pr_GRP"
-      case 23: // "pr_TOUCH"
-      case 24: // "pr_CHMOD"
-      case 25: // "pr_CAT"
-      case 26: // "pr_RM"
-      case 27: // "pr_EDIT"
-      case 28: // "pr_REN"
-      case 29: // "pr_MV"
-      case 30: // "pr_CP"
-      case 31: // "pr_MKDIR"
-      case 32: // "pr_FIND"
-      case 33: // "pr_LOSS"
-      case 34: // "pr_RECOVERY"
-      case 35: // "pr_R"
-      case 36: // "pr_FILEN"
-      case 37: // "pr_DEST"
-      case 38: // "pr_P"
-      case 39: // "pr_CONT"
-      case 40: // "pr_UGO"
-      case 41: // "pr_STDIN"
-      case 42: // "pr_RUTA"
-      case 43: // "pr_ROOT"
-      case 44: // "pr_MKDISK"
-      case 45: // "pr_RMDISK"
-      case 46: // "pr_FDISK"
-      case 47: // "pr_MOUNT"
-      case 48: // "pr_UMOUNT"
-      case 49: // "pr_MKFS"
-      case 50: // "tk_string_d"
-      case 51: // "tk_string_s"
-      case 52: // "tk_path"
-      case 53: // "pr_exec"
-      case 54: // "pr_rep"
-      case 55: // "tk_identifier"
-      case 56: // "tk_pattern"
-      case 57: // "tk_number"
-      case 60: // STRING
-      case 61: // DATA
-      case 69: // PARAM
-      case 70: // BOOLEAN_PARAM
+      case 20: // "pr_CHGRP"
+      case 21: // "pr_USER"
+      case 22: // "pr_PWD"
+      case 23: // "pr_GRP"
+      case 24: // "pr_TOUCH"
+      case 25: // "pr_CHOWN"
+      case 26: // "pr_CHMOD"
+      case 27: // "pr_CAT"
+      case 28: // "pr_RM"
+      case 29: // "pr_EDIT"
+      case 30: // "pr_REN"
+      case 31: // "pr_MV"
+      case 32: // "pr_CP"
+      case 33: // "pr_MKDIR"
+      case 34: // "pr_FIND"
+      case 35: // "pr_LOSS"
+      case 36: // "pr_RECOVERY"
+      case 37: // "pr_R"
+      case 38: // "pr_FILEN"
+      case 39: // "pr_DEST"
+      case 40: // "pr_P"
+      case 41: // "pr_CONT"
+      case 42: // "pr_UGO"
+      case 43: // "pr_STDIN"
+      case 44: // "pr_RUTA"
+      case 45: // "pr_ROOT"
+      case 46: // "pr_MKDISK"
+      case 47: // "pr_RMDISK"
+      case 48: // "pr_FDISK"
+      case 49: // "pr_MOUNT"
+      case 50: // "pr_UMOUNT"
+      case 51: // "pr_MKFS"
+      case 52: // "tk_string_d"
+      case 53: // "tk_string_s"
+      case 54: // "tk_path"
+      case 55: // "pr_exec"
+      case 56: // "pr_rep"
+      case 57: // "tk_identifier"
+      case 58: // "tk_pattern"
+      case 59: // "tk_number"
+      case 62: // STRING
+      case 63: // DATA
+      case 71: // PARAM
+      case 72: // BOOLEAN_PARAM
         value.copy< std::string > (YY_MOVE (that.value));
         break;
 
@@ -2237,48 +2277,50 @@ switch (yytype)
       case 17: // "pr_RMGRP"
       case 18: // "pr_MKUSR"
       case 19: // "pr_RMUSR"
-      case 20: // "pr_USER"
-      case 21: // "pr_PWD"
-      case 22: // "pr_GRP"
-      case 23: // "pr_TOUCH"
-      case 24: // "pr_CHMOD"
-      case 25: // "pr_CAT"
-      case 26: // "pr_RM"
-      case 27: // "pr_EDIT"
-      case 28: // "pr_REN"
-      case 29: // "pr_MV"
-      case 30: // "pr_CP"
-      case 31: // "pr_MKDIR"
-      case 32: // "pr_FIND"
-      case 33: // "pr_LOSS"
-      case 34: // "pr_RECOVERY"
-      case 35: // "pr_R"
-      case 36: // "pr_FILEN"
-      case 37: // "pr_DEST"
-      case 38: // "pr_P"
-      case 39: // "pr_CONT"
-      case 40: // "pr_UGO"
-      case 41: // "pr_STDIN"
-      case 42: // "pr_RUTA"
-      case 43: // "pr_ROOT"
-      case 44: // "pr_MKDISK"
-      case 45: // "pr_RMDISK"
-      case 46: // "pr_FDISK"
-      case 47: // "pr_MOUNT"
-      case 48: // "pr_UMOUNT"
-      case 49: // "pr_MKFS"
-      case 50: // "tk_string_d"
-      case 51: // "tk_string_s"
-      case 52: // "tk_path"
-      case 53: // "pr_exec"
-      case 54: // "pr_rep"
-      case 55: // "tk_identifier"
-      case 56: // "tk_pattern"
-      case 57: // "tk_number"
-      case 60: // STRING
-      case 61: // DATA
-      case 69: // PARAM
-      case 70: // BOOLEAN_PARAM
+      case 20: // "pr_CHGRP"
+      case 21: // "pr_USER"
+      case 22: // "pr_PWD"
+      case 23: // "pr_GRP"
+      case 24: // "pr_TOUCH"
+      case 25: // "pr_CHOWN"
+      case 26: // "pr_CHMOD"
+      case 27: // "pr_CAT"
+      case 28: // "pr_RM"
+      case 29: // "pr_EDIT"
+      case 30: // "pr_REN"
+      case 31: // "pr_MV"
+      case 32: // "pr_CP"
+      case 33: // "pr_MKDIR"
+      case 34: // "pr_FIND"
+      case 35: // "pr_LOSS"
+      case 36: // "pr_RECOVERY"
+      case 37: // "pr_R"
+      case 38: // "pr_FILEN"
+      case 39: // "pr_DEST"
+      case 40: // "pr_P"
+      case 41: // "pr_CONT"
+      case 42: // "pr_UGO"
+      case 43: // "pr_STDIN"
+      case 44: // "pr_RUTA"
+      case 45: // "pr_ROOT"
+      case 46: // "pr_MKDISK"
+      case 47: // "pr_RMDISK"
+      case 48: // "pr_FDISK"
+      case 49: // "pr_MOUNT"
+      case 50: // "pr_UMOUNT"
+      case 51: // "pr_MKFS"
+      case 52: // "tk_string_d"
+      case 53: // "tk_string_s"
+      case 54: // "tk_path"
+      case 55: // "pr_exec"
+      case 56: // "pr_rep"
+      case 57: // "tk_identifier"
+      case 58: // "tk_pattern"
+      case 59: // "tk_number"
+      case 62: // STRING
+      case 63: // DATA
+      case 71: // PARAM
+      case 72: // BOOLEAN_PARAM
         value.move< std::string > (YY_MOVE (s.value));
         break;
 
@@ -2338,7 +2380,7 @@ switch (yytype)
 
 #line 6 "parser.yy"
 } // yy
-#line 2342 "parser.tab.hh"
+#line 2384 "parser.tab.hh"
 
 
 

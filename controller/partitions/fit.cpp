@@ -25,7 +25,7 @@ int getPartitionByFit(int _options[], char _fit)
                 }
                 break;
             case 'B':
-                if (_options[i] < n || n == -1)
+                if (_options[i] < n || ret == -1)
                 {
                     n = _options[i];
                     ret = i;

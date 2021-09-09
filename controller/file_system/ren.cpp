@@ -27,7 +27,7 @@ int Renombrar(string _path, string _name_to_edit, string _new_name)
         fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {
-            std::cout << "Not found: " + folders[i] + "\n";
+            // std::cout << "Not found: " + folders[i] + "\n";
             return coutError("Error: la ruta del archivo o carpeta no se encuentra.", file);
         }
     }
@@ -38,13 +38,13 @@ int Renombrar(string _path, string _name_to_edit, string _new_name)
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode_father, sizeof(InodosTable), 1, file);
     if (!fileExists(inode_father, _name_to_edit, file, super_bloque.s_block_start))
-        return coutError("El archivo o carpeta'" + _name_to_edit + "' no se encuentra en la ruta: " + _path + ".", file);
+        return coutError("El archivo o carpeta '" + _name_to_edit + "' no se encuentra en la ruta: '" + _path + "'.", file);
 
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock file_block_tmp;
     bool x = false;
     FolderReference aux;
-    for (int i = 0; i < 12 && !x; i++) // falta indirectos
+    for (int i = 0; i < 15 && !x; i++) // falta indirectos
     {
         if (inode_father.i_block[i] != -1)
         {
@@ -107,6 +107,7 @@ int ren(string _path, string _name)
 
     string npath = _path.substr(0, _path.find_last_of('/'));
     string filename = _path.substr(_path.find_last_of('/') + 1);
-
+    if (filename.length() > 12)
+        return coutError("La longitud del nombre del archivo no debe exceder los 12 caracteres.", NULL);
     return Renombrar(npath, filename, _name);
 }

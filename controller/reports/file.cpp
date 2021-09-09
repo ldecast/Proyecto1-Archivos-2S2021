@@ -7,7 +7,6 @@
 
 using std::string;
 
-string getDotFile(int _index_inode, int _start_inodes, int _start_blocks, string _path, string _filename, bool _found);
 string getDot_file_block(string _name, string _content);
 
 string ReportFile(MOUNTED _mounted, string _ruta)
@@ -51,7 +50,7 @@ string ReportFile(MOUNTED _mounted, string _ruta)
     CarpetasBlock file_block;
     InodosTable inode_current;
     bool x = false;
-    for (int j = 0; j < 12 && !x; j++) // Obtener el inodo asociado directo, falta indirectos
+    for (int j = 0; j < 15 && !x; j++) // Obtener el inodo asociado directo, falta indirectos
     {
         if (inode_father.i_block[j] != -1)
         {

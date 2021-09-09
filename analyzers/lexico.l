@@ -59,11 +59,13 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "rmgrp"                 {return yy::class_parser::make_RMGRP(yytext, loc);}
 "mkusr"                 {return yy::class_parser::make_MKUSR(yytext, loc);}
 "rmusr"                 {return yy::class_parser::make_RMUSR(yytext, loc);}
+"chgrp"                 {return yy::class_parser::make_CHGRP(yytext, loc);}
 {HYPHEN}("user"|"usr")  {return yy::class_parser::make_USER(yytext, loc);}
 {HYPHEN}"pwd"           {return yy::class_parser::make_PWD(yytext, loc);}
 {HYPHEN}"grp"           {return yy::class_parser::make_GRP(yytext, loc);}
 
 "chmod"                 {return yy::class_parser::make_CHMOD(yytext, loc);}
+"chown"                 {return yy::class_parser::make_CHOWN(yytext, loc);}
 "touch"                 {return yy::class_parser::make_TOUCH(yytext, loc);}
 "cat"                   {return yy::class_parser::make_CAT(yytext, loc);}
 "rm"                    {return yy::class_parser::make_RM(yytext, loc);}

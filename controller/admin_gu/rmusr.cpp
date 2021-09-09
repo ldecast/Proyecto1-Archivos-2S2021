@@ -41,7 +41,7 @@ int rmusr(string _name)
     file = fopen((_user_logged.mounted.path).c_str(), "rb+");
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
+    // std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
     std::istringstream f(content_file);
     int uid = 1;
     string line, tmp = "";
@@ -83,7 +83,7 @@ int rmusr(string _name)
 
     users_inode.i_size = content_file.length();
     /* REESCRITURA */
-    for (int i = 0; i < 12 && content_file.length() > 0; i++) //falta agregar indirectos
+    for (int i = 0; i < 15 && content_file.length() > 0; i++) //falta agregar indirectos
     {
         ArchivosBlock fblock;
         if (content_file.length() > 64)

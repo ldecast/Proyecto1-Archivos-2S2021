@@ -56,7 +56,7 @@ int cat(std::vector<string> _filen)
         CarpetasBlock file_block;
         InodosTable inode_current;
         bool x = false;
-        for (int j = 0; j < 12 && !x; j++) // Obtener el inodo asociado directo
+        for (int j = 0; j < 15 && !x; j++) // Obtener el inodo asociado directo
         {
             if (inode_father.i_block[j] != -1)
             {

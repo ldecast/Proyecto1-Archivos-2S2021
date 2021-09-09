@@ -31,34 +31,16 @@ int CrearCarpeta(string _path, string _name, bool _p)
     /* Lectura del bitmap de inodos */
     char bm_inodes[super_bloque.s_inodes_count];
     fseek(file, super_bloque.s_bm_inode_start, SEEK_SET);
-    fread(&bm_inodes, sizeof(super_bloque.s_inodes_count), 1, file);
+    fread(&bm_inodes, super_bloque.s_inodes_count, 1, file);
 
     /* Lectura del bitmap de bloques */
     char bm_blocks[3 * super_bloque.s_inodes_count];
     fseek(file, super_bloque.s_bm_block_start, SEEK_SET);
-    fread(&bm_blocks, sizeof(3 * super_bloque.s_inodes_count), 1, file);
-
-    /* Lectura del inodo de carpeta raíz */
-    InodosTable root_inode;
-    fseek(file, super_bloque.s_inode_start, SEEK_SET);
-    fread(&root_inode, sizeof(InodosTable), 1, file);
-    CarpetasBlock root_folder;
-    fseek(file, super_bloque.s_block_start, SEEK_SET);
-    fread(&root_folder, 64, 1, file);
-
-    /* Llenar el nuevo inodo carpeta */
-    // new_inode.i_block[0] = free_block;
-    // new_inode.i_size = 0;
-    // new_inode.i_type = '0';
-    // new_inode.i_gid = _user_logged.GID;
-    // new_inode.i_uid = _user_logged.UID;
-    // new_inode.i_perm = 664;
-    // new_inode.i_ctime = getCurrentTime();
-    // new_inode.i_mtime = new_inode.i_ctime;
-    // new_inode.i_atime = new_inode.i_ctime;
+    fread(&bm_blocks, 3 * super_bloque.s_inodes_count, 1, file);
 
     /* Lectura de la última carpeta padre */
     FolderReference fr;
+    string pre_path = "";
     std::vector<string> folders = SplitPath(_path);
     for (int i = 0; i < folders.size(); i++)
     {
@@ -66,20 +48,21 @@ int CrearCarpeta(string _path, string _name, bool _p)
         /* Alguna carpeta padre no existe */
         if (fr.inode == -1)
         {
-            // std::cout << "Not found: " + folders[i] + "\n";
             if (!_p)
                 return coutError("Error: la ruta no existe y no se ha indicado el comando -p.", file);
             fclose(file);
             file = NULL;
             for (int j = i; j < folders.size(); j++)
             {
-                // std::cout << _path.substr(0, _path.find(folders[j])) + folders[j] << std::endl; //solo leer y luego esribir
-                int p = mkdir(_path.substr(0, _path.find(folders[j])) + folders[j], "");
+                pre_path += ("/" + folders[j]);
+                // std::cout << pre_path << std::endl;
+                int p = mkdir(pre_path, "");
                 if (!p)
                     return coutError("Ha ocurrido un error", NULL);
             }
             return mkdir(_path + "/" + _name, "");
         }
+        pre_path += ("/" + folders[i]);
     }
 
     /* Lectura del inodo de carpeta padre */
@@ -90,7 +73,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
     if (!HasPermission(_user_logged, inode_father, 2))
         return coutError("El usuario no posee los permisos de escritura sobre la carpeta padre.", file);
     if (fileExists(inode_father, _name, file, super_bloque.s_block_start))
-        return coutError("La carpeta '" + _name + "' ya existe en la ruta: '/" + _path + "'.", file);
+        return coutError("La carpeta '" + _name + "' ya existe en la ruta: '" + _path + "'.", file);
 
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock folder_father;
@@ -114,7 +97,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
     }
     if (!cupo) // usar el siguiente i_block disponible del inodo_father
     {
-        for (int i = 0; i < 12; i++) //agregar indirectos
+        for (int i = 0; i < 15; i++) //agregar indirectos
         {
             if (inode_father.i_block[i] != -1 && !cupo) // revisar si existe espacio disponible en un bloque carpeta
             {
@@ -159,12 +142,11 @@ int CrearCarpeta(string _path, string _name, bool _p)
             }
         }
     }
+    if (!cupo)
+        return coutError("No se encontró espacio disponible para crear la carpeta: " + _path + "/" + _name, file);
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fwrite(&inode_father, sizeof(InodosTable), 1, file);
-
-    if (!cupo)
-        coutError("No se encontró espacio para crear la carpeta.", file);
 
     /* Llenar el nuevo inodo carpeta */
     new_inode.i_block[0] = free_block;
@@ -214,7 +196,7 @@ int CrearCarpeta(string _path, string _name, bool _p)
 
     fclose(file);
     file = NULL;
-    std::cout << "Se creó la carpeta: " + _path + "/" + _name + "\n";
+    // std::cout << "Se creó la carpeta: " + _path + "/" + _name + "\n";
     return 1;
 }
 
@@ -227,5 +209,7 @@ int mkdir(string _path, string _p)
 
     string npath = _path.substr(0, _path.find_last_of('/'));
     string name_folder = _path.substr(_path.find_last_of('/') + 1);
+    if (name_folder.length() > 12)
+        return coutError("La longitud del nombre de la carpeta no debe exceder los 12 caracteres.", NULL);
     return CrearCarpeta(npath, name_folder, _p != "");
 }

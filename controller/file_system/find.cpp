@@ -27,7 +27,7 @@ int Encontrar(string _path, string _foldername, string _filename, char _pattern)
         fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {
-            std::cout << "Not found: " + folders[i] + "\n";
+            // std::cout << "Not found: " + folders[i] + "\n";
             return coutError("Error: la ruta del archivo o carpeta no se encuentra.", file);
         }
     }
@@ -37,14 +37,14 @@ int Encontrar(string _path, string _foldername, string _filename, char _pattern)
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode_father, sizeof(InodosTable), 1, file);
-    if (!fileExists(inode_father, _foldername, file, super_bloque.s_block_start))
-        return coutError("El archivo o carpeta'" + _foldername + "' no se encuentra en la ruta: " + _path + ".", file);
+    if (_foldername != "" && !fileExists(inode_father, _foldername, file, super_bloque.s_block_start))
+        return coutError("El archivo o carpeta '" + _foldername + "' no se encuentra en la ruta: " + _path + ".", file);
 
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock file_block_tmp;
     bool x = false;
     FolderReference aux;
-    if (_foldername == "")
+    if (_foldername == "" || _foldername == "/")
         x = true;
     for (int i = 0; i < 15 && !x; i++) // falta indirectos
     {
@@ -77,6 +77,9 @@ int Encontrar(string _path, string _foldername, string _filename, char _pattern)
         return coutError("No se halló el inodo de la carpeta a buscar.", file);
 
     inode_current.i_atime = getCurrentTime();
+    string ext_pattern = _filename;
+    if (_filename.find('.') != std::string::npos)
+        ext_pattern = _filename.substr(_filename.find_last_of('.') + 1);
     for (int i = 0; i < 15; i++)
     {
         if (inode_current.i_block[i] != -1)
@@ -88,24 +91,35 @@ int Encontrar(string _path, string _foldername, string _filename, char _pattern)
             {
                 if (file_block_tmp.b_content[j].b_inodo != -1 && string(file_block_tmp.b_content[j].b_name) != "." && string(file_block_tmp.b_content[j].b_name) != "..")
                 {
+                    // std::cout << file_block_tmp.b_content[j].b_name << std::endl;
                     string tmp = string(file_block_tmp.b_content[j].b_name);
                     string tipo;
                     if (tmp.find('.') != std::string::npos)
                     {
                         tipo = "Archivo";
-                        if (tmp.substr(tmp.find_last_of('.')) == _filename.substr(_filename.find_last_of('.')))
+                        // std::cout << ext_pattern << std::endl;
+                        // std::cout << tmp << std::endl;
+                        // std::cout << tmp.find_last_of('.') << std::endl;
+                        string ext_tmp = tmp.substr(tmp.find_last_of('.') + 1);
+                        if (ext_tmp == ext_pattern || ext_pattern == "*")
                         {
                             if (_pattern == '*')
+                            {
                                 std::cout << (tmp + "|" + std::to_string(aux.inode) + "|" + tipo) << std::endl;
-                            else if (tmp.find_last_of('.') == 1)
+                                continue;
+                            }
+                            else if (_pattern == '?' && tmp.find_last_of('.') == 1)
+                            {
                                 std::cout << (tmp + "|" + std::to_string(aux.inode) + "|" + tipo) << std::endl;
+                                continue;
+                            }
                         }
                     }
                     else
                     {
                         tipo = "Folder";
                     }
-                    if (tmp == _filename)
+                    if (tmp == _filename || _filename == "*")
                     {
                         std::cout << (tmp + "|" + std::to_string(aux.inode) + "|" + tipo) << std::endl;
                     }

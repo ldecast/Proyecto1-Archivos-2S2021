@@ -53,12 +53,14 @@ struct command x;
 %token <std::string> RMGRP "pr_RMGRP"
 %token <std::string> MKUSR "pr_MKUSR"
 %token <std::string> RMUSR "pr_RMUSR"
+%token <std::string> CHGRP "pr_CHGRP"
 
 %token <std::string> USER "pr_USER"
 %token <std::string> PWD "pr_PWD"
 %token <std::string> GRP "pr_GRP"
 
 %token <std::string> TOUCH "pr_TOUCH"
+%token <std::string> CHOWN "pr_CHOWN"
 %token <std::string> CHMOD "pr_CHMOD"
 %token <std::string> CAT "pr_CAT"
 %token <std::string> RM "pr_RM"
@@ -156,6 +158,8 @@ ADMIN_USERS_GROUPS: "pr_login" PARAMS {x = newCommand("__LOGIN",parametros);}
                   | "pr_RMGRP" PARAMS {x = newCommand("__RMGRP",parametros);}
                   | "pr_MKUSR" PARAMS {x = newCommand("__MKUSR",parametros);}
                   | "pr_RMUSR" PARAMS {x = newCommand("__RMUSR",parametros);}
+                  | "pr_CHOWN" PARAMS {x = newCommand("__CHOWN",parametros);}
+                  | "pr_CHGRP" PARAMS {x = newCommand("__CHGRP",parametros);}
 ;
 
 FILESYSTEM: "pr_CHMOD" PARAMS {x = newCommand("__CHMOD",parametros);}

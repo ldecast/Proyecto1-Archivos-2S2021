@@ -33,7 +33,6 @@ int rmgrp(string _name)
     fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
     fseek(file, sizeof(InodosTable), SEEK_CUR);        // Mover el puntero al segundo inodo que corresponde al archivo de users.txt
     fread(&users_inode, sizeof(InodosTable), 1, file); // Leer el inodo
-    // std::cout << "\033[1;33m" + string(ctime(&users_inode.i_mtime)) + "\033[0m\n";
     fclose(file);
     file = NULL;
 
@@ -79,7 +78,7 @@ int rmgrp(string _name)
 
     users_inode.i_size = content_file.length();
     /* REESCRITURA */
-    for (int i = 0; i < 12 && content_file.length() > 0; i++) //falta agregar indirectos
+    for (int i = 0; i < 15 && content_file.length() > 0; i++) //falta agregar indirectos
     {
         ArchivosBlock fblock;
         if (content_file.length() > 64)

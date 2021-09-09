@@ -28,7 +28,7 @@ int CortarYPegar(string _path_cut, string _name_cut, string _path_paste, string 
         fr_cut = getFatherReference(fr_cut, folders_cut[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr_cut.inode == -1)
         {
-            std::cout << "Not found: " + folders_cut[i] + "\n";
+            // std::cout << "Not found: " + folders_cut[i] + "\n";
             return coutError("Error: la ruta del archivo o carpeta no se encuentra.", file);
         }
     }
@@ -41,7 +41,7 @@ int CortarYPegar(string _path_cut, string _name_cut, string _path_paste, string 
         fr_paste = getFatherReference(fr_paste, folders_paste[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr_paste.inode == -1)
         {
-            std::cout << "Not found: " + folders_paste[i] + "\n";
+            // std::cout << "Not found: " + folders_paste[i] + "\n";
             return coutError("Error: la ruta del archivo o carpeta no se encuentra.", file);
         }
     }
@@ -66,7 +66,7 @@ int CortarYPegar(string _path_cut, string _name_cut, string _path_paste, string 
     CarpetasBlock file_block_tmp;
     bool x = false;
     FolderReference aux_cut;
-    for (int i = 0; i < 12 && !x; i++) // falta indirectos
+    for (int i = 0; i < 15 && !x; i++) // falta indirectos
     {
         if (inode_father_cut.i_block[i] != -1)
         {
@@ -97,7 +97,7 @@ int CortarYPegar(string _path_cut, string _name_cut, string _path_paste, string 
     /* Lectura del bloque de carpeta padre a pegar */
     x = false;
     FolderReference aux_paste;
-    for (int i = 0; i < 12 && !x; i++) // falta indirectos
+    for (int i = 0; i < 15 && !x; i++) // falta indirectos
     {
         if (inode_father_paste.i_block[i] != -1)
         {

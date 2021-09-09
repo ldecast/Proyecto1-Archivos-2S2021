@@ -30,7 +30,7 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
     /* Lectura del bitmap de bloques */
     char bm_blocks[3 * super_bloque.s_inodes_count];
     fseek(file, super_bloque.s_bm_block_start, SEEK_SET);
-    fread(&bm_blocks, sizeof(3 * super_bloque.s_inodes_count), 1, file);
+    fread(&bm_blocks, 3 * super_bloque.s_inodes_count, 1, file);
 
     /* Lectura del inodo de carpeta raíz */
     InodosTable root_inode;
@@ -47,7 +47,7 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
         fr = getFatherReference(fr, folders[i], file, super_bloque.s_inode_start, super_bloque.s_block_start);
         if (fr.inode == -1)
         {
-            std::cout << "Not found: " + folders[i] + "\n";
+            // std::cout << "Not found: " + folders[i] + "\n";
             return coutError("Error: la ruta no existe y no se ha indicado el comando -r.", file);
         }
     }
@@ -66,7 +66,7 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
     CarpetasBlock file_block_tmp;
     int _index_to_edit_inode = -1;
     bool x = false;
-    for (int i = 0; i < 12 && !x; i++) // falta indirectos
+    for (int i = 0; i < 15 && !x; i++) // falta indirectos
     {
         if (inode_father.i_block[i] != -1)
         {
@@ -97,12 +97,12 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
     /* Llenar con la información del archivo */
     ArchivosBlock tmp_content_block;
     string tmp = "";
-    for (int i = 11; i >= 0; i--) //falta indirectos
+    for (int i = 0; i < 15; i++) //falta indirectos
     {
         if (_content.length() > 64)
         {
-            tmp = _content.substr(_content.length() - 64, 64);
-            _content = _content.substr(0, _content.length() - 64);
+            tmp = _content.substr(0, 64);
+            _content = _content.substr(64);
         }
         else
         {

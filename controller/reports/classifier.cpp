@@ -12,6 +12,7 @@
 #include "file.cpp"
 #include "ls.cpp"
 #include "journaling.cpp"
+#include "tree.cpp"
 
 int classifier(std::string _name, std::string _path, std::string _id, std::string _ruta, std::string _root)
 {
@@ -36,40 +37,46 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
     else if (_name == "disk")
         grafo = ReportDisk(mounted);
 
-    Superbloque sb;
-    FILE *file = fopen(mounted.path.c_str(), "rb");
-    int part_start = startByteSuperBloque(mounted);
-    fseek(file, part_start, SEEK_SET);
-    fread(&sb, sizeof(Superbloque), 1, file);
-    if (sb.s_magic == -1)
-        return coutError("El sistema de archivos se ha corrompido, intente recuperarlo usando Recovery.", file);
-
-    if (_name == "inode")
-        grafo = ReportInodes(mounted);
-
-    else if (_name == "block")
-        grafo = ReportBlocks(mounted);
-
-    else if (_name == "bm_inode")
-        grafo = ReportBitMapInodes(mounted);
-
-    else if (_name == "bm_block")
-        grafo = ReportBitMapBlocks(mounted);
-
-    else if (_name == "sb")
-        grafo = ReportSuperBloque(mounted);
-
-    else if (_name == "file")
-        grafo = ReportFile(mounted, _ruta);
-
-    else if (_name == "ls")
-        grafo = ReportLS(mounted);
-
-    else if (_name == "journaling")
-        return generateJournalingReport(dir_output);
-
     else
-        return coutError("El nombre del reporte a generar no es válido: " + _name, NULL);
+    {
+        Superbloque sb;
+        FILE *file = fopen(mounted.path.c_str(), "rb");
+        int part_start = startByteSuperBloque(mounted);
+        fseek(file, part_start, SEEK_SET);
+        fread(&sb, sizeof(Superbloque), 1, file);
+        if (sb.s_magic == -1)
+            return coutError("El sistema de archivos se ha corrompido, intente recuperarlo usando Recovery.", file);
+
+        if (_name == "inode")
+            grafo = ReportInodes(mounted);
+
+        else if (_name == "block")
+            grafo = ReportBlocks(mounted);
+
+        else if (_name == "bm_inode")
+            grafo = ReportBitMapInodes(mounted);
+
+        else if (_name == "bm_block")
+            grafo = ReportBitMapBlocks(mounted);
+
+        else if (_name == "sb")
+            grafo = ReportSuperBloque(mounted);
+
+        else if (_name == "file")
+            grafo = ReportFile(mounted, _ruta);
+
+        else if (_name == "ls")
+            grafo = ReportLS(mounted);
+
+        else if (_name == "journaling")
+            return generateJournalingReport(dir_output);
+
+        else if (_name == "tree")
+            grafo = ReportTree(mounted, _root);
+
+        else
+            return coutError("El nombre del reporte a generar no es válido: " + _name, NULL);
+    }
 
     if (grafo == "-")
         return 0;
@@ -93,7 +100,7 @@ void AddToJournaling(command _tmp)
     std::ofstream f;
     f.open(dir, std::ios_base::app); // append instead of overwrite
     if (!x)
-        f << FileJournaling();
+        f << HeaderJournaling();
 
     f << getDotJournaling(_tmp);
     f.close();

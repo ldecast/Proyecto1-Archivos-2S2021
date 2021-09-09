@@ -11,11 +11,11 @@ using std::string;
 
 int edit(string _path, string _cont, string _stdin)
 {
-    if (_path == "")
+    if (_path == "" || (_cont == "" && _stdin == ""))
         return coutError("Error: faltan parámetros obligatorios.", NULL);
     if (!_user_logged.logged_in)
         return coutError("Error: No se encuentra ninguna sesión activa.", NULL);
-    if (!isDir(_cont))
+    if (_stdin == "" && !isDir(_cont))
         return coutError("Error: no se puede acceder a la ubicación: '" + _cont + "'", NULL);
     string npath = _path.substr(0, _path.find_last_of('/'));
     string filename = _path.substr(_path.find_last_of('/') + 1);

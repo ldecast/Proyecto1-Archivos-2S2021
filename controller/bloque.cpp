@@ -43,10 +43,11 @@ int bloque(struct command x)
             fread(&sb, sizeof(Superbloque), 1, file);
             if (sb.s_magic == -1)
                 return coutError("El sistema de archivos se ha corrompido, intente recuperarlo usando Recovery.", file);
+            if (sb.s_filesystem_type == 3)
+                AddToJournaling(x);
             fclose(file);
             file = NULL;
         }
-        AddToJournaling(x);
     }
 
     if (x.keyword == "__MKDISK")

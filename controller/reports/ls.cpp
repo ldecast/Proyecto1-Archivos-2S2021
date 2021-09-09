@@ -68,7 +68,7 @@ string getDotLS(FILE *_file, int _index_inode, int _start_inodes, int _start_blo
     if (inode_current.i_type == '0')
     {
         CarpetasBlock file_block;
-        for (int i = 0; i < 12; i++) // falta indirectos
+        for (int i = 0; i < 15; i++) // falta indirectos
         {
             if (inode_current.i_block[i] != -1)
             { /* Leer el bloque y redireccionar al inodo y ver si de nuevo es otra carpeta */
@@ -78,7 +78,7 @@ string getDotLS(FILE *_file, int _index_inode, int _start_inodes, int _start_blo
                 for (int j = 0; j < 4; j++)
                 {
                     _name = file_block.b_content[j].b_name;
-                    if (file_block.b_content[j].b_inodo != -1 && file_block.b_content[j].b_inodo != _index_inode && string(_name) != ".." && string(_name) != ".")
+                    if (file_block.b_content[j].b_inodo > 0 && file_block.b_content[j].b_inodo != _index_inode && string(_name) != ".." && string(_name) != ".")
                     {
                         // std::cout << _name << std::endl;
                         _index_inode = file_block.b_content[j].b_inodo;

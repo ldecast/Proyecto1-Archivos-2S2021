@@ -42,7 +42,7 @@ int chgrp(string _user, string _grp)
     string content_file = ReadFile(1, super_bloque.s_inode_start, super_bloque.s_block_start, _user_logged.mounted.path);
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    std::cout << content_file << std::endl;
+    // std::cout << content_file << std::endl;
     std::istringstream f(content_file);
     string line;
     int gid = 1;

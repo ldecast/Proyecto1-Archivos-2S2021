@@ -31,7 +31,7 @@ int BorrarParticion(char _delete, std::string _path, std::string _name)
         if (_delete == 'C')
         {
             fseek(pFile, mbr.mbr_partition[i].part_start + sizeof(partition), SEEK_SET);
-            fwrite("\0", mbr.mbr_partition[i].part_size - sizeof(partition), 1, pFile);
+            // fwrite("\0", mbr.mbr_partition[i].part_size - sizeof(partition), 1, pFile);
         }
     }
     else if (type == 'L') //borrar referencia del EBR anterior
@@ -45,21 +45,21 @@ int BorrarParticion(char _delete, std::string _path, std::string _name)
         // print("?" + std::string(_ebr.part_name));
         _ebr_previous = getEBRprevious(_ebr_initial, _ebr_to_delete.part_start, pFile); // me devolvio el mismo???
         // y si es el inicial o no tiene...{}
-        std::cout << "_ebr_previous.part_next: " + std::to_string(_ebr_previous.part_next) << std::endl; //pq 0?
+        // std::cout << "_ebr_previous.part_next: " + std::to_string(_ebr_previous.part_next) << std::endl; //pq 0?
         _ebr_previous.part_next = _ebr_to_delete.part_next;
-        std::cout << "_ebr_previous.part_size: " + std::to_string(_ebr_previous.part_size) << std::endl;
-        std::cout << "_ebr_previous.part_name: " + std::string(_ebr_previous.part_name) << std::endl;
-        std::cout << "updated_ebr_previous.part_next: " + std::to_string(_ebr_previous.part_next) << std::endl;
+        // std::cout << "_ebr_previous.part_size: " + std::to_string(_ebr_previous.part_size) << std::endl;
+        // std::cout << "_ebr_previous.part_name: " + std::string(_ebr_previous.part_name) << std::endl;
+        // std::cout << "updated_ebr_previous.part_next: " + std::to_string(_ebr_previous.part_next) << std::endl;
         fseek(pFile, _ebr_to_delete.part_start, SEEK_SET);
-        fwrite("\0", sizeof(EBR), 1, pFile);
-        std::cout << "_ebr_to_delete.part_size: " + std::to_string(_ebr_to_delete.part_size) << std::endl;
-        std::cout << "_ebr_to_delete.part_name: " + std::string(_ebr_to_delete.part_name) << std::endl;
+        // fwrite("\0", sizeof(EBR), 1, pFile);
+        // std::cout << "_ebr_to_delete.part_size: " + std::to_string(_ebr_to_delete.part_size) << std::endl;
+        // std::cout << "_ebr_to_delete.part_name: " + std::string(_ebr_to_delete.part_name) << std::endl;
         fseek(pFile, _ebr_previous.part_start, SEEK_SET);
         fwrite(&_ebr_previous, sizeof(EBR), 1, pFile);
         if (_delete == 'C')
         {
             fseek(pFile, _ebr_to_delete.part_start + sizeof(EBR), SEEK_SET);
-            fwrite("\0", _ebr_to_delete.part_size - sizeof(EBR), 1, pFile);
+            // fwrite("\0", _ebr_to_delete.part_size - sizeof(EBR), 1, pFile);
         }
     }
     fclose(pFile);

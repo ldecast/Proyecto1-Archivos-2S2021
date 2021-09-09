@@ -28,12 +28,12 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     /* Lectura del bitmap de inodos */
     char bm_inodes[super_bloque.s_inodes_count];
     fseek(file, super_bloque.s_bm_inode_start, SEEK_SET);
-    fread(&bm_inodes, sizeof(super_bloque.s_inodes_count), 1, file);
+    fread(&bm_inodes, super_bloque.s_inodes_count, 1, file);
 
     /* Lectura del bitmap de bloques */
     char bm_blocks[3 * super_bloque.s_inodes_count];
     fseek(file, super_bloque.s_bm_block_start, SEEK_SET);
-    fread(&bm_blocks, sizeof(3 * super_bloque.s_inodes_count), 1, file);
+    fread(&bm_blocks, 3 * super_bloque.s_inodes_count, 1, file);
 
     /* Lectura del inodo de carpeta raíz */
     InodosTable root_inode;
@@ -85,6 +85,9 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
             j++;
         }
     }
+    int i_size = content.length();
+    if (i_size > 960)
+        content = content.substr(0, 960);
     // std::cout << content << std::endl;
 
     /* Lectura del inodo de carpeta padre */
@@ -108,7 +111,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     }
     /* Lectura del bloque de carpeta padre */
     bool cupo = false;
-    for (int i = 0; i < 12; i++) //agregar indirectos
+    for (int i = 0; i < 15; i++) //agregar indirectos
     {
         if (inode_father.i_block[i] != -1 && !cupo) // revisar si existe espacio disponible en un bloque carpeta
         {
@@ -151,17 +154,16 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
             break;
         }
     }
-    inode_father.i_size += content.length();
+    if (!cupo)
+        return coutError("\033[1;31mNo se encontró espacio para crear el archivo.\033[0m\n", file);
+    inode_father.i_size += i_size;
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fwrite(&inode_father, sizeof(InodosTable), 1, file);
 
-    if (!cupo)
-        std::cout << "\033[1;31mNo se encontró espacio para crear el archivo.\033[0m\n";
-
     /* Llenar el nuevo inodo de archivo */
     new_inode.i_block[0] = free_block;
-    new_inode.i_size = content.length();
+    new_inode.i_size = i_size;
     new_inode.i_type = '1';
     new_inode.i_gid = _user_logged.GID;
     new_inode.i_uid = _user_logged.UID;
@@ -189,7 +191,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     super_bloque.s_free_inodes_count--;
     super_bloque.s_free_blocks_count--;
 
-    root_inode.i_size += content.length();
+    root_inode.i_size += i_size;
 
     /* ESCRITURA */
     fseek(file, start_byte_sb, SEEK_SET);
@@ -201,13 +203,15 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     fseek(file, super_bloque.s_bm_block_start, SEEK_SET);
     fwrite(&bm_blocks, 3 * super_bloque.s_inodes_count, 1, file);
 
-    fseek(file, super_bloque.s_inode_start, SEEK_SET);
-    fwrite(&root_inode, sizeof(InodosTable), 1, file);
+    if (fr.inode != 0)
+    {
+        fseek(file, super_bloque.s_inode_start, SEEK_SET);
+        fwrite(&root_inode, sizeof(InodosTable), 1, file);
+    }
 
     fseek(file, super_bloque.s_block_start, SEEK_SET); // Mover el puntero al inicio de la tabla de bloques
     fseek(file, free_block * 64, SEEK_CUR);
     fwrite(&file_to_create, 64, 1, file);
-    // coutError("Se creó el archivo en el bloque: " + std::to_string(free_block) + " En el inodo: " + std::to_string(free_inode), NULL);
 
     fclose(file);
     file = NULL;
@@ -215,7 +219,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     {
         writeBlocks(extra, free_inode);
     }
-    std::cout << "Se creó el archivo: " + _path + "/" + _name + "\n";
+    // std::cout << "Se creó el archivo: " + _path + "/" + _name + "\n";
     return 1;
 }
 
@@ -234,6 +238,10 @@ int touch(string _path, string _r, string _size, string _cont, string _stdin, bo
     }
     string npath = _path.substr(0, _path.find_last_of('/'));
     string filename = _path.substr(_path.find_last_of('/') + 1);
+    if (filename.length() > 12)
+        return coutError("La longitud del nombre del archivo no debe exceder los 12 caracteres.", NULL);
     int nsize = (_size == "" || _cont != "") ? 0 : std::stoi(_size);
+    if (nsize < 0)
+        return coutError("Error: se debe ingresar un tamaño mayor o igual a 0.", NULL);
     return CrearArchivo(npath, filename, _r != "", nsize, _cont, _stdin != "");
 }

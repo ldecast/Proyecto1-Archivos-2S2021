@@ -49,7 +49,7 @@ int mkusr(string _usr, string _pwd, string _grp)
     fread(&users_file, sizeof(ArchivosBlock), 1, file);
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
+    // std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
     std::istringstream f(content_file);
     Users user_tmp;
     Groups group_tmp;

@@ -6,7 +6,7 @@
 
 using std::string;
 
-string FileJournaling()
+string HeaderJournaling()
 {
     string grafo = getHeader_1();
     grafo +=
