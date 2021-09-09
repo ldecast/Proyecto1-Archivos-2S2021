@@ -36,7 +36,8 @@ int exec(std::string _path)
 
 int main()
 {
-  // exec("/home/ldecast/Escritorio/run.sh");
+  system("clear");
+  // exec("/home/ldecast/Escritorio/Entrada.sh");
   std::string input, output;
   std::string filename = "command.txt";
   while (true)
