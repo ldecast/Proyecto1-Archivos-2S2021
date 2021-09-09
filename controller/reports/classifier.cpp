@@ -11,6 +11,7 @@
 #include "sb.cpp"
 #include "file.cpp"
 #include "ls.cpp"
+#include "journaling.cpp"
 
 int classifier(std::string _name, std::string _path, std::string _id, std::string _ruta, std::string _root)
 {
@@ -56,6 +57,9 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
     else if (_name == "ls")
         grafo = ReportLS(mounted);
 
+    else if (_name == "journaling")
+        return generateJournalingReport(dir_output);
+
     else
         return coutError("El nombre del reporte a generar no es válido: " + _name, NULL);
 
@@ -65,4 +69,24 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
     writeDot(grafo);
     generateReport(dir_output);
     return 1;
+}
+
+void AddToJournaling(command _tmp)
+{
+    std::string dir = "../controller/reports/journal.dot";
+    bool x = true;
+    if (!isDir(dir))
+    {
+        x = false;
+        std::ofstream MyFile(dir);
+        MyFile << "";
+        MyFile.close();
+    }
+    std::ofstream f;
+    f.open(dir, std::ios_base::app); // append instead of overwrite
+    if (!x)
+        f << FileJournaling();
+
+    f << getDotJournaling(_tmp);
+    f.close();
 }

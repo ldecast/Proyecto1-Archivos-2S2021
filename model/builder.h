@@ -30,6 +30,7 @@ struct command
     string cont;
     string _stdin;
     std::vector<string> filen;
+    string dest;
 
     string ruta;
     string root;

@@ -30,4 +30,19 @@ void generateReport(std::string _path)
     system(syst.c_str());
 }
 
+int generateJournalingReport(std::string _path)
+{
+    std::string dir = "../controller/reports/journal.dot";
+    std::ofstream f;
+    f.open(dir, std::ios_base::app); // append instead of overwrite
+    f << "</TABLE>>];\n}";
+    f.close();
+    std::string extension = _path.substr(_path.find_last_of('.') + 1);
+    std::string syst = "dot -T" + extension + " " + dir + " -o " + _path;
+    system(syst.c_str());
+
+    remove(dir.c_str());
+    return 1;
+}
+
 #endif

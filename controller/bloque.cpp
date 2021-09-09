@@ -22,6 +22,13 @@
 
 int bloque(struct command x)
 {
+    if (x.keyword == "__MKFS" || x.keyword == "__MKGRP" || x.keyword == "__RMGRP" || x.keyword == "__MKUSR" || x.keyword == "__RMUSR" ||
+        x.keyword == "__CHMOD" || x.keyword == "__TOUCH" || x.keyword == "__RM" || x.keyword == "__EDIT" || x.keyword == "__MKDIR" ||
+        x.keyword == "__MV" || x.keyword == "__CP" || x.keyword == "__REN" || x.keyword == "__CHOWN" || x.keyword == "__CHGRP")
+    {
+        AddToJournaling(x);
+    }
+
     if (x.keyword == "__MKDISK")
         return makeDisk(x.size, x.fit, x.unit, x.path);
 
@@ -36,9 +43,6 @@ int bloque(struct command x)
 
     if (x.keyword == "__UMOUNT")
         return umount(x.id);
-
-    if (x.keyword == "__MKFS")
-        return mkfs(x.id, x.type, x.fs);
 
     if (x.keyword == "__MKFS")
         return mkfs(x.id, x.type, x.fs);
