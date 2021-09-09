@@ -63,9 +63,14 @@ struct command x;
 %token <std::string> CAT "pr_CAT"
 %token <std::string> RM "pr_RM"
 %token <std::string> EDIT "pr_EDIT"
+%token <std::string> REN "pr_REN"
+%token <std::string> MV "pr_MV"
+%token <std::string> CP "pr_CP"
 %token <std::string> MKDIR "pr_MKDIR"
+
 %token <std::string> R "pr_R"
 %token <std::string> FILEN "pr_FILEN"
+%token <std::string> DEST "pr_DEST"
 %token <std::string> P "pr_P"
 %token <std::string> CONT "pr_CONT"
 %token <std::string> UGO "pr_UGO"
@@ -154,6 +159,9 @@ FILESYSTEM: "pr_CHMOD" PARAMS {x = newCommand("__CHMOD",parametros);}
             | "pr_RM" PARAMS {x = newCommand("__RM",parametros);}
             | "pr_EDIT" PARAMS {x = newCommand("__EDIT",parametros);}
             | "pr_MKDIR" PARAMS {x = newCommand("__MKDIR",parametros);}
+            | "pr_REN" PARAMS {x = newCommand("__REN",parametros);}
+            | "pr_CP" PARAMS {x = newCommand("__CP",parametros);}
+            | "pr_MV" PARAMS {x = newCommand("__MV",parametros);}
 ;
 
 REPORT: "pr_rep" PARAMS {x = newCommand("__REP",parametros);}
@@ -183,6 +191,7 @@ PARAM: "pr_SIZE" {$$ = "__SIZE";}
       | "pr_UGO" {$$ = "__UGO";}
       | "pr_CONT" {$$ = "__CONT";}
       | "pr_FILEN" {$$ = "__FILEN";}
+      | "pr_DEST" {$$ = "__DEST";}
 ;
 
 BOOLEAN_PARAM: "pr_R" {$$ = "__R";}

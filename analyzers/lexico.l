@@ -67,6 +67,9 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "cat"                   {return yy::class_parser::make_CAT(yytext, loc);}
 "rm"                    {return yy::class_parser::make_RM(yytext, loc);}
 "edit"                  {return yy::class_parser::make_EDIT(yytext, loc);}
+"ren"                   {return yy::class_parser::make_REN(yytext, loc);}
+"mv"                    {return yy::class_parser::make_MV(yytext, loc);}
+"cp"                    {return yy::class_parser::make_CP(yytext, loc);}
 "mkdir"                 {return yy::class_parser::make_MKDIR(yytext, loc);}
 {HYPHEN}"ugo"           {return yy::class_parser::make_UGO(yytext, loc);}
 {HYPHEN}"cont"          {return yy::class_parser::make_CONT(yytext, loc);}
@@ -74,6 +77,7 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 {HYPHEN}"r"             {return yy::class_parser::make_R(yytext, loc);}
 {HYPHEN}"file"{NUMERO}  {return yy::class_parser::make_FILEN(yytext, loc);}
 {HYPHEN}"p"             {return yy::class_parser::make_P(yytext, loc);}
+{HYPHEN}"dest"          {return yy::class_parser::make_DEST(yytext, loc);}
 
 "pause"                 {
                           std::cout << "Ingrese cualquier tecla para continuar: ";

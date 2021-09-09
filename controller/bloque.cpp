@@ -17,6 +17,9 @@
 #include "./file_system/touch.cpp"
 #include "./file_system/cat.cpp"
 #include "./file_system/rm.cpp"
+#include "./file_system/ren.cpp"
+#include "./file_system/mv.cpp"
+#include "./file_system/cp.cpp"
 #include "./file_system/mkdir.cpp"
 #include "./reports/classifier.cpp"
 
@@ -91,6 +94,15 @@ int bloque(struct command x)
 
     if (x.keyword == "__MKDIR")
         return mkdir(x.path, x.r);
+
+    if (x.keyword == "__REN")
+        return ren(x.path, x.name);
+
+    if (x.keyword == "__MV")
+        return mv(x.path, x.dest);
+
+    if (x.keyword == "__CP")
+        return cp(x.path, x.dest);
 
     if (x.keyword == "__REP")
         return classifier(x.name, x.path, x.id, x.ruta, x.root);

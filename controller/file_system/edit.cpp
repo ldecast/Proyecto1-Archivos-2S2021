@@ -55,9 +55,9 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
     fseek(file, fr.inode * sizeof(InodosTable), SEEK_CUR);
     fread(&inode_father, sizeof(InodosTable), 1, file);
     if (!HasPermission(_user_logged, inode_father, 6))
-        return coutError("El usuario no posee los permisos de lectura y escritura sobre la carpeta padre.", NULL);
+        return coutError("El usuario no posee los permisos de lectura y escritura sobre la carpeta padre.", file);
     if (!fileExists(inode_father, _name, file, super_bloque.s_block_start))
-        return coutError("El archivo '" + _name + "' no se encuentra en la ruta: " + _path + ".", NULL);
+        return coutError("El archivo '" + _name + "' no se encuentra en la ruta: " + _path + ".", file);
 
     /* Lectura del bloque de carpeta padre */
     CarpetasBlock file_block_tmp;
