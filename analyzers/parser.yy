@@ -95,6 +95,7 @@ struct command x;
 %token <std::string> RUN_EXEC "pr_exec"
 %token <std::string> RUN_REPORT "pr_rep"
 %token <std::string> IDENTIFICADOR "tk_identifier"
+%token <std::string> PATTERN "tk_pattern"
 %token <std::string> NUMERO "tk_number"
 %token FIN 0 "eof"
 
@@ -127,6 +128,7 @@ DATA: STRING {$$=$1;}
     | "tk_number" {$$=$1;}
     | "tk_path" {$$=$1;}
     | "tk_identifier" {$$=$1;}
+    | "tk_pattern" { $$=$1;}
 ;
 
 E: EXEC
