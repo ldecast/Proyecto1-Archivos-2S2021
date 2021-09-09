@@ -67,6 +67,8 @@ struct command x;
 %token <std::string> MV "pr_MV"
 %token <std::string> CP "pr_CP"
 %token <std::string> MKDIR "pr_MKDIR"
+%token <std::string> LOSS "pr_LOSS"
+%token <std::string> RECOVERY "pr_RECOVERY"
 
 %token <std::string> R "pr_R"
 %token <std::string> FILEN "pr_FILEN"
@@ -162,6 +164,8 @@ FILESYSTEM: "pr_CHMOD" PARAMS {x = newCommand("__CHMOD",parametros);}
             | "pr_REN" PARAMS {x = newCommand("__REN",parametros);}
             | "pr_CP" PARAMS {x = newCommand("__CP",parametros);}
             | "pr_MV" PARAMS {x = newCommand("__MV",parametros);}
+            | "pr_LOSS" PARAMS {x = newCommand("__LOSS",parametros);}
+            | "pr_RECOVERY" PARAMS {x = newCommand("__RECOVERY",parametros);}
 ;
 
 REPORT: "pr_rep" PARAMS {x = newCommand("__REP",parametros);}

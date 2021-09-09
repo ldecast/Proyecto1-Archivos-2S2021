@@ -71,6 +71,8 @@ PATH_DIR \/.[^" "]+|{IDENTIFICADOR}"."{IDENTIFICADOR}
 "mv"                    {return yy::class_parser::make_MV(yytext, loc);}
 "cp"                    {return yy::class_parser::make_CP(yytext, loc);}
 "mkdir"                 {return yy::class_parser::make_MKDIR(yytext, loc);}
+"loss"                  {return yy::class_parser::make_LOSS(yytext, loc);}
+"recovery"              {return yy::class_parser::make_RECOVERY(yytext, loc);}
 {HYPHEN}"ugo"           {return yy::class_parser::make_UGO(yytext, loc);}
 {HYPHEN}"cont"          {return yy::class_parser::make_CONT(yytext, loc);}
 {HYPHEN}"stdin"         {return yy::class_parser::make_STDIN(yytext, loc);}

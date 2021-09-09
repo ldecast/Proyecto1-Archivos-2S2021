@@ -21,14 +21,28 @@
 #include "./file_system/mv.cpp"
 #include "./file_system/cp.cpp"
 #include "./file_system/mkdir.cpp"
+#include "./file_system/loss.cpp"
+#include "./file_system/recovery.cpp"
 #include "./reports/classifier.cpp"
 
 int bloque(struct command x)
 {
     if (x.keyword == "__MKFS" || x.keyword == "__MKGRP" || x.keyword == "__RMGRP" || x.keyword == "__MKUSR" || x.keyword == "__RMUSR" ||
-        x.keyword == "__CHMOD" || x.keyword == "__TOUCH" || x.keyword == "__RM" || x.keyword == "__EDIT" || x.keyword == "__MKDIR" ||
+        x.keyword == "__CHMOD" || x.keyword == "__TOUCH" || x.keyword == "__RM" || x.keyword == "__EDIT" || x.keyword == "__MKDIR" || x.keyword == "__CAT" ||
         x.keyword == "__MV" || x.keyword == "__CP" || x.keyword == "__REN" || x.keyword == "__CHOWN" || x.keyword == "__CHGRP")
     {
+        if (_user_logged.logged_in)
+        {
+            Superbloque sb;
+            FILE *file = fopen(_user_logged.mounted.path.c_str(), "rb");
+            int part_start = startByteSuperBloque(_user_logged.mounted);
+            fseek(file, part_start, SEEK_SET);
+            fread(&sb, sizeof(Superbloque), 1, file);
+            if (sb.s_magic == -1)
+                return coutError("El sistema de archivos se ha corrompido, intente recuperarlo usando Recovery.", file);
+            fclose(file);
+            file = NULL;
+        }
         AddToJournaling(x);
     }
 
@@ -103,6 +117,12 @@ int bloque(struct command x)
 
     if (x.keyword == "__CP")
         return cp(x.path, x.dest);
+
+    if (x.keyword == "__LOSS")
+        return loss(x.id);
+
+    if (x.keyword == "__RECOVERY")
+        return recovery(x.id);
 
     if (x.keyword == "__REP")
         return classifier(x.name, x.path, x.id, x.ruta, x.root);

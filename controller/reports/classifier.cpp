@@ -36,7 +36,15 @@ int classifier(std::string _name, std::string _path, std::string _id, std::strin
     else if (_name == "disk")
         grafo = ReportDisk(mounted);
 
-    else if (_name == "inode")
+    Superbloque sb;
+    FILE *file = fopen(mounted.path.c_str(), "rb");
+    int part_start = startByteSuperBloque(mounted);
+    fseek(file, part_start, SEEK_SET);
+    fread(&sb, sizeof(Superbloque), 1, file);
+    if (sb.s_magic == -1)
+        return coutError("El sistema de archivos se ha corrompido, intente recuperarlo usando Recovery.", file);
+
+    if (_name == "inode")
         grafo = ReportInodes(mounted);
 
     else if (_name == "block")
