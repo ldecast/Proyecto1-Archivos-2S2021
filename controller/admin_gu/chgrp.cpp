@@ -15,7 +15,7 @@ int chgrp(string _user, string _grp)
         return coutError("Error: faltan parámetros obligatorios.", NULL);
 
     if (_user_logged.nombre != "root" || _user_logged.logged_in == false)
-        return coutError("Error: solamente se puede ejecutar el comando mkgrp con el usuario root.", NULL);
+        return coutError("Error: solamente se puede ejecutar el comando chgrp con el usuario root.", NULL);
 
     Users user_to_edit, user_tmp;
     user_to_edit.nombre = _user;

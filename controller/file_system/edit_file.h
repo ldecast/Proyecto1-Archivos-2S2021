@@ -135,8 +135,8 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
             fseek(file, inode_current.i_block[i] * 64, SEEK_CUR);
             fwrite(&tmp_content_block, 64, 1, file);
             bm_blocks[inode_current.i_block[i]] = '0';
-            free_block = inode_current.i_block[i];
-            super_bloque.s_first_blo = free_block;
+            // free_block = inode_current.i_block[i];
+            // super_bloque.s_first_blo = free_block;
             super_bloque.s_free_blocks_count++;
             inode_current.i_block[i] = -1;
         }

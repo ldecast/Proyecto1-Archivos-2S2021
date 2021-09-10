@@ -169,6 +169,9 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
     new_inode.i_ctime = getCurrentTime();
     new_inode.i_mtime = new_inode.i_ctime;
     new_inode.i_atime = new_inode.i_ctime;
+    fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
+    fseek(file, free_inode * sizeof(InodosTable), SEEK_CUR);
+    fwrite(&new_inode, sizeof(InodosTable), 1, file);
 
     /* Llenar con la información del archivo */
     string extra = "-";
@@ -200,10 +203,6 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
 
     fseek(file, super_bloque.s_inode_start, SEEK_SET);
     fwrite(&root_inode, sizeof(InodosTable), 1, file);
-
-    fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
-    fseek(file, free_inode * sizeof(InodosTable), SEEK_CUR);
-    fwrite(&new_inode, sizeof(InodosTable), 1, file);
 
     fseek(file, super_bloque.s_block_start, SEEK_SET); // Mover el puntero al inicio de la tabla de bloques
     fseek(file, free_block * 64, SEEK_CUR);

@@ -15,6 +15,7 @@
 #include "./admin_gu/rmusr.cpp"
 #include "./admin_gu/chgrp.cpp"
 #include "./file_system/chmod.cpp"
+#include "./file_system/chown.cpp"
 #include "./file_system/touch.cpp"
 #include "./file_system/cat.cpp"
 #include "./file_system/rm.cpp"
@@ -89,6 +90,9 @@ int bloque(struct command x)
 
     if (x.keyword == "__CHMOD")
         return chmod(x.path, x.ugo, x.r);
+
+    if (x.keyword == "__CHOWN")
+        return chown(x.path, x.user, x.r);
 
     if (x.keyword == "__TOUCH")
     {

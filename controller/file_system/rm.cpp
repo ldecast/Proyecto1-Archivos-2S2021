@@ -167,16 +167,16 @@ int RewriteInode(int _index_inode, int _seek_superbloque)
         {
             if (inode_current.i_block[i] != -1)
             {
-                free_block = inode_current.i_block[i];
+                // free_block = inode_current.i_block[i];
                 bm_blocks[free_block] = '0';
-                super_bloque.s_first_blo = free_block;
+                // super_bloque.s_first_blo = free_block;
                 super_bloque.s_blocks_count++;
                 inode_current.i_block[i] = -1;
             }
         }
-        free_inode = _index_inode;
+        // free_inode = _index_inode;
         bm_inodes[free_inode] = '0';
-        super_bloque.s_first_ino = free_inode;
+        // super_bloque.s_first_ino = free_inode;
         super_bloque.s_free_inodes_count++;
     }
     /* ESCRITURA */

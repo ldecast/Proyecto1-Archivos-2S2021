@@ -73,7 +73,6 @@ Groups getGroupByName(string _name, InodosTable users_inode, int s_block_start, 
 {
     /* Obtener todo el archivo concatenado */
     string content_file = GetAllFile(users_inode, s_block_start, _path);
-    FILE *file = fopen(_path.c_str(), "rb");
     Groups group_tmp;
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
     std::istringstream f(content_file);
@@ -96,8 +95,6 @@ Groups getGroupByName(string _name, InodosTable users_inode, int s_block_start, 
 
             if (group_tmp.nombre == _name && group_tmp.GID != 0)
             {
-                fclose(file);
-                file = NULL;
                 return group_tmp;
             }
             break;
@@ -105,9 +102,48 @@ Groups getGroupByName(string _name, InodosTable users_inode, int s_block_start, 
             break;
         }
     }
-    fclose(file);
-    file = NULL;
     return group_tmp;
+}
+
+Users getUserByName(string _name, int _index_inode, int _s_inode_start, int _s_block_start, string _path)
+{
+    /* Obtener todo el archivo concatenado */
+    string content_file = ReadFile(_index_inode, _s_inode_start, _s_block_start, _path);
+    Users user_tmp;
+    /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
+    std::istringstream f(content_file);
+    string line;
+    while (getline(f, line))
+    {
+        int count = 0;
+        for (int i = 0; (i = line.find(',', i)) != std::string::npos; i++)
+            count++;
+        switch (count)
+        {
+        case 4:
+            user_tmp.UID = std::stoi(line.substr(0, line.find_first_of(',')));
+            line = line.substr(line.find_first_of(',') + 1);
+
+            user_tmp.tipo = line.substr(0, line.find_first_of(','))[0];
+            line = line.substr(line.find_first_of(',') + 1);
+
+            user_tmp.grupo = line.substr(0, line.find_first_of(','));
+            line = line.substr(line.find_first_of(',') + 1);
+
+            user_tmp.nombre = line.substr(0, line.find_first_of(','));
+            line = line.substr(line.find_first_of(',') + 1);
+
+            user_tmp.contrasena = line.substr(0, line.find_first_of('\n'));
+
+            if (user_tmp.nombre == _name && user_tmp.UID != 0)
+            {
+                return user_tmp;
+            }
+            break;
+        }
+    }
+    user_tmp.UID = -1;
+    return user_tmp;
 }
 
 bool HasPermission(Users _user, InodosTable _inode, int _req)
@@ -139,7 +175,7 @@ bool HasPermission(Users _user, InodosTable _inode, int _req)
         return u == '3' || u == '7';
     case 4: // Lectura
         return u == '4' || u == '5' || u == '6' || u == '7';
-    case 5: // Lectura
+    case 5: // Lectura y ejecución
         return u == '5' || u == '7';
     case 6: // Lectura y escritura
         return u == '6' || u == '7';
