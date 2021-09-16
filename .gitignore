@@ -1,6 +1,2 @@
-analyzers/entrada.txt
-analyzers/exec.txt
-analyzers/command.txt
-controller/reports/report.dot
-
 *.dot
+*.txt
