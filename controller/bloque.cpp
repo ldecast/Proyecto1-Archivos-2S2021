@@ -28,7 +28,7 @@
 #include "./file_system/recovery.cpp"
 #include "./reports/classifier.cpp"
 
-int bloque(struct command x)
+int bloque(struct command x) /* Aquí se maneja qué acción ejecutar según lo que devuelve el analizador */
 {
     if (x.keyword == "__MKFS" || x.keyword == "__MKGRP" || x.keyword == "__RMGRP" || x.keyword == "__MKUSR" || x.keyword == "__RMUSR" ||
         x.keyword == "__CHMOD" || x.keyword == "__TOUCH" || x.keyword == "__RM" || x.keyword == "__EDIT" || x.keyword == "__MKDIR" || x.keyword == "__CAT" ||

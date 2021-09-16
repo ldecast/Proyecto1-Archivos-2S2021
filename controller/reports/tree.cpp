@@ -12,7 +12,7 @@ string getDot_inode_tree(InodosTable _inode, int _index_inode);
 string getDot_folder_block_tree(int _start_blocks, int _index_block, string _path);
 string getDot_file_block_tree(int _start_blocks, int _index_block, string _path);
 
-string ReportTree(MOUNTED _mounted, string _root)
+string ReportTree(MOUNTED _mounted, string _root) /* Este reporte quedó bien mamalon xd */
 {
     string grafo =
         std::string("digraph G {\n") +

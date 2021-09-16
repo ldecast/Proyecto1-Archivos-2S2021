@@ -44,9 +44,6 @@ int MontarParticion(string _path, string _name)
     {
         partition _particion = getPartition(mbr, _name, _file);
         _part_start = _particion.part_start;
-        // print("_particion.part_name: " + string(_particion.part_name));
-        // print("_particion.part_size: " + std::to_string(_particion.part_size));
-
         _mounted.particion = _particion;
     }
     else if (tipo == 'L')
@@ -57,8 +54,6 @@ int MontarParticion(string _path, string _name)
         fread(&_ebr_initial, sizeof(EBR), 1, _file);
         _ebr_to_mount = getLogicPartition(_ebr_initial, _name, _file);
         _part_start = _ebr_to_mount.part_start + sizeof(EBR);
-        // print("_ebr_to_mount.part_name: " + string(_ebr_to_mount.part_name));
-        // print("_ebr_to_mount.part_size: " + std::to_string(_ebr_to_mount.part_size));
 
         _mounted.logica = _ebr_to_mount;
     }

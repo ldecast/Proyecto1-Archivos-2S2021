@@ -106,5 +106,5 @@ int chgrp(string _user, string _grp)
 
     fclose(file);
     file = NULL;
-    return EditarArchivo("/", "users.txt", content_file, false);
+    return EditarArchivo("/", "users.txt", content_file, false); // Llamar al método de editar archivo con el nuevo contenido
 }

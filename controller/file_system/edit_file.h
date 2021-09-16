@@ -153,7 +153,6 @@ int EditarArchivo(string _path, string _name, string _content, bool _stdin)
     fseek(file, _index_to_edit_inode * sizeof(InodosTable), SEEK_CUR);
     fwrite(&inode_current, sizeof(InodosTable), 1, file);
 
-    // coutError("Se editó el archivo en el bloque: " + std::to_string(free_block) + " En el inodo: " + std::to_string(free_inode), NULL);
     fclose(file);
     file = NULL;
     // std::cout << "Se editó el archivo: " + _path + "/" + _name + "\n";

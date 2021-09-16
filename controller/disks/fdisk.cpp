@@ -42,8 +42,6 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
     EBR ebr_inicial;
     fseek(_file, extendida.part_start, SEEK_SET);
     fread(&ebr_inicial, sizeof(EBR), 1, _file);
-    // std::cout << "ebr_inicial.part_name: ";
-    // std::cout << ebr_inicial.part_name << std::endl;
 
     if (existeNombreEBR(ebr_inicial, _name, _file))
         return coutError("El nombre a asignar ya existe como partición lógica.", _file);
@@ -75,8 +73,7 @@ int CrearLogica(MBR _mbr, int _size, FILE *_file, char _fit, std::string _name)
         ebr_new.part_start = ebr_to_update.part_start + ebr_to_update.part_size; // + sizeof(EBR)
         ebr_new.part_status = '1';
 
-        ebr_to_update.part_next = ebr_new.part_start; // +1?
-        // std::cout << "ebr_new.part_name: " + std::string(ebr_new.part_name) + " ebr_new.part_start: " + std::to_string(ebr_new.part_start) << std::endl;
+        ebr_to_update.part_next = ebr_new.part_start;
         Superbloque sb;
 
         fseek(_file, ebr_to_update.part_start, SEEK_SET);
@@ -122,8 +119,8 @@ int CrearParticion(int _size, char _unit, std::string _path, char _type, char _f
             nstart += mbr.mbr_partition[i].part_size;
             if (mbr.mbr_partition[i].part_status == '0')
             {
-                if (!Validations(mbr, i, nstart, tam)) //return coutError("Ya no se encuentra espacio disponible para crear la partición.", pFile);
-                    continue;
+                if (!Validations(mbr, i, nstart, tam))
+                    continue; // Sigue buscando un espacio disponible
                 if (i < 3)
                 {
                     if (mbr.mbr_partition[i + 1].part_start != 0)
@@ -141,7 +138,7 @@ int CrearParticion(int _size, char _unit, std::string _path, char _type, char _f
             }
         }
 
-        int i = getPartitionByFit(options, _fit); //ahora toca con el EBR
+        int i = getPartitionByFit(options, _fit);
         if (i == -1)
             return coutError("No se encontró ningún espacio apto para crear la partición.", pFile);
 

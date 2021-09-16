@@ -65,7 +65,6 @@ int cat(std::vector<string> _filen)
                 fread(&file_block, 64, 1, file);
                 for (int k = 0; k < 4; k++)
                 {
-                    // std::cout << file_block.b_content[k].b_name << std::endl;
                     if (string(file_block.b_content[k].b_name) == name)
                     {
                         // std::cout << file_block.b_content[k].b_inodo << std::endl;
@@ -86,10 +85,9 @@ int cat(std::vector<string> _filen)
         fclose(file);
         file = NULL;
         /* Obtener todo el archivo concatenado */
-        // std::cout << _index_inode << std::endl;
         content += (ReadFile(_index_inode, super_bloque.s_inode_start, super_bloque.s_block_start, _user_logged.mounted.path) + "\n");
     }
-    std::cout << content;
+    std::cout << content; // Imprime el archivo
 
     return 1;
 }

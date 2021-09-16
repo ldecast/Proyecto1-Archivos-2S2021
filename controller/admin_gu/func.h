@@ -32,17 +32,10 @@ int ByteLastFileBlock(InodosTable _inode)
 {
     for (int i = 0; i < 15; i++) //falta indirecto
     {
-        // std::cout << "\033[1;32m" + std::to_string(_inode.i_block[i]) + "\033[0m\n";
         if (_inode.i_block[i] == -1)
             return _inode.i_block[i - 1] * 64;
     }
     return -1;
-}
-
-int numberOfFileBlocks(int _size)
-{
-    float tmp = static_cast<float>(_size) / 64.0;
-    return (int)ceil(tmp);
 }
 
 std::vector<std::string> Separate64Chars(std::string _content)
@@ -149,7 +142,6 @@ Users getUserByName(string _name, int _index_inode, int _s_inode_start, int _s_b
 bool HasPermission(Users _user, InodosTable _inode, int _req)
 {
     char u;
-    // std::cout << ctime(&_inode.i_ctime) << std::endl;
     /* Usuario root */
     if (_user.nombre == "root")
         return true;
@@ -163,7 +155,7 @@ bool HasPermission(Users _user, InodosTable _inode, int _req)
     else
         u = std::to_string(_inode.i_perm)[2];
 
-    if (u == '7' || u == '0')
+    if (u == '7' || u == '0') // Si es permiso 7 siempre será true y 0 siempre será false
         return u == '7';
     switch (_req)
     {

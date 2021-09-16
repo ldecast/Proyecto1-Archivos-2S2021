@@ -86,7 +86,7 @@ int CrearArchivo(string _path, string _name, bool _r, int _size, string _cont, b
         }
     }
     int i_size = content.length();
-    if (i_size > 960)
+    if (i_size > 960) // Al no manejar indirectos, un bloque de archivo solamente da para 960 caracteres.
         content = content.substr(0, 960);
     // std::cout << content << std::endl;
 

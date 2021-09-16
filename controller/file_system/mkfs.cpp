@@ -68,8 +68,6 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     for (int i = 2; i < n; i++)
         bm_content += "0";
     strcpy(bitmap_inodes, bm_content.c_str());
-    // std::cout << bitmap_inodes << std::endl;
-    // std::cout << bm_content.length() << std::endl;
 
     /* CREACIÓN DEL BITMAP DE BLOQUES */
     char bitmap_blocks[3 * n];
@@ -77,8 +75,6 @@ int CrearSistemaArchivos(MOUNTED _mounted, char _type, int _fs)
     for (int i = 2; i < 3 * n; i++)
         bm_content += "0";
     strcpy(bitmap_blocks, bm_content.c_str());
-    // std::cout << bitmap_blocks << std::endl;
-    // std::cout << bm_content.length() << std::endl;
 
     /* CREACIÓN DE JOURNALING */
     Journaling journaling;

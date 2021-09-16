@@ -62,12 +62,7 @@ EBR getLogicByFit(EBR _ebr_initial, char _fit, FILE *_file, int _size)
     for (int i = 0; i < _options.size(); i++)
     {
         _ebr = _options[i];
-        // std::cout << "ret.part_name: " + std::string(_ebr.part_name) << std::endl;
-        // std::cout << "_ebr.part_next: " + std::to_string(_ebr.part_next) << std::endl;
-        // std::cout << "_ebr.part_start: " + std::to_string(_ebr.part_start) << std::endl;
-        // std::cout << "_ebr.part_size: " + std::to_string(_ebr.part_size) << std::endl;
         aux = (_ebr.part_next == -1) ? 0 : _ebr.part_next - _ebr.part_start - _ebr.part_size;
-        // std::cout << "aux: " + std::to_string(aux) << std::endl;
         switch (_fit)
         {
         case 'F':
@@ -90,7 +85,5 @@ EBR getLogicByFit(EBR _ebr_initial, char _fit, FILE *_file, int _size)
             return {part_status : '!'};
         }
     }
-    // std::cout << "ret.part_name: " + std::string(ret.part_name) << std::endl;
-    // std::cout << "_options.size(): " + std::to_string(_options.size()) << std::endl;
     return ret;
 }

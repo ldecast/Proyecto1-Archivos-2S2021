@@ -41,7 +41,6 @@ char existPartition(MBR _mbr, std::string _name, FILE *_file)
 
 EBR getLogicPartition(EBR _ebr, std::string _name, FILE *_file)
 {
-    // std::cout << _ebr.part_name << std::endl;
     if (_ebr.part_name == _name)
         return _ebr;
     if (_ebr.part_next != -1)
@@ -55,7 +54,6 @@ EBR getLogicPartition(EBR _ebr, std::string _name, FILE *_file)
 
 EBR getEBRprevious(EBR _ebr, int _n, FILE *_file) //revisar
 {
-    // std::cout << ".." + std::string(_ebr.part_name) << std::endl;
     if (_ebr.part_next == _n)
         return _ebr;
     if (_ebr.part_next != -1)
@@ -156,8 +154,6 @@ int getPartitionsSize(MBR _mbr)
 
 int getLogicsSize(EBR _ebr, int _s, FILE *_file)
 {
-    // std::cout << "getLogicsSize -->_ebr.part_next: ";
-    // std::cout << _ebr.part_next << std::endl;
     _s += _ebr.part_size;
     if (_ebr.part_next == -1)
         return _s;
@@ -180,10 +176,5 @@ bool Validations(MBR _mbr, int _index, int _ini, int _size)
     }
     return true;
 }
-
-// void print(std::string _message)
-// {
-//     std::cout << _message << std::endl;
-// }
 
 #endif

@@ -31,7 +31,6 @@ int mkgrp(string _name)
     fseek(file, super_bloque.s_inode_start, SEEK_SET); // Mover el puntero al inicio de la tabla de inodos
     fseek(file, sizeof(InodosTable), SEEK_CUR);        // Mover el puntero al segundo inodo que corresponde al archivo de users.txt
     fread(&users_inode, sizeof(InodosTable), 1, file); // Leer el inodo
-    // std::cout << "\033[1;33m" + string(ctime(&users_inode.i_mtime)) + "\033[0m\n";
     fclose(file);
     file = NULL;
 
@@ -46,7 +45,7 @@ int mkgrp(string _name)
     fread(&users_file, sizeof(ArchivosBlock), 1, file);
 
     /* LEER LÍNEA POR LÍNEA EL ARCHIVO USERS.TXT */
-    // std::cout << "\033[1;32m" + string(content_file) + "\033[0m\n";
+    // std::cout << content_file";
     std::istringstream f(content_file);
     string line;
     int gid = 1;
@@ -81,7 +80,6 @@ int mkgrp(string _name)
     if (string(users_file.b_content).length() + tmp.length() > 64)
     {
         tmp = string(users_file.b_content) + tmp;
-        // std::cout << "\033[1;31m(" + string(tmp) + ")\033[0m\n";
         extra = tmp.substr(64);
         tmp = tmp.substr(0, 64);
     }
